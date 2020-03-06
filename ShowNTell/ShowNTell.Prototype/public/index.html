@@ -1,0 +1,28 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<meta name="google-signin-client_id" content="462162693296-pesibunbs71up7lress4c6b549bd2qld.apps.googleusercontent.com"/>
+
+	<title>Show-n-Tell - Home</title>
+
+	<link href="main.css" rel="stylesheet" />
+	<script src="index.js" defer></script>
+
+	<script src="https://apis.google.com/js/platform.js" async defer></script>
+	<script src="signin.js" defer></script>
+</head>
+<body>
+	<div id="root">
+		<h1>Home</h1>
+		<p id="status"></p>
+		<form>
+			<div class="g-signin2" data-onsuccess="onSignIn"></div>
+			<input id="file-upload" type="file" />
+			<button id="file-submit" type="button">Submit</button>
+			<button id="file-get" type="button">Get Image</button>
+		</form>
+		<img id="image"/>
+	</div>
+</body>
+</html>
