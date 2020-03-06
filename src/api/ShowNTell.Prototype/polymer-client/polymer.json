@@ -4,5 +4,14 @@
     "rules": [
       "polymer-3"
     ]
-  }
+  },
+  "sources": [
+    "manifest/**",
+    "package.json"
+  ],
+  "extraDependencies": [
+    "manifest.json",
+    "node_modules/@webcomponents/webcomponentsjs/**",
+    "node_modules/@vaadin/router/**"
+  ]
 }

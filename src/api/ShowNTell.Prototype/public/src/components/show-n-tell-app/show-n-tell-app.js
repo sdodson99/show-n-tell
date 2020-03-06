@@ -1,7 +1,7 @@
-import { html, PolymerElement } from "@polymer/polymer/polymer-element.js";
-import ImagePostService from "../../services/image-post-service.js.js";
-import "@google-web-components/google-signin/google-signin.js";
-import "../create-image-form/create-image-form.js.js";
+import { html, PolymerElement } from "../../../node_modules/@polymer/polymer/polymer-element.js";
+import ImagePostService from "../../services/image-post-service.js";
+import "../../../node_modules/@google-web-components/google-signin/google-signin.js";
+import "../create-image-form/create-image-form.js";
 
 class ShowNTellApp extends PolymerElement {
   static get template() {

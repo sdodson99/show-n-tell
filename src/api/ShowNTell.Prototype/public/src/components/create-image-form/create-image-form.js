@@ -1,4 +1,4 @@
-import { html, PolymerElement } from "@polymer/polymer/polymer-element.js";
+import { html, PolymerElement } from "../../../node_modules/@polymer/polymer/polymer-element.js";
 
 class CreateImageForm extends PolymerElement {
   static get template() {
