@@ -1,0 +1,59 @@
+﻿* {
+	margin: 0;
+	padding: 0;
+}
+
+body {
+	font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+	background: #4c465e;
+	color: white;
+	height: 100%;
+	display: flex;
+}
+
+h1 {
+	font-weight: normal;
+	font-size: 3em;
+}
+
+#root {
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+	align-items: center;
+}
+
+#status {
+	color: #d6ae40;
+	font-size: 1.5em;
+}
+
+form {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+input[type=file] {
+	margin: 0.5em;
+}
+
+.g-signin2 {
+	margin: 0.5em;
+}
+
+button {
+	margin: 0.5em;
+	padding: 5px 10px;
+	border-radius: 5px;
+	background: #d6ae40;
+	color: white;
+	text-decoration: none;
+	border: 1px solid white;
+	font-size: 1.5em;
+}
+
+#image {
+	margin-top: 1em;
+	max-width: 100%;
+}
