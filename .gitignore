@@ -5,3 +5,4 @@ bin/
 *.editorconfig
 uploads/
 build/
+*.~vsdx
