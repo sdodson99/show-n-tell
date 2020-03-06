@@ -14,6 +14,7 @@ namespace ShowNTell.Prototype
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
+                    webBuilder.UseUrls("https://localhost:44323");
                     webBuilder.UseStartup<Startup>();
                 });
     }
