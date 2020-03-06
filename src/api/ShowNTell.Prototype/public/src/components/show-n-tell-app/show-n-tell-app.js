@@ -1,9 +1,7 @@
-import {html, PolymerElement} from '@polymer/polymer/polymer-element.js';
-
-import ImagePostService from '../../services/image-post-service'
-
-import '@google-web-components/google-signin';
-import '../create-image-form/create-image-form'
+import { html, PolymerElement } from "@polymer/polymer/polymer-element.js";
+import ImagePostService from "../../services/image-post-service.js.js";
+import "@google-web-components/google-signin/google-signin.js";
+import "../create-image-form/create-image-form.js.js";
 
 class ShowNTellApp extends PolymerElement {
   static get template() {
@@ -90,68 +88,69 @@ class ShowNTellApp extends PolymerElement {
   }
 
   signIn() {
-    if(typeof gapi !== 'undefined'){
-      if(!this.isSignedIn){
+    if (typeof gapi !== 'undefined') {
+      if (!this.isSignedIn) {
         // Log user in if not signed in already.
-        const accessToken = gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().id_token
-        window.localStorage.setItem("accessToken", accessToken)
+        const accessToken = gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().id_token;
+        window.localStorage.setItem("accessToken", accessToken);
       } else {
         // Log user out if user is signed in.
-        window.localStorage.clear("accessToken")
+        window.localStorage.clear("accessToken");
       }
     }
-  }
+  } // Post the attached file to the server when submit event raised.
 
-  // Post the attached file to the server when submit event raised.
+
   async createImage(e) {
-    let uploadedImage = e.detail.image
-
-    let status = await this.imagePostService.create(uploadedImage)
+    let uploadedImage = e.detail.image;
+    let status = await this.imagePostService.create(uploadedImage);
 
     switch (status) {
       case 200:
-        this.statusMessage = "Successfully uploaded image."
-        break
+        this.statusMessage = "Successfully uploaded image.";
+        break;
+
       case 400:
-        this.statusMessage = "Please provide an image."
-        break
+        this.statusMessage = "Please provide an image.";
+        break;
+
       case 401:
-        this.statusMessage = "You must login to upload an image."
-        break
+        this.statusMessage = "You must login to upload an image.";
+        break;
+
       case 403:
-        this.statusMessage = "You do not have permission to upload an image."
-        break
+        this.statusMessage = "You do not have permission to upload an image.";
+        break;
+
       default:
-        this.statusMessage = "Unable to upload image."
+        this.statusMessage = "Unable to upload image.";
     }
   }
 
   async showImage() {
-    let lastUploadedId = this.imagePostService.lastUploadedId
+    let lastUploadedId = this.imagePostService.lastUploadedId;
 
     if (lastUploadedId) {
       try {
-        const image = await this.imagePostService.getById(lastUploadedId)
-        
-        this.imageDescription = `Description: "${image.description}"`
-        this.imageUri = image.imageUri
-        this.statusMessage = ""
+        const image = await this.imagePostService.getById(lastUploadedId);
+        this.imageDescription = `Description: "${image.description}"`;
+        this.imageUri = image.imageUri;
+        this.statusMessage = "";
       } catch (err) {
-        this.statusMessage = "Image does not exist."
+        this.statusMessage = "Image does not exist.";
       }
     } else {
-      this.statusMessage = "Please upload an image first."
+      this.statusMessage = "Please upload an image first.";
     }
   }
 
   constructor() {
-    super()
-
-    this.imagePostService = new ImagePostService()
-
-    this.signIn = this.signIn.bind(this)
-    this.createImage = this.createImage.bind(this)
+    super();
+    this.imagePostService = new ImagePostService();
+    this.signIn = this.signIn.bind(this);
+    this.createImage = this.createImage.bind(this);
   }
+
 }
 
 window.customElements.define('show-n-tell-app', ShowNTellApp);

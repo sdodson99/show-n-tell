@@ -13,6 +13,7 @@
     "wct-mocha": "^1.0.1"
   },
   "scripts": {
-    "dev": "polymer serve --port 5000"
+    "dev": "polymer serve --port 5000",
+    "build": "polymer "
   }
 }
