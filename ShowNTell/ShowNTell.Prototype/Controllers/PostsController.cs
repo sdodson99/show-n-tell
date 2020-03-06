@@ -5,7 +5,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using ShowNTell.Prototype.Models;
+using System;
 using System.IO;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace ShowNTell.Prototype.Controllers
@@ -14,28 +16,37 @@ namespace ShowNTell.Prototype.Controllers
     [ApiController]
     public class PostsController : ControllerBase
     {
-        private readonly IWebHostEnvironment _environment;
-        private readonly ILogger<PostsController> _logger;
+        private const string BASE_IMAGE_PATH = "uploads";
 
-        public PostsController(IWebHostEnvironment environment, ILogger<PostsController> logger)
+        private readonly IWebHostEnvironment _environment;
+        private readonly ShowNTellDbContext _context;
+
+        public PostsController(IWebHostEnvironment environment, ShowNTellDbContext context)
         {
             _environment = environment;
-            _logger = logger;
+            _context = context;
+
+            //Create upload directory
+            string uploadsPath = Path.Combine(_environment.WebRootPath, BASE_IMAGE_PATH);
+            if(!Directory.Exists(uploadsPath))
+            {
+                Directory.CreateDirectory(uploadsPath);
+            }
         }
 
         [HttpGet]
         [Route("{id}")]
-        public IActionResult GetPost(int id)
+        public async Task<IActionResult> GetPost(int id)
         {
             string baseUrl = HttpContext.Request.Scheme + "://" + HttpContext.Request.Host;
 
-            //Simulate getting a post by ID from the database...
-            return Ok(new ShowNTellFile
-            {
-                Id = id,
-                Name = "ProfilePicture",
-                Url = baseUrl + "/uploads/profile.png"
-            });
+            // Get the post from the database.
+            ImagePost post = await _context.ImagePosts.FindAsync(id);
+
+            // Setup the uri location to show the image.
+            post.ImageUri = Path.Combine(baseUrl, post.ImageUri);
+
+            return Ok(post);
         }
 
         [HttpPost]
@@ -54,8 +65,9 @@ namespace ShowNTell.Prototype.Controllers
             IFormFile uploadedFile = files[0];
 
             //Create the path for the uploaded file.
-            //Note: Directory is hardcoded. Ideally, we will pass this as a constant parameter to the controller.
-            string targetFilePath = Path.Combine(_environment.WebRootPath, "uploads", "profile.png");
+            string fileExtension = Path.GetExtension(uploadedFile.FileName);
+            string relativeImageUri = Path.Combine(BASE_IMAGE_PATH, Guid.NewGuid().ToString() + fileExtension);
+            string targetFilePath = Path.Combine(_environment.WebRootPath, relativeImageUri);
 
             //Write the file to the path.
             using (FileStream output = new FileStream(targetFilePath, FileMode.Create))
@@ -63,9 +75,19 @@ namespace ShowNTell.Prototype.Controllers
                 await uploadedFile.CopyToAsync(output);
             }
 
-            //Simluate adding the file data to the database...
+            //Create new post.
+            ImagePost newPost = new ImagePost
+            {
+                UserEmail = HttpContext.User.FindFirst(ClaimTypes.Email).Value,
+                Description = "This is a post",
+                ImageUri = relativeImageUri
+            };
 
-            return Ok();
+            //Add post to database.
+            _context.ImagePosts.Add(newPost);
+            await _context.SaveChangesAsync();
+
+            return Ok(newPost);
         }
     }
 }
