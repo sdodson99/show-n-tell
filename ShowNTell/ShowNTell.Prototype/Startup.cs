@@ -6,6 +6,7 @@ using Microsoft.Extensions.Hosting;
 using ShowNTell.Prototype.Extensions;
 using ShowNTell.Prototype.Models;
 using Microsoft.EntityFrameworkCore;
+using SeanDodson.GoogleJWTAuthentication.Extensions;
 
 namespace ShowNTell.Prototype
 {
