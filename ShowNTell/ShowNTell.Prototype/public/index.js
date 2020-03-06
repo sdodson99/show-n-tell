@@ -7,6 +7,9 @@ const inputFile = document.getElementById("file-upload")
 const imgOutput = document.getElementById("image")
 const statusContent = document.getElementById("status")
 
+//Track the last uploaded image id
+let lastUploadedId
+
 //Post the attached file to the server when submit button clicked.
 btnSubmit.addEventListener("click", async (e) => {
 	let status = await postFile(inputFile.files[0])
@@ -31,13 +34,17 @@ btnSubmit.addEventListener("click", async (e) => {
 
 //Get an image from the server and display it as the img source.
 btnGet.addEventListener("click", async (e) => {
-	try {
-		const image = await getImage(1)
-		imgOutput.removeAttribute("src")
-		imgOutput.setAttribute("src", image.url)
-		statusContent.innerText = ""
-	} catch (err) {
-		statusContent.innerText = "Image does not exist."
+	if (lastUploadedId) {
+		try {
+			const image = await getImage(lastUploadedId)
+			imgOutput.removeAttribute("src")
+			imgOutput.setAttribute("src", image.imageUri)
+			statusContent.innerText = ""
+		} catch (err) {
+			statusContent.innerText = "Image does not exist."
+		}
+	} else {
+		statusContent.innerText = "Please upload an image first."
 	}
 })
 
@@ -63,6 +70,11 @@ async function postFile(file) {
 		},
 		body: formData
 	})
+
+	if (result.ok) {
+		const createdPost = await result.json();
+		lastUploadedId = createdPost.id
+	}
 
 	return result.status
 }
