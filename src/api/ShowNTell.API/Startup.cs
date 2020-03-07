@@ -43,13 +43,19 @@ namespace ShowNTell.API
 
         private Action<DbContextOptionsBuilder> GetDbContextOptionsBuilderAction()
         {
+            string connectionString = "";
+
             // Change data source for production.
             if(Environment.IsProduction())
             {
-
+                connectionString = Configuration.GetConnectionString("azure-sql");
+            }
+            else
+            {
+                connectionString = Configuration.GetConnectionString("vs-local");
             }
 
-            return o => o.UseSqlite("Data Source=data.db;");
+            return o => o.UseSqlServer(connectionString);
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
