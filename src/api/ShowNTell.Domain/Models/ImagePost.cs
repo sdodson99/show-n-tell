@@ -11,5 +11,7 @@ namespace ShowNTell.Domain.Models
         public string ImageUri { get; set; }
         public string Description { get; set; }
         public DateTime DateCreated { get; set; }
+
+        public User User { get; set; }
     }
 }
