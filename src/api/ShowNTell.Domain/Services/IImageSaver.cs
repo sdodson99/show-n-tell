@@ -8,6 +8,6 @@ namespace ShowNTell.Domain.Services
 {
     public interface IImageSaver
     {
-        Task SaveImage(FileStream imageStream);
+        Task<string> SaveImage(FileStream imageStream);
     }
 }

@@ -41,23 +41,6 @@ namespace ShowNTell.API
             services.AddDbContext<ShowNTellDbContext>(dbContextOptionsBuilderAction);
         }
 
-        private Action<DbContextOptionsBuilder> GetDbContextOptionsBuilderAction()
-        {
-            string connectionString = "";
-
-            // Change data source for production.
-            if(Environment.IsProduction())
-            {
-                connectionString = Configuration.GetConnectionString("azure-sql");
-            }
-            else
-            {
-                connectionString = Configuration.GetConnectionString("vs-local");
-            }
-
-            return o => o.UseSqlServer(connectionString);
-        }
-
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
@@ -75,6 +58,23 @@ namespace ShowNTell.API
             {
                 endpoints.MapControllers();
             });
+        }
+
+        private Action<DbContextOptionsBuilder> GetDbContextOptionsBuilderAction()
+        {
+            string connectionString = "";
+
+            // Change data source for production.
+            if (Environment.IsProduction())
+            {
+                connectionString = Configuration.GetConnectionString("azure-sql");
+            }
+            else
+            {
+                connectionString = Configuration.GetConnectionString("vs-local");
+            }
+
+            return o => o.UseSqlServer(connectionString);
         }
     }
 }
