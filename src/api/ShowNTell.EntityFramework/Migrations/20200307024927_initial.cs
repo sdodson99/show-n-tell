@@ -12,7 +12,7 @@ namespace ShowNTell.EntityFramework.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Email = table.Column<string>(nullable: true),
                     DateJoined = table.Column<DateTime>(nullable: false)
                 },
@@ -26,7 +26,7 @@ namespace ShowNTell.EntityFramework.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<int>(nullable: false),
                     ImageUri = table.Column<string>(nullable: true),
                     Description = table.Column<string>(nullable: true),
