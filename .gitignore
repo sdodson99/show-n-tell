@@ -7,3 +7,4 @@ uploads/
 build/
 *.~vsdx
 *.db
+appsettings.Production.json
