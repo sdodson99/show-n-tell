@@ -15,6 +15,13 @@ namespace ShowNTell.EntityFramework.ShowNTellDbContextFactories
             _options = options;
         }
 
+        public ShowNTellDbContextFactory(Action<DbContextOptionsBuilder> optionsBuilder)
+        {
+            DbContextOptionsBuilder builder = new DbContextOptionsBuilder();
+            optionsBuilder(builder);
+            _options = builder.Options;
+        }
+
         public ShowNTellDbContext CreateDbContext()
         {
             return new ShowNTellDbContext(_options);

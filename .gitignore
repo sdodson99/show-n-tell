@@ -6,3 +6,4 @@ bin/
 uploads/
 build/
 *.~vsdx
+*.db
