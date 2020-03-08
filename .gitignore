@@ -8,3 +8,4 @@ build/
 *.~vsdx
 *.db
 appsettings.Production.json
+appsettings.json

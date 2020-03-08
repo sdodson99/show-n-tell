@@ -16,6 +16,7 @@
   <ItemGroup>
     <ProjectReference Include="..\ShowNTell.Domain\ShowNTell.Domain.csproj" />
     <ProjectReference Include="..\ShowNTell.EntityFramework\ShowNTell.EntityFramework.csproj" />
+    <ProjectReference Include="..\ShowNTell.AzureStorage\ShowNTell.AzureStorage.csproj" />
   </ItemGroup>
 
 
