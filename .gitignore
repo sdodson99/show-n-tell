@@ -5,7 +5,10 @@ bin/
 *.editorconfig
 uploads/
 build/
+public/
+node_modules/
 *.~vsdx
 *.db
+*.DS_Store
 appsettings.Production.json
 appsettings.json
