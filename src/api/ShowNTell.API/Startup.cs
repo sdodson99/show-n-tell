@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
@@ -15,6 +16,7 @@ using SeanDodson.GoogleJWTAuthentication.Extensions;
 using ShowNTell.AzureStorage.Services;
 using ShowNTell.AzureStorage.Services.BlobClientFactories;
 using ShowNTell.Domain.Services;
+using ShowNTell.Domain.Services.ImageSavers;
 using ShowNTell.EntityFramework;
 using ShowNTell.EntityFramework.Services;
 using ShowNTell.EntityFramework.ShowNTellDbContextFactories;
@@ -23,6 +25,9 @@ namespace ShowNTell.API
 {
     public class Startup
     {
+        private const string STATIC_FILE_BASE_URI = "static";
+        private const string IMAGE_DIRECTORY_NAME = "images";
+
         public Startup(IConfiguration configuration, IWebHostEnvironment environment)
         {
             Configuration = configuration;
@@ -53,11 +58,21 @@ namespace ShowNTell.API
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseStaticFiles("/" + STATIC_FILE_BASE_URI);
+
             app.UseHttpsRedirection();
 
             app.UseRouting();
 
             app.UseAuthorization();
+
+            //Add cors for all alternative domains.
+            app.UseCors(policy =>
+            {
+                policy.AllowAnyOrigin()
+                    .AllowAnyHeader()
+                    .AllowAnyMethod();
+            });
 
             app.UseEndpoints(endpoints =>
             {
@@ -73,8 +88,24 @@ namespace ShowNTell.API
 
         private IImageSaver GetImageSaver()
         {
-            string connectionString = Configuration.GetConnectionString("blob-storage");
-            return new AzureBlobImageSaver(new AzureBlobClientFactory(connectionString, "images"));
+            IImageSaver imageSaver;
+
+            if(Environment.IsProduction())
+            {
+                string connectionString = Configuration.GetConnectionString("blob-storage");
+
+                imageSaver = new AzureBlobImageSaver(new AzureBlobClientFactory(connectionString, "images"));
+            }
+            else
+            {
+                string imageOutputPath = Path.Combine(Environment.WebRootPath, IMAGE_DIRECTORY_NAME);
+                string baseUrl = Configuration.GetValue<string>("BaseUrl");
+                string imageBaseUri = Path.Combine(baseUrl, STATIC_FILE_BASE_URI, IMAGE_DIRECTORY_NAME);
+
+                imageSaver = new LocalImageSaver(imageOutputPath, imageBaseUri);
+            }
+
+            return imageSaver;
         }
     }
 }

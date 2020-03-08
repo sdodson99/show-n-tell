@@ -4,6 +4,7 @@ using Azure.Storage.Blobs.Models;
 using ShowNTell.AzureStorage.Services.BlobClientFactories;
 using ShowNTell.AzureStorage.Services.BlobClients;
 using ShowNTell.Domain.Services;
+using ShowNTell.Domain.Services.ImageSavers;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -21,12 +22,12 @@ namespace ShowNTell.AzureStorage.Services
             _blobClientFactory = blobClientFactory;
         }
 
-        public async Task<string> SaveImage(FileStream imageStream)
+        public async Task<string> SaveImage(Stream imageStream)
         {
             IBlobClient client = await _blobClientFactory.CreateBlobClient();
 
             string imageId = Guid.NewGuid().ToString();
-            Response<BlobContentInfo> uploadResponse = await client.UploadBlobAsync(imageId, imageStream);
+            await client.UploadBlobAsync(imageId, imageStream);
 
             return Path.Combine(client.Uri.AbsoluteUri, imageId);
         }

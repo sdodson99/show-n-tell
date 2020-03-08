@@ -4,10 +4,10 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ShowNTell.Domain.Services
+namespace ShowNTell.Domain.Services.ImageSavers
 {
     public interface IImageSaver
     {
-        Task<string> SaveImage(FileStream imageStream);
+        Task<string> SaveImage(Stream imageStream);
     }
 }

@@ -10,6 +10,6 @@ namespace ShowNTell.AzureStorage.Services.BlobClients
     {
         Uri Uri { get; }
         
-        Task<Response<BlobContentInfo>> UploadBlobAsync(string blobName, FileStream stream);
+        Task<Response<BlobContentInfo>> UploadBlobAsync(string blobName, Stream stream);
     }
 }
