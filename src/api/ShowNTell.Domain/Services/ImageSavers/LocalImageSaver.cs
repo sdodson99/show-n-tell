@@ -17,9 +17,9 @@ namespace ShowNTell.Domain.Services.ImageSavers
             _localImageBaseUri = localImageBaseUri;
         }
 
-        public async Task<string> SaveImage(Stream imageStream)
+        public async Task<string> SaveImage(Stream imageStream, string fileExtension)
         {
-            string imageFileName = Guid.NewGuid().ToString() + ".txt";
+            string imageFileName = Guid.NewGuid().ToString() + fileExtension;
 
             await WriteImageToOutput(imageStream, imageFileName);
 

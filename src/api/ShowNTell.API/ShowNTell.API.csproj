@@ -19,5 +19,9 @@
     <ProjectReference Include="..\ShowNTell.AzureStorage\ShowNTell.AzureStorage.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\images\" />
+  </ItemGroup>
+
 
 </Project>
