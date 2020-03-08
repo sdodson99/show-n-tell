@@ -1,7 +1,7 @@
 <template>
     <nav>
-      <router-link to="explore">Explore</router-link>
-      <router-link to="feed">Feed</router-link>
+      <router-link class="m-5" to="explore">Explore</router-link>
+      <router-link class="m-5" to="feed">Feed</router-link>
     </nav>
 </template>
 
@@ -12,5 +12,5 @@ export default {
 </script>
 
 <style>
-
+    
 </style>
