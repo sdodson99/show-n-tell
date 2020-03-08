@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using ShowNTell.API.Models.Requests;
+using ShowNTell.Domain.Models;
 using ShowNTell.Domain.Services;
 using ShowNTell.Domain.Services.ImageSavers;
 
@@ -36,11 +37,21 @@ namespace ShowNTell.API.Controllers
             }
 
             IFormFile image = imagePostRequest.Image;
+            string imageExtension = Path.GetExtension(image.FileName);
             Stream stream = image.OpenReadStream();
 
-            string imageUri = await _imageSaver.SaveImage(stream);
+            string imageUri = await _imageSaver.SaveImage(stream, imageExtension);
 
-            return Ok();
+            ImagePost newImagePost = new ImagePost()
+            {
+                Description = imagePostRequest.Description,
+                ImageUri = imageUri,
+                DateCreated = DateTime.Now
+            };
+
+            newImagePost = await _imagePostService.Create(newImagePost);
+
+            return Ok(newImagePost);
         }
     }
 }

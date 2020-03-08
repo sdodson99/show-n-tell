@@ -22,14 +22,14 @@ namespace ShowNTell.AzureStorage.Services
             _blobClientFactory = blobClientFactory;
         }
 
-        public async Task<string> SaveImage(Stream imageStream)
+        public async Task<string> SaveImage(Stream imageStream, string fileExtension)
         {
             IBlobClient client = await _blobClientFactory.CreateBlobClient();
 
-            string imageId = Guid.NewGuid().ToString();
-            await client.UploadBlobAsync(imageId, imageStream);
+            string imageName = Guid.NewGuid().ToString() + fileExtension;
+            await client.UploadBlobAsync(imageName, imageStream);
 
-            return Path.Combine(client.Uri.AbsoluteUri, imageId);
+            return Path.Combine(client.Uri.AbsoluteUri, imageName);
         }
     }
 }
