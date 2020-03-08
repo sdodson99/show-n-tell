@@ -30,6 +30,12 @@ namespace ShowNTell.AzureStorage.Tests
             _imageSaver = new AzureBlobImageSaver(mockBlobClientFactory.Object);
         }
 
+        [TearDown]
+        public void TearDown()
+        {
+            _imageStream.Dispose();
+        }
+
         [Test]
         public async Task SaveImage_WithImageStream_ReturnsImageStreamUriWithBaseUri()
         {

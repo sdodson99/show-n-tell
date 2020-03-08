@@ -9,7 +9,7 @@ namespace ShowNTell.AzureStorage.Services.BlobClients
 {
     public class AzureBlobClient : IBlobClient
     {
-        private BlobContainerClient _client;
+        private readonly BlobContainerClient _client;
 
         public AzureBlobClient(BlobContainerClient client)
         {
@@ -18,7 +18,7 @@ namespace ShowNTell.AzureStorage.Services.BlobClients
 
         public Uri Uri => _client.Uri;
 
-        public async Task<Response<BlobContentInfo>> UploadBlobAsync(string blobName, FileStream stream)
+        public async Task<Response<BlobContentInfo>> UploadBlobAsync(string blobName, Stream stream)
         {
             return await _client.UploadBlobAsync(blobName, stream);
         }
