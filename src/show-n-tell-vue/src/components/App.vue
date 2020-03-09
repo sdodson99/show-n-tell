@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <Layout/>
+    <Layout v-bind:is-logged-in="isLoggedIn"/>
   </div>
 </template>
 
@@ -11,6 +11,9 @@ export default {
   name: "App",
   components: {
     Layout
+  },
+  props: {
+    isLoggedIn: Boolean
   }
 };
 </script>
