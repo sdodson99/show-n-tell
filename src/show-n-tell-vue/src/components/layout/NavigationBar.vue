@@ -2,7 +2,7 @@
     <div id="nav-root">
         <div class="container">
             <nav class="row p-3 text-center">
-                <router-link class="col-md-auto mx-1 text-md-left row justify-content-center link" exact-active-class="active-link" to="/">
+                <router-link class="col-md-auto mx-1 text-md-left row justify-content-center link" to="/">
                     <div class="content px-3 p-2">Show 'N Tell</div>
                 </router-link>
                 <div class="col"></div>
@@ -12,6 +12,12 @@
                 <router-link class="col-md-auto mx-1 row justify-content-center link" active-class="active-link" to="feed">
                     <div class="content px-3 p-2">Feed</div>
                 </router-link>
+                <router-link v-if="!isLoggedIn" class="col-md-auto mx-1 row justify-content-center link" active-class="active-link" to="login">
+                    <div class="content px-3 p-2">Login</div>
+                </router-link>
+                <router-link v-if="isLoggedIn" class="col-md-auto mx-1 row justify-content-center link" active-class="active-link" to="logout">
+                    <div class="content px-3 p-2">Logout</div>
+                </router-link>
             </nav>
         </div>
     </div>
@@ -19,7 +25,10 @@
 
 <script>
 export default {
-    name: "NavigationBar"
+    name: "NavigationBar",
+    props: {
+        isLoggedIn: Boolean
+    }
 }
 </script>
 
@@ -37,7 +46,8 @@ export default {
     }
 
     .link .content {
-        min-width: 150px;
+        min-width: 100px;
+        border-bottom: 3px solid var(--color-grayscale-light);
     }
 
     .active-link .content{
