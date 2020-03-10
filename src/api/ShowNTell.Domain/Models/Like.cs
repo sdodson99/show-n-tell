@@ -6,8 +6,10 @@ namespace ShowNTell.Domain.Models
 {
     public class Like
     {
-        public int UserId { get; set; }
+        public string UserEmail { get; set; }
         public int ImagePostId { get; set; }
         public DateTime DateCreated { get; set; }
+
+        public User User { get; set; }
     }
 }

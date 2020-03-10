@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ShowNTell.EntityFramework;
 
 namespace ShowNTell.EntityFramework.Migrations
 {
     [DbContext(typeof(ShowNTellDbContext))]
-    partial class ShowNTellDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200310012350_user_email")]
+    partial class user_email
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

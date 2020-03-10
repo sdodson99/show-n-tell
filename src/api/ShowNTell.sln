@@ -13,9 +13,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShowNTell.EntityFramework.T
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShowNTell.API", "ShowNTell.API\ShowNTell.API.csproj", "{DF441BBC-214D-499C-BD31-650D5BE24635}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShowNTell.AzureStorage.Tests", "ShowNTell.AzureStorage.Tests\ShowNTell.AzureStorage.Tests.csproj", "{F1588149-BDD8-4BA6-82BA-6AFE916209C9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShowNTell.AzureStorage.Tests", "ShowNTell.AzureStorage.Tests\ShowNTell.AzureStorage.Tests.csproj", "{F1588149-BDD8-4BA6-82BA-6AFE916209C9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShowNTell.AzureStorage", "ShowNTell.AzureStorage\ShowNTell.AzureStorage.csproj", "{43C2AD6A-5C09-4726-90E7-8EA6311FF0B4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShowNTell.AzureStorage", "ShowNTell.AzureStorage\ShowNTell.AzureStorage.csproj", "{43C2AD6A-5C09-4726-90E7-8EA6311FF0B4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace ShowNTell.API.Models.Requests
 {
-    public class ImagePostRequest
+    public class CreateImagePostRequest
     {
         [Required]
         public IFormFile Image {get; set; }

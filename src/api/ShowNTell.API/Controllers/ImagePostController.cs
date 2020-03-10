@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using ShowNTell.API.Extensions;
 using ShowNTell.API.Models.Requests;
 using ShowNTell.Domain.Models;
 using ShowNTell.Domain.Services;
@@ -27,21 +29,51 @@ namespace ShowNTell.API.Controllers
             _imageSaver = imageSaver;
             _logger = logger;
         }
-        
+
+        [HttpGet]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<IActionResult> GetAllForUser()
+        {
+            User currentUser = HttpContext.GetUser();
+
+            IEnumerable<ImagePost> posts = await _imagePostService.GetAllByUserEmail(currentUser.Email);
+
+            return Ok(posts);
+        }
+
+        [HttpGet]
+        [Route("random")]
+        public async Task<IActionResult> GetRandom()
+        {
+            return Ok(new ImagePost()
+            {
+                Description = "hello world",
+                ImageUri = "https://images.pexels.com/photos/255379/pexels-photo-255379.jpeg",
+                DateCreated = DateTime.Now,
+                Id = 5
+            });
+        }
+
+        [HttpGet]
+        [Route("{id}")]
+        public async Task<IActionResult> GetById(int id)
+        {
+            return Ok(await _imagePostService.GetById(id));
+        }
+
         [HttpPost]
-        public async Task<IActionResult> Create([FromForm] ImagePostRequest imagePostRequest)
+        public async Task<IActionResult> Create([FromForm] CreateImagePostRequest imagePostRequest)
         {
             if(!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
+            // Store image file.
             IFormFile image = imagePostRequest.Image;
-            string imageExtension = Path.GetExtension(image.FileName);
-            Stream stream = image.OpenReadStream();
+            string imageUri = await _imageSaver.SaveImage(image.OpenReadStream(), Path.GetExtension(image.FileName));
 
-            string imageUri = await _imageSaver.SaveImage(stream, imageExtension);
-
+            // Save image database record.
             ImagePost newImagePost = new ImagePost()
             {
                 Description = imagePostRequest.Description,
