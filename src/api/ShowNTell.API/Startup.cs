@@ -1,17 +1,11 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using SeanDodson.GoogleJWTAuthentication.Extensions;
 using ShowNTell.AzureStorage.Services;
 using ShowNTell.AzureStorage.Services.BlobClientFactories;
@@ -41,6 +35,7 @@ namespace ShowNTell.API
         {
             services.AddControllers();
             services.AddGoogleJWTAuthentication();
+            services.AddAuthorization();
             services.AddSingleton<IImagePostService, EFImagePostService>();
 
             IImageSaver imageSaver = GetImageSaver();
@@ -63,8 +58,8 @@ namespace ShowNTell.API
             app.UseHttpsRedirection();
 
             app.UseRouting();
-
             app.UseAuthorization();
+            app.UseAuthentication();
 
             //Add cors for all alternative domains.
             app.UseCors(policy =>

@@ -2,7 +2,7 @@ obj/
 bin/
 .vs/
 .vscode/
-wwwroot/images/
+wwwroot/
 *.editorconfig
 uploads/
 build/
