@@ -77,7 +77,7 @@ namespace ShowNTell.API
 
         private Action<DbContextOptionsBuilder> GetDbContextOptionsBuilderAction()
         {
-            string connectionString = Configuration.GetConnectionString("database");
+            string connectionString = Configuration.GetConnectionString("docker-database");
             return o => o.UseSqlServer(connectionString);
         }
 
