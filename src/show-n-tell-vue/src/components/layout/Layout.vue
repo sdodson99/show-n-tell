@@ -1,6 +1,6 @@
 <template>
   <div>
-    <NavigationBar v-bind:is-logged-in="isLoggedIn"/>
+    <NavigationBar v-bind:is-logged-in="isLoggedIn" />
     <div class="container">
       <router-view class="my-5"></router-view>
     </div>
@@ -8,7 +8,7 @@
 </template>
 
 <script>
-import NavigationBar from './NavigationBar'
+import NavigationBar from "./NavigationBar";
 
 export default {
   name: "Layout",

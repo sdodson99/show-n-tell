@@ -1,8 +1,8 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
-import ServiceContainer from "./services/service-container"
+import ServiceContainer from "./services/service-container";
 
-const TITLE_SUFFIX = " - Show 'N Tell"
+const TITLE_SUFFIX = " - Show 'N Tell";
 
 Vue.use(VueRouter);
 
@@ -21,7 +21,7 @@ const router = new VueRouter({
       meta: {
         title: "Explore"
       },
-      component: () => import("./components/Explore")
+      component: () => import("./pages/Explore")
     },
     {
       path: "/feed",
@@ -58,4 +58,4 @@ router.beforeEach((to, from, next) => {
   next();
 });
 
-export default router
+export default router;

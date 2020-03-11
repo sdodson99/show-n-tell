@@ -62,12 +62,16 @@ namespace ShowNTell.API.Controllers
         }
 
         [HttpPost]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> Create([FromForm] CreateImagePostRequest imagePostRequest)
         {
             if(!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
+
+            // Get the user making the request.
+            User user = HttpContext.GetUser();
 
             // Store image file.
             IFormFile image = imagePostRequest.Image;
@@ -76,6 +80,7 @@ namespace ShowNTell.API.Controllers
             // Save image database record.
             ImagePost newImagePost = new ImagePost()
             {
+                UserEmail = user.Email,
                 Description = imagePostRequest.Description,
                 ImageUri = imageUri,
                 DateCreated = DateTime.Now

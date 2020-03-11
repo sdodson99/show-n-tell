@@ -1,12 +1,10 @@
 <template>
-  <div>
-    Feed
-  </div>
+  <div></div>
 </template>
 
 <script>
 export default {
-  name: "Feed"
+  name: "Explore"
 };
 </script>
 

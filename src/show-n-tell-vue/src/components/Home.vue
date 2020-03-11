@@ -6,9 +6,8 @@
 </template>
 
 <script>
-
-function updateMessage(){
-  this.message = "test"
+function updateMessage() {
+  this.message = "test";
 }
 
 export default {
@@ -16,7 +15,7 @@ export default {
   data: function() {
     return {
       message: "hello"
-    }
+    };
   },
   methods: {
     updateMessage
