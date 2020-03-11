@@ -2,7 +2,8 @@ obj/
 bin/
 .vs/
 .vscode/
-wwwroot/
+**/wwwroot/images/*
+!**/wwwroot/images/README.md
 *.editorconfig
 uploads/
 build/
