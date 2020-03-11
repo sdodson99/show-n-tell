@@ -1,7 +1,7 @@
 <template>
   <div class="d-flex flex-column align-items-center">
     <h1>Login</h1>
-    <p class="my-3 font-weight-light">
+    <p class="my-3 font-weight-light text-center">
       Click below to login to your Show 'N Tell account with Google.
     </p>
     <GoogleLogin

@@ -2,7 +2,7 @@
   <div>
     <NavigationBar v-bind:is-logged-in="isLoggedIn" />
     <div class="container">
-      <router-view class="my-5"></router-view>
+      <router-view class="m-5"></router-view>
     </div>
   </div>
 </template>
