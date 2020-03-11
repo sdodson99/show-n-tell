@@ -55,7 +55,7 @@ namespace ShowNTell.API.Controllers
         }
 
         [HttpGet]
-        [Route("{id}")]
+        [Route("{id:int}")]
         public async Task<IActionResult> GetById(int id)
         {
             return Ok(await _imagePostService.GetById(id));
