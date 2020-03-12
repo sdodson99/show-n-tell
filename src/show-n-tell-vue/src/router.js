@@ -35,12 +35,15 @@ const router = new VueRouter({
       }
     },
     {
-      path: "/feed",
+      path: "/profile",
       meta: {
-        title: "Feed",
+        title: "Profile",
         authenticate: true
       },
-      component: () => import("./components/Feed")
+      component: () => import("./pages/Profile"),
+      props: {
+        imagePostService: ServiceContainer.RandomImagePostService
+      }
     },
     {
       path: "/login",
