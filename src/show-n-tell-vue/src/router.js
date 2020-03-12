@@ -10,6 +10,7 @@ const router = new VueRouter({
   routes: [
     {
       path: "/",
+      name: "Home",
       redirect: "/explore",
     },
     {
@@ -23,14 +24,27 @@ const router = new VueRouter({
       }
     },
     {
+      path: "/create",
+      meta: {
+        title: "Create",
+        authenticate: true
+      },
+      component: () => import("./pages/Create"),
+      props: {
+        imagePostService: ServiceContainer.RandomImagePostService
+      }
+    },
+    {
       path: "/feed",
       meta: {
-        title: "Feed"
+        title: "Feed",
+        authenticate: true
       },
       component: () => import("./components/Feed")
     },
     {
       path: "/login",
+      name: "Login",
       meta: {
         title: "Login"
       },
@@ -50,6 +64,16 @@ const router = new VueRouter({
       }
     }
   ]
+});
+
+router.beforeEach((to, from, next) => {
+  if(to.meta.authenticate && !ServiceContainer.AuthenticationService.isLoggedIn()) {
+    next({name: "Login"})
+  } else if(to.name === "Login" && ServiceContainer.AuthenticationService.isLoggedIn()) {
+    next({name: "Home"})
+  } else {
+    next()
+  }
 });
 
 router.beforeEach((to, from, next) => {

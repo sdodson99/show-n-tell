@@ -3,21 +3,30 @@
     <div class="container">
       <nav class="row p-3 text-center">
         <router-link
-          class="col-md-auto mx-1 text-md-left row justify-content-center link"
+          class="col-lg-auto mx-1 text-lg-left row justify-content-center link"
           to="/"
         >
           <div class="content px-3 p-2">Show 'N Tell</div>
         </router-link>
         <div class="col"></div>
         <router-link
-          class="col-md-auto mx-1 row justify-content-center link hover-link"
+          class="col-lg-auto mx-1 row justify-content-center link hover-link"
           active-class="active-link"
           to="/explore"
         >
           <div class="content px-3 p-2">Explore</div>
         </router-link>
         <router-link
-          class="col-md-auto mx-1 row justify-content-center link hover-link"
+          v-if="isLoggedIn"
+          class="col-lg-auto mx-1 row justify-content-center link hover-link"
+          active-class="active-link"
+          to="/create"
+        >
+          <div class="content px-3 p-2">Create</div>
+        </router-link>
+        <router-link
+          v-if="isLoggedIn"
+          class="col-lg-auto mx-1 row justify-content-center link hover-link"
           active-class="active-link"
           to="feed"
         >
@@ -25,7 +34,7 @@
         </router-link>
         <router-link
           v-if="!isLoggedIn"
-          class="col-md-auto mx-1 row justify-content-center link hover-link"
+          class="col-lg-auto mx-1 row justify-content-center link hover-link"
           active-class="active-link"
           to="login"
         >
@@ -33,7 +42,7 @@
         </router-link>
         <router-link
           v-if="isLoggedIn"
-          class="col-md-auto mx-1 row justify-content-center link hover-link"
+          class="col-lg-auto mx-1 row justify-content-center link hover-link"
           active-class="active-link"
           to="logout"
         >
