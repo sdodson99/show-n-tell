@@ -62,18 +62,25 @@ namespace ShowNTell.EntityFramework.Services
         {
             using (ShowNTellDbContext context = _contextFactory.CreateDbContext())
             {
-                ImagePost storedImagePost = await context.ImagePosts.FindAsync(id);
-
-                if(storedImagePost == null)
-                {
-                    throw new EntityNotFoundException<int>(id);
-                }
+                ImagePost storedImagePost = await GetByIdFromContext(id, context);
 
                 // Do not update Id or DateCreated on stored post.
                 imagePost.Id = storedImagePost.Id;
                 imagePost.DateCreated = storedImagePost.DateCreated;
 
                 context.Entry(storedImagePost).CurrentValues.SetValues(imagePost);
+                await context.SaveChangesAsync();
+
+                return storedImagePost;
+            }
+        }
+        public async Task<ImagePost> UpdateDescription(int id, string description)
+        {
+            using (ShowNTellDbContext context = _contextFactory.CreateDbContext())
+            {
+                ImagePost storedImagePost = await GetByIdFromContext(id, context);
+
+                storedImagePost.Description = description;
                 await context.SaveChangesAsync();
 
                 return storedImagePost;
@@ -98,6 +105,18 @@ namespace ShowNTell.EntityFramework.Services
 
                 return success;
             }
+        }
+
+        private static async Task<ImagePost> GetByIdFromContext(int id, ShowNTellDbContext context)
+        {
+            ImagePost storedImagePost = await context.ImagePosts.FindAsync(id);
+
+            if (storedImagePost == null)
+            {
+                throw new EntityNotFoundException<int>(id);
+            }
+
+            return storedImagePost;
         }
     }
 }

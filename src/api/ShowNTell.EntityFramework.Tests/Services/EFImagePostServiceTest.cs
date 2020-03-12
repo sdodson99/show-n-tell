@@ -28,6 +28,8 @@ namespace ShowNTell.EntityFramework.Tests.Services
         {
             DbContextOptions options = new DbContextOptionsBuilder().UseInMemoryDatabase(Guid.NewGuid().ToString()).Options;
             _context = new ShowNTellDbContext(options);
+            _context.Users.Add(GetValidUser());
+            _context.Users.Add(GetInvalidUser());
             _context.ImagePosts.AddRange(GetImagePosts());
             _context.SaveChanges();
 
@@ -84,20 +86,19 @@ namespace ShowNTell.EntityFramework.Tests.Services
         public async Task Update_WithExistingImagePostId_ReturnsUpdatedImagePostWithId()
         {
             int expectedId = _existingId;
+            string expectedDescription = "Updated description";
             ImagePost storedImagePost = _context.ImagePosts.Find(expectedId);
-            string oldDescription = storedImagePost.Description;
-            string newDescription = "Updated description";
             ImagePost newImagePost = new ImagePost()
             {
-                Description = newDescription
+                Description = expectedDescription
             };
 
             ImagePost updatedImagePost = await _imagePostService.Update(expectedId, newImagePost);
             int actualId = updatedImagePost.Id;
-            string updatedDescription = updatedImagePost.Description;
+            string actualDescription = updatedImagePost.Description;
 
             Assert.AreEqual(expectedId, actualId);
-            Assert.AreNotEqual(oldDescription, updatedDescription);
+            Assert.AreEqual(expectedDescription, actualDescription);
         }
 
         [Test]
@@ -108,6 +109,34 @@ namespace ShowNTell.EntityFramework.Tests.Services
 
             EntityNotFoundException<int> exception = Assert.ThrowsAsync<EntityNotFoundException<int>>(() => 
                 _imagePostService.Update(expectedId, createdImagePost));
+            int actualId = exception.EntityId;
+
+            Assert.AreEqual(expectedId, actualId);
+        }
+
+        [Test]
+        public async Task UpdateDescription_WithExistingImagePostId_ReturnsUpdatedImagePostWithIdAndDescription()
+        {
+            int expectedId = _existingId;
+            string expectedDescription = "Updated description";
+            ImagePost storedImagePost = _context.ImagePosts.Find(expectedId);
+
+            ImagePost updatedImagePost = await _imagePostService.UpdateDescription(expectedId, expectedDescription);
+            int actualId = updatedImagePost.Id;
+            string actualDescription = updatedImagePost.Description;
+
+            Assert.AreEqual(expectedId, actualId);
+            Assert.AreEqual(expectedDescription, actualDescription);
+        }
+
+        [Test]
+        public void UpdateDescription_WithNonExistingImagePostId_ThrowsEntityNotFoundExceptionWithId()
+        {
+            int expectedId = _nonExistingId;
+            ImagePost createdImagePost = new ImagePost();
+
+            EntityNotFoundException<int> exception = Assert.ThrowsAsync<EntityNotFoundException<int>>(() => 
+                _imagePostService.UpdateDescription(expectedId, "Updated Description"));
             int actualId = exception.EntityId;
 
             Assert.AreEqual(expectedId, actualId);
@@ -138,7 +167,7 @@ namespace ShowNTell.EntityFramework.Tests.Services
             {
                 imagePosts.Add(new ImagePost()
                 {
-                    User = GetValidUser()
+                    UserEmail = _validUserEmail
                 });
             }
 
@@ -146,6 +175,7 @@ namespace ShowNTell.EntityFramework.Tests.Services
             imagePosts.Add(new ImagePost()
             {
                 Id = _existingId,
+                UserEmail = _invalidEmail
             });
 
             // Add some invalid user image posts.
@@ -153,15 +183,15 @@ namespace ShowNTell.EntityFramework.Tests.Services
             {
                 new ImagePost()
                 {
-                    User = GetInvalidUser()
+                    UserEmail = _invalidEmail
                 },
                 new ImagePost()
                 {
-                    User = GetInvalidUser()
+                    UserEmail = _invalidEmail
                 },
                 new ImagePost()
                 {
-                    User = GetInvalidUser()
+                    UserEmail = _invalidEmail
                 }
             });
 

@@ -62,7 +62,7 @@ namespace ShowNTell.API.Controllers
         }
 
         [HttpPost]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> Create([FromForm] CreateImagePostRequest imagePostRequest)
         {
             if(!ModelState.IsValid)
@@ -71,7 +71,7 @@ namespace ShowNTell.API.Controllers
             }
 
             // Get the user making the request.
-            User user = HttpContext.GetUser();
+            // User user = HttpContext.GetUser();
 
             // Store image file.
             IFormFile image = imagePostRequest.Image;
@@ -80,7 +80,7 @@ namespace ShowNTell.API.Controllers
             // Save image database record.
             ImagePost newImagePost = new ImagePost()
             {
-                UserEmail = user.Email,
+                UserEmail = "admin@showntell.com",
                 Description = imagePostRequest.Description,
                 ImageUri = imageUri,
                 DateCreated = DateTime.Now
@@ -89,6 +89,62 @@ namespace ShowNTell.API.Controllers
             newImagePost = await _imagePostService.Create(newImagePost);
 
             return Ok(newImagePost);
+        }
+
+        [HttpPut]
+        [Route("{id:int}")]
+        // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<IActionResult> Update(int id, [FromBody] UpdateImagePostRequest imagePostRequest)
+        {
+            if(!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            // Get the user making the request.
+            // User user = HttpContext.GetUser();
+
+            // Check if user owns the post.
+            bool userOwnsPost = true;
+
+            if(!userOwnsPost) 
+            {
+                return Forbid();
+            }
+
+            // Update image database record.
+            ImagePost updateImagePost = await _imagePostService.UpdateDescription(id, imagePostRequest.Description);
+
+            return Ok(updateImagePost);
+        }
+
+        [HttpDelete]
+        [Route("{id:int}")]
+        // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<IActionResult> Delete(int id)
+        {
+            // Get the user making the request.
+            // User user = HttpContext.GetUser();
+
+            // Check if user owns the post.
+            bool userOwnsPost = true;
+
+            if(!userOwnsPost) 
+            {
+                return Forbid();
+            }
+
+            // Try to delete the image.
+            bool success = await _imagePostService.Delete(id);
+
+            if(success)
+            {
+                return NoContent();
+            } 
+            else
+            {
+                return NotFound();
+            }
         }
     }
 }
