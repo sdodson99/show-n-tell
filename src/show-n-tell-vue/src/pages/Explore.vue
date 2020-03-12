@@ -80,10 +80,14 @@ export default {
     cursor: pointer;
   }
 
-  button:disabled{
+  button:disabled, button:disabled:hover{
     border: 1px solid var(--color-secondary-medium);
     background: var(--color-grayscale-light);
     cursor: default;
+  }
+
+  button:hover {
+    background: var(--color-secondary-dark);
   }
 
 </style>

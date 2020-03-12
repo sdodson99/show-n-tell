@@ -28,9 +28,9 @@
           v-if="isLoggedIn"
           class="col-lg-auto mx-1 row justify-content-center link hover-link"
           active-class="active-link"
-          to="feed"
+          to="profile"
         >
-          <div class="content px-3 p-2">Feed</div>
+          <div class="content px-3 p-2">Profile</div>
         </router-link>
         <router-link
           v-if="!isLoggedIn"
@@ -86,6 +86,6 @@ export default {
 }
 
 .hover-link .content:hover {
-  border-bottom: 3px solid var(--color-secondary-medium);
+  border-bottom: 3px solid var(--color-secondary-dark);
 }
 </style>
