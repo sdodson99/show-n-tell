@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using ShowNTell.EntityFramework;
+using ShowNTell.EntityFramework.DataSeeders;
 
 namespace ShowNTell.API
 {
@@ -18,13 +19,11 @@ namespace ShowNTell.API
         {
             IHost host = CreateHostBuilder(args).Build();
 
-            // Migrate the database.
+            // Seed the database.
             using (IServiceScope scope = host.Services.CreateScope())
             {
-                using (ShowNTellDbContext context = scope.ServiceProvider.GetRequiredService<ShowNTellDbContext>())
-                {
-                    context.Database.Migrate();
-                }
+                AdminDataSeeder seeder = scope.ServiceProvider.GetRequiredService<AdminDataSeeder>();
+                seeder.Seed();
             }
 
             host.Run();
