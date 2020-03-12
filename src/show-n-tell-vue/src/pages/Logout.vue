@@ -3,12 +3,10 @@
 </template>
 
 <script>
-import AuthenticationService from "../services/local-storage-authentication-service";
-
 export default {
   name: "Logout",
   props: {
-    authenticationService: AuthenticationService
+    authenticationService: Object
   },
   created: function() {
     this.authenticationService.logout();

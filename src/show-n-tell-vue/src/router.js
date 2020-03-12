@@ -10,11 +10,7 @@ const router = new VueRouter({
   routes: [
     {
       path: "/",
-      alias: "/home",
-      meta: {
-        title: "Home"
-      },
-      component: () => import("./components/Home")
+      redirect: "/explore",
     },
     {
       path: "/explore",

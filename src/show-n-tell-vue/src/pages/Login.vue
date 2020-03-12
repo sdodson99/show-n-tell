@@ -17,12 +17,11 @@
 
 <script>
 import GoogleLogin from "vue-google-login";
-import AuthenticationService from "../services/local-storage-authentication-service";
 
 export default {
   name: "Login",
   props: {
-    authenticationService: AuthenticationService
+    authenticationService: Object
   },
   data() {
     return {

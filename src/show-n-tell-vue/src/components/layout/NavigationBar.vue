@@ -10,14 +10,14 @@
         </router-link>
         <div class="col"></div>
         <router-link
-          class="col-md-auto mx-1 row justify-content-center link"
+          class="col-md-auto mx-1 row justify-content-center link hover-link"
           active-class="active-link"
-          to="explore"
+          to="/explore"
         >
           <div class="content px-3 p-2">Explore</div>
         </router-link>
         <router-link
-          class="col-md-auto mx-1 row justify-content-center link"
+          class="col-md-auto mx-1 row justify-content-center link hover-link"
           active-class="active-link"
           to="feed"
         >
@@ -25,7 +25,7 @@
         </router-link>
         <router-link
           v-if="!isLoggedIn"
-          class="col-md-auto mx-1 row justify-content-center link"
+          class="col-md-auto mx-1 row justify-content-center link hover-link"
           active-class="active-link"
           to="login"
         >
@@ -33,7 +33,7 @@
         </router-link>
         <router-link
           v-if="isLoggedIn"
-          class="col-md-auto mx-1 row justify-content-center link"
+          class="col-md-auto mx-1 row justify-content-center link hover-link"
           active-class="active-link"
           to="logout"
         >
@@ -76,7 +76,7 @@ export default {
   border-bottom: 3px solid var(--color-secondary-medium);
 }
 
-.link .content:hover {
+.hover-link .content:hover {
   border-bottom: 3px solid var(--color-secondary-medium);
 }
 </style>
