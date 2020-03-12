@@ -15,7 +15,10 @@ class APIRandomImagePostService {
 
     const apiResponse = await fetch(url);
 
-    return await apiResponse.json();
+    let image = await apiResponse.json();
+    image.dateCreated = new Date(image.dateCreated);
+
+    return image;
   }
 }
 

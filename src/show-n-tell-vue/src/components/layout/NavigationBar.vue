@@ -58,6 +58,7 @@ export default {
   background: var(--color-grayscale-light);
   color: var(--color-primary-dark);
   font-size: 1.5em;
+  border-bottom: 1px solid var(--color-primary-dark);
 }
 
 .link {
@@ -72,6 +73,10 @@ export default {
 }
 
 .active-link .content {
-  border-bottom: 3px solid var(--color-primary-dark);
+  border-bottom: 3px solid var(--color-secondary-medium);
+}
+
+.link .content:hover {
+  border-bottom: 3px solid var(--color-secondary-medium);
 }
 </style>
