@@ -9,5 +9,6 @@ namespace ShowNTell.EntityFramework
         public ShowNTellDbContext(DbContextOptions options) : base(options) { }
 
         public DbSet<ImagePost> ImagePosts { get; set; }
+        public DbSet<User> Users { get; set; }
     }
 }

@@ -12,6 +12,7 @@ using ShowNTell.AzureStorage.Services.BlobClientFactories;
 using ShowNTell.Domain.Services;
 using ShowNTell.Domain.Services.ImageSavers;
 using ShowNTell.EntityFramework;
+using ShowNTell.EntityFramework.DataSeeders;
 using ShowNTell.EntityFramework.Services;
 using ShowNTell.EntityFramework.ShowNTellDbContextFactories;
 
@@ -37,9 +38,8 @@ namespace ShowNTell.API
             services.AddGoogleJWTAuthentication();
             services.AddAuthorization();
             services.AddSingleton<IImagePostService, EFImagePostService>();
-
-            IImageSaver imageSaver = GetImageSaver();
-            services.AddSingleton<IImageSaver>(imageSaver);
+            services.AddSingleton<IImageSaver>(GetImageSaver());
+            services.AddSingleton<AdminDataSeeder>();
 
             Action<DbContextOptionsBuilder> dbContextOptionsBuilderAction = GetDbContextOptionsBuilderAction();
             services.AddSingleton<IShowNTellDbContextFactory>(new ShowNTellDbContextFactory(dbContextOptionsBuilderAction));
