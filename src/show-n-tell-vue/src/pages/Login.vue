@@ -58,4 +58,13 @@ export default {
 h1 {
   color: var(--color-primary-dark);
 }
+
+.abcRioButtonContents span{
+  display: none;
+}
+
+.abcRioButtonContents::after{
+  content: "Sign in";
+}
+
 </style>

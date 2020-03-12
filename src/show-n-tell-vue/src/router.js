@@ -21,7 +21,10 @@ const router = new VueRouter({
       meta: {
         title: "Explore"
       },
-      component: () => import("./pages/Explore")
+      component: () => import("./pages/Explore"),
+      props: {
+        randomImagePostService: ServiceContainer.RandomImagePostService
+      }
     },
     {
       path: "/feed",
