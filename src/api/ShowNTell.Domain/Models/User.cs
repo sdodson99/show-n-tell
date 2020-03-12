@@ -9,6 +9,7 @@ namespace ShowNTell.Domain.Models
     {
         [Key]
         public string Email { get; set; }
+        public string Username { get; set; }
         public DateTime DateJoined { get; set; }
     }
 }
