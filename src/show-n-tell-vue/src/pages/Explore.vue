@@ -70,24 +70,4 @@ export default {
     max-width: 100%;
   }
 
-  button{
-    border: none;
-    padding: 1em;
-    background: var(--color-secondary-medium);
-    color: var(--color-primary-dark);
-    border-radius: 5px;
-    min-width: 100px;
-    cursor: pointer;
-  }
-
-  button:disabled, button:disabled:hover{
-    border: 1px solid var(--color-secondary-medium);
-    background: var(--color-grayscale-light);
-    cursor: default;
-  }
-
-  button:hover {
-    background: var(--color-secondary-dark);
-  }
-
 </style>

@@ -11,7 +11,7 @@ class APIRandomImagePostService {
    * Get a random image post from the API.
    */
   async getRandom() {
-    const url = `${this.baseUrl}/imagepost/random`;
+    const url = `${this.baseUrl}/imageposts/random`;
 
     const apiResponse = await fetch(url);
 

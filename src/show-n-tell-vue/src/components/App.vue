@@ -45,4 +45,33 @@ a:link {
   --color-grayscale-medium: rgb(121, 121, 121);
   --color-grayscale-light: rgb(230, 230, 230);
 }
+
+h1{
+  color: var(--color-grayscale-dark);
+}
+
+button{
+  border: none;
+  padding: 1em;
+  background: var(--color-secondary-medium);
+  color: var(--color-primary-dark);
+  border-radius: 5px;
+  min-width: 100px;
+  cursor: pointer;
+}
+
+button:disabled, button:disabled:hover{
+  border: 1px solid var(--color-secondary-medium);
+  background: var(--color-grayscale-light);
+  cursor: default;
+}
+
+button:hover {
+  background: var(--color-secondary-dark);
+}
+
+input[type="file"] {
+    border: 1px solid var(--color-primary-dark);
+    border-radius: 3px;
+}
 </style>

@@ -90,7 +90,7 @@ namespace ShowNTell.API
 
         private Action<DbContextOptionsBuilder> GetDbContextOptionsBuilderAction()
         {
-            string connectionString = Configuration.GetConnectionString("docker-database");
+            string connectionString = Configuration.GetConnectionString("local-database");
             return o => o.UseSqlServer(connectionString);
         }
 
