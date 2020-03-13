@@ -6,7 +6,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.OpenApi.Models;
 using SeanDodson.GoogleJWTAuthentication.Extensions;
+using ShowNTell.API.Models.Requests;
 using ShowNTell.AzureStorage.Services;
 using ShowNTell.AzureStorage.Services.BlobClientFactories;
 using ShowNTell.Domain.Services;
@@ -37,6 +39,11 @@ namespace ShowNTell.API
             services.AddControllers();
             services.AddGoogleJWTAuthentication();
             services.AddAuthorization();
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Show 'N Tell API", Version = "v1" });
+            });
+
             services.AddSingleton<IImagePostService, EFImagePostService>();
             services.AddSingleton<IImageSaver>(GetImageSaver());
             services.AddSingleton<AdminDataSeeder>();
@@ -52,6 +59,12 @@ namespace ShowNTell.API
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Show 'N Tell API v1");
+            });
 
             app.UseStaticFiles("/" + STATIC_FILE_BASE_URI);
 
