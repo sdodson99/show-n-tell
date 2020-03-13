@@ -20,12 +20,16 @@ namespace ShowNTell.API.Controllers
     public class ImagePostsController : ControllerBase
     {
         private readonly IImagePostService _imagePostService;
+        private readonly IRandomImagePostService _randomImagePostService;
         private readonly IImageSaver _imageSaver;
         private readonly ILogger<ImagePostsController> _logger;
 
-        public ImagePostsController(IImagePostService imagePostService, IImageSaver imageSaver, ILogger<ImagePostsController> logger)
+        public ImagePostsController(IImagePostService imagePostService, IRandomImagePostService randomImagePostService, 
+            IImageSaver imageSaver, 
+            ILogger<ImagePostsController> logger)
         {
             _imagePostService = imagePostService;
+            _randomImagePostService = randomImagePostService;
             _imageSaver = imageSaver;
             _logger = logger;
         }
@@ -45,13 +49,14 @@ namespace ShowNTell.API.Controllers
         [Route("random")]
         public async Task<IActionResult> GetRandom()
         {
-            return Ok(new ImagePost()
+            ImagePost randomPost = await _randomImagePostService.GetRandom();
+
+            if(randomPost == null)
             {
-                Description = "hello world",
-                ImageUri = "https://images.pexels.com/photos/255379/pexels-photo-255379.jpeg",
-                DateCreated = DateTime.Now,
-                Id = 5
-            });
+                return NotFound();
+            }
+
+            return Ok(randomPost);
         }
 
         [HttpGet]
