@@ -45,6 +45,7 @@ namespace ShowNTell.API
             });
 
             services.AddSingleton<IImagePostService, EFImagePostService>();
+            services.AddSingleton<IRandomImagePostService, EFRandomImagePostService>();
             services.AddSingleton<IImageSaver>(GetImageSaver());
             services.AddSingleton<AdminDataSeeder>();
 
