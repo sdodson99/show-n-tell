@@ -39,6 +39,7 @@ namespace ShowNTell.API
             services.AddControllers();
             services.AddGoogleJWTAuthentication();
             services.AddAuthorization();
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Show 'N Tell API", Version = "v1" });
@@ -46,7 +47,7 @@ namespace ShowNTell.API
 
             services.AddSingleton<IImagePostService, EFImagePostService>();
             services.AddSingleton<IRandomImagePostService, EFRandomImagePostService>();
-            services.AddSingleton<IImageStorage>(GetImageSaver());
+            services.AddSingleton<IImageStorage>(GetImageStorage());
             services.AddSingleton<AdminDataSeeder>();
 
             Action<DbContextOptionsBuilder> dbContextOptionsBuilderAction = GetDbContextOptionsBuilderAction();
@@ -91,11 +92,11 @@ namespace ShowNTell.API
 
         private Action<DbContextOptionsBuilder> GetDbContextOptionsBuilderAction()
         {
-            string connectionString = Configuration.GetConnectionString("local-database");
+            string connectionString = Configuration.GetConnectionString("database");
             return o => o.UseSqlServer(connectionString);
         }
 
-        private IImageStorage GetImageSaver()
+        private IImageStorage GetImageStorage()
         {
             IImageStorage imageSaver;
 

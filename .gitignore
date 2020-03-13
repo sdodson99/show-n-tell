@@ -7,7 +7,6 @@ bin/
 *.editorconfig
 uploads/
 build/
-public/
 node_modules/
 *.~vsdx
 *.db
