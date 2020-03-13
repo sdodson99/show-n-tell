@@ -2,7 +2,7 @@
   <div id="nav-root">
     <div class="container">
       <nav :class="{ open: open }" class="row p-3 align-items-start justify-content-center">
-        <div class="col-lg-auto row align-items-center justify-content-center justify-content-sm-between">
+        <div class="col-lg-auto d-flex flex-column align-items-center justify-content-center">
           <router-link
             class="row justify-content-center mx-1 link"
             to="/"
