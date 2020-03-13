@@ -4,15 +4,23 @@
       <button class="m-1 order-sm-2" type="button" @click="nextImage">Next</button>
       <button class="m-1 order-sm-1" type="button" :disabled="!hasPreviousImage" @click="previousImage">Previous</button>
     </div>
-    <div class="my-3 text-center">
-      <img id="explore-image" src="https://images.pexels.com/photos/255379/pexels-photo-255379.jpeg"/>
-    </div>
-    <div class="my-1 text-center">
-      <div>posted by {{ currentImage.userEmail }}</div>
-      <div>{{ currentImage.dateCreated }}</div>
-    </div>
-    <div class="my-3 text-center">
-      {{ currentImage.description }}
+    <div id="image-post" class="p-1" v-if="currentImage.imageUri">
+      <div id="image-container" class="mt-3 text-center">
+        <img id="explore-image" :src="currentImage.imageUri"/>
+      </div>
+      <div id="image-details" class="d-flex flex-column flex-sm-row align-items-center justify-content-between">
+        <div class="my-3 order-sm-2 text-center text-sm-right">
+          <div>posted by {{ currentImage.userEmail }}</div>
+          <div>{{ formattedDateCreated }}</div>
+        </div>
+        <div class="order-sm-1 text-center text-sm-left">
+          <div>{{ currentImage.likes }} likes</div>
+          <div>{{ currentImage.comments }} comments</div>
+        </div>
+      </div>
+      <div class="my-3 text-center">
+        {{ currentImage.description }}
+      </div>
     </div>
   </div>
 </template>
@@ -36,6 +44,9 @@ export default {
     },
     currentImage: function() {
       return this.images[this.currentImageIndex] || {};
+    },
+    formattedDateCreated: function() {
+      return this.currentImage.dateCreated ? this.currentImage.dateCreated.toLocaleDateString() : null
     }
   },
   created: function() {
@@ -45,6 +56,8 @@ export default {
     nextImage: async function() {
       if(this.isShowingLastImage) {
         let newImage = await this.randomImagePostService.getRandom();
+        newImage.likes = 143;
+        newImage.comments = 5;
         this.images.push(newImage);
       }
 
@@ -63,11 +76,20 @@ export default {
 </script>
 
 <style scoped>
-  #explore-image{
-    border: 1px solid var(--color-primary-dark);
+  #image-container{
+    background: var(--color-grayscale-light);
     border-radius: 3px;
-    max-height: 50vh;
-    max-width: 100%;
+    border: 1px solid var(--color-primary-dark);
   }
 
+  #explore-image{
+    max-height: 50vh;
+    max-width: 100%;
+    background: white;
+  }
+
+  #image-post {
+    max-width: 700px;
+    margin: auto;
+  }
 </style>

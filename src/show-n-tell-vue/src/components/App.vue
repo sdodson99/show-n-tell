@@ -55,6 +55,7 @@ button{
   padding: 1em;
   background: var(--color-secondary-medium);
   color: var(--color-primary-dark);
+  border: 1px solid transparent;
   border-radius: 5px;
   min-width: 100px;
   cursor: pointer;
