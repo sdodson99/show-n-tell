@@ -54,9 +54,6 @@ export default {
 </script>
 
 <style>
-h1 {
-  color: var(--color-primary-dark);
-}
 
 .abcRioButtonContents span{
   display: none;

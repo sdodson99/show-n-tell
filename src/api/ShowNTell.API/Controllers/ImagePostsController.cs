@@ -17,13 +17,13 @@ namespace ShowNTell.API.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class ImagePostController : ControllerBase
+    public class ImagePostsController : ControllerBase
     {
         private readonly IImagePostService _imagePostService;
         private readonly IImageSaver _imageSaver;
-        private readonly ILogger<ImagePostController> _logger;
+        private readonly ILogger<ImagePostsController> _logger;
 
-        public ImagePostController(IImagePostService imagePostService, IImageSaver imageSaver, ILogger<ImagePostController> logger)
+        public ImagePostsController(IImagePostService imagePostService, IImageSaver imageSaver, ILogger<ImagePostsController> logger)
         {
             _imagePostService = imagePostService;
             _imageSaver = imageSaver;
@@ -62,7 +62,7 @@ namespace ShowNTell.API.Controllers
         }
 
         [HttpPost]
-        // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> Create([FromForm] CreateImagePostRequest imagePostRequest)
         {
             if(!ModelState.IsValid)
@@ -71,7 +71,7 @@ namespace ShowNTell.API.Controllers
             }
 
             // Get the user making the request.
-            // User user = HttpContext.GetUser();
+            User user = HttpContext.GetUser();
 
             // Store image file.
             IFormFile image = imagePostRequest.Image;
@@ -80,7 +80,7 @@ namespace ShowNTell.API.Controllers
             // Save image database record.
             ImagePost newImagePost = new ImagePost()
             {
-                UserEmail = "admin@showntell.com",
+                UserEmail = user.Email,
                 Description = imagePostRequest.Description,
                 ImageUri = imageUri,
                 DateCreated = DateTime.Now
