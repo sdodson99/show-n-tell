@@ -4,14 +4,14 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ShowNTell.Domain.Services.ImageSavers
+namespace ShowNTell.Domain.Services.ImageStorages
 {
-    public class LocalImageSaver : IImageSaver
+    public class LocalImageStorage : IImageStorage
     {
         private readonly string _localImageDirectory;
         private readonly string _localImageBaseUri;
 
-        public LocalImageSaver(string localImageDirectory, string localImageBaseUri)
+        public LocalImageStorage(string localImageDirectory, string localImageBaseUri)
         {
             _localImageDirectory = localImageDirectory;
             _localImageBaseUri = localImageBaseUri;
@@ -26,6 +26,30 @@ namespace ShowNTell.Domain.Services.ImageSavers
             string resourceLocation = Path.Combine(_localImageBaseUri, imageFileName);
 
             return resourceLocation;
+        }
+
+        public async Task<bool> DeleteImage(string fileUri)
+        {
+            bool success = false;
+
+            string imageFileName = fileUri.Substring(_localImageBaseUri.Length).Trim('/', '\\');
+            string localImageLocation = Path.Combine(_localImageDirectory, imageFileName);
+
+            try
+            {
+                if(File.Exists(localImageLocation))
+                {
+                    File.Delete(localImageLocation);
+                    success = true;
+                }
+            }
+            catch (Exception)
+            {
+                success = false;
+            }
+
+            return await Task.FromResult(success);
+
         }
 
         private async Task WriteImageToOutput(Stream imageStream, string imageId)

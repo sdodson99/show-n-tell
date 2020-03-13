@@ -11,5 +11,6 @@ namespace ShowNTell.AzureStorage.Services.BlobClients
         Uri Uri { get; }
         
         Task<Response<BlobContentInfo>> UploadBlobAsync(string blobName, Stream stream);
+        Task<Response> DeleteBlobAsync(string blobName);
     }
 }

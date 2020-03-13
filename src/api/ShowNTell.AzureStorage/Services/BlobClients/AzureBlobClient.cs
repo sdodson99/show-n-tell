@@ -22,5 +22,10 @@ namespace ShowNTell.AzureStorage.Services.BlobClients
         {
             return await _client.UploadBlobAsync(blobName, stream);
         }
+
+        public async Task<Response> DeleteBlobAsync(string blobName)
+        {
+            return await _client.DeleteBlobAsync(blobName);
+        }
     }
 }

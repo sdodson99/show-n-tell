@@ -12,7 +12,7 @@ using ShowNTell.API.Models.Requests;
 using ShowNTell.AzureStorage.Services;
 using ShowNTell.AzureStorage.Services.BlobClientFactories;
 using ShowNTell.Domain.Services;
-using ShowNTell.Domain.Services.ImageSavers;
+using ShowNTell.Domain.Services.ImageStorages;
 using ShowNTell.EntityFramework;
 using ShowNTell.EntityFramework.DataSeeders;
 using ShowNTell.EntityFramework.Services;
@@ -46,7 +46,7 @@ namespace ShowNTell.API
 
             services.AddSingleton<IImagePostService, EFImagePostService>();
             services.AddSingleton<IRandomImagePostService, EFRandomImagePostService>();
-            services.AddSingleton<IImageSaver>(GetImageSaver());
+            services.AddSingleton<IImageStorage>(GetImageSaver());
             services.AddSingleton<AdminDataSeeder>();
 
             Action<DbContextOptionsBuilder> dbContextOptionsBuilderAction = GetDbContextOptionsBuilderAction();
@@ -95,15 +95,15 @@ namespace ShowNTell.API
             return o => o.UseSqlServer(connectionString);
         }
 
-        private IImageSaver GetImageSaver()
+        private IImageStorage GetImageSaver()
         {
-            IImageSaver imageSaver;
+            IImageStorage imageSaver;
 
             if(Environment.IsProduction())
             {
                 string connectionString = Configuration.GetConnectionString("blob-storage");
 
-                imageSaver = new AzureBlobImageSaver(new AzureBlobClientFactory(connectionString, "images"));
+                imageSaver = new AzureBlobImageStorage(new AzureBlobClientFactory(connectionString, "images"));
             }
             else
             {
@@ -111,7 +111,7 @@ namespace ShowNTell.API
                 string baseUrl = Configuration.GetValue<string>("BaseUrl");
                 string imageBaseUri = Path.Combine(baseUrl, STATIC_FILE_BASE_URI, IMAGE_DIRECTORY_NAME);
 
-                imageSaver = new LocalImageSaver(imageOutputPath, imageBaseUri);
+                imageSaver = new LocalImageStorage(imageOutputPath, imageBaseUri);
             }
 
             return imageSaver;
