@@ -4,7 +4,7 @@ using Azure.Storage.Blobs.Models;
 using ShowNTell.AzureStorage.Services.BlobClientFactories;
 using ShowNTell.AzureStorage.Services.BlobClients;
 using ShowNTell.Domain.Services;
-using ShowNTell.Domain.Services.ImageSavers;
+using ShowNTell.Domain.Services.ImageStorages;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -13,11 +13,11 @@ using System.Threading.Tasks;
 
 namespace ShowNTell.AzureStorage.Services
 {
-    public class AzureBlobImageSaver : IImageSaver
+    public class AzureBlobImageStorage : IImageStorage
     {
         private readonly IBlobClientFactory _blobClientFactory;
 
-        public AzureBlobImageSaver(IBlobClientFactory blobClientFactory)
+        public AzureBlobImageStorage(IBlobClientFactory blobClientFactory)
         {
             _blobClientFactory = blobClientFactory;
         }
@@ -30,6 +30,16 @@ namespace ShowNTell.AzureStorage.Services
             await client.UploadBlobAsync(imageName, imageStream);
 
             return Path.Combine(client.Uri.AbsoluteUri, imageName);
+        }
+
+        public async Task<bool> DeleteImage(string fileUri)
+        {
+            IBlobClient client = await _blobClientFactory.CreateBlobClient();
+
+            string imageName = fileUri.Substring(client.Uri.AbsoluteUri.Length);
+            Response deleteResponse = await client.DeleteBlobAsync(imageName);
+
+            return deleteResponse.Status.ToString().StartsWith('2');
         }
     }
 }

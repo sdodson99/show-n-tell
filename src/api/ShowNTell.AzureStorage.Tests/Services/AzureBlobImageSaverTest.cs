@@ -15,7 +15,7 @@ namespace ShowNTell.AzureStorage.Tests
 
         private FileStream _imageStream;
         private string _imageExtension;
-        private AzureBlobImageSaver _imageSaver;
+        private AzureBlobImageStorage _imageSaver;
 
         [SetUp]
         public void Setup()
@@ -29,7 +29,7 @@ namespace ShowNTell.AzureStorage.Tests
             Mock<IBlobClientFactory> mockBlobClientFactory = new Mock<IBlobClientFactory>();
             mockBlobClientFactory.Setup(m => m.CreateBlobClient()).ReturnsAsync(mockBlobClient.Object);
 
-            _imageSaver = new AzureBlobImageSaver(mockBlobClientFactory.Object);
+            _imageSaver = new AzureBlobImageStorage(mockBlobClientFactory.Object);
         }
 
         [TearDown]

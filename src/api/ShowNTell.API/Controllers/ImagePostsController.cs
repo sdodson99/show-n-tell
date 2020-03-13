@@ -11,7 +11,7 @@ using ShowNTell.API.Extensions;
 using ShowNTell.API.Models.Requests;
 using ShowNTell.Domain.Models;
 using ShowNTell.Domain.Services;
-using ShowNTell.Domain.Services.ImageSavers;
+using ShowNTell.Domain.Services.ImageStorages;
 
 namespace ShowNTell.API.Controllers
 {
@@ -21,16 +21,16 @@ namespace ShowNTell.API.Controllers
     {
         private readonly IImagePostService _imagePostService;
         private readonly IRandomImagePostService _randomImagePostService;
-        private readonly IImageSaver _imageSaver;
+        private readonly IImageStorage _imageStorage;
         private readonly ILogger<ImagePostsController> _logger;
 
         public ImagePostsController(IImagePostService imagePostService, IRandomImagePostService randomImagePostService, 
-            IImageSaver imageSaver, 
+            IImageStorage imageStorage, 
             ILogger<ImagePostsController> logger)
         {
             _imagePostService = imagePostService;
             _randomImagePostService = randomImagePostService;
-            _imageSaver = imageSaver;
+            _imageStorage = imageStorage;
             _logger = logger;
         }
 
@@ -80,7 +80,7 @@ namespace ShowNTell.API.Controllers
 
             // Store image file.
             IFormFile image = imagePostRequest.Image;
-            string imageUri = await _imageSaver.SaveImage(image.OpenReadStream(), Path.GetExtension(image.FileName));
+            string imageUri = await _imageStorage.SaveImage(image.OpenReadStream(), Path.GetExtension(image.FileName));
 
             // Save image database record.
             ImagePost newImagePost = new ImagePost()
@@ -139,17 +139,27 @@ namespace ShowNTell.API.Controllers
                 return Forbid();
             }
 
-            // Try to delete the image.
-            bool success = await _imagePostService.Delete(id);
+            // Find the image to delete.
+            ImagePost imageToDelete = await _imagePostService.GetById(id);
 
-            if(success)
-            {
-                return NoContent();
-            } 
-            else
+            if(imageToDelete == null)
             {
                 return NotFound();
             }
+
+            // Delete the image record.
+            if(!await _imagePostService.Delete(id))
+            {
+                return NotFound();
+            }
+
+            // Delete the image from storage.
+            if (!await _imageStorage.DeleteImage(imageToDelete.ImageUri))
+            {
+                return BadRequest();
+            }
+
+            return NoContent();
         }
     }
 }
