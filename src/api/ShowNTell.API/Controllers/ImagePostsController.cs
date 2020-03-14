@@ -125,26 +125,23 @@ namespace ShowNTell.API.Controllers
 
         [HttpDelete]
         [Route("{id:int}")]
-        // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> Delete(int id)
         {
             // Get the user making the request.
-            // User user = HttpContext.GetUser();
-
-            // Check if user owns the post.
-            bool userOwnsPost = true;
-
-            if(!userOwnsPost) 
-            {
-                return Forbid();
-            }
+            User user = HttpContext.GetUser();
 
             // Find the image to delete.
             ImagePost imageToDelete = await _imagePostService.GetById(id);
-
             if(imageToDelete == null)
             {
                 return NotFound();
+            }
+
+            // Check if user does not own image.
+            if(imageToDelete.UserEmail != user.Email) 
+            {
+                return Forbid();
             }
 
             // Delete the image record.
