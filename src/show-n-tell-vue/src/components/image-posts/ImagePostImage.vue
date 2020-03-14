@@ -1,5 +1,5 @@
 <template>
-    <div id="image-container" class="d-flex align-items-center justify-content-center">
+    <div id="image-container" @click="$emit('click')" class="d-flex align-items-center justify-content-center">
         <img id="explore-image" :style="{ maxHeight: maxHeight }" :src="imageUri"/>
     </div>
 </template>

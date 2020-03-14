@@ -6,6 +6,24 @@ class APIImagePostService {
     constructor(baseUrl) {
       this.baseUrl = baseUrl;
     }
+
+    /**
+     * Get an image post from the API by id.
+     */
+    async getById(id) {
+        const url = `${this.baseUrl}/imageposts/${id}`;
+  
+        // Make the API request.
+        const result = await fetch(url)
+
+        const imagePost = await result.json()
+
+        if(imagePost.dateCreated) {
+            imagePost.dateCreated = new Date(imagePost.dateCreated)
+        }
+
+        return imagePost
+    }
   
     /**
      * Post an image post to the API.

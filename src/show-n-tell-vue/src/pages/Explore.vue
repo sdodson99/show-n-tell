@@ -8,7 +8,7 @@
       <image-post-image class="mt-3" max-height="50vh" :imageUri="currentImage.imageUri"/>
       <div id="image-details" class="d-flex flex-column flex-md-row justify-content-between">
         <div class="my-3 order-md-2 text-center text-md-right">
-          <div>posted by {{ currentImage.userEmail }}</div>
+          <div>posted by {{ currentImageUsername }}</div>
           <div>{{ formattedDateCreated }}</div>
         </div>
         <image-post-feedback class="my-3 justify-content-center text-center text-md-left order-md-1"/>
@@ -28,6 +28,7 @@ export default {
   name: "Explore",
   props: {
     isLoggedIn: Boolean,
+    imagePostService: Object,
     randomImagePostService: Object
   },
   components: {
@@ -49,17 +50,24 @@ export default {
     },
     formattedDateCreated: function() {
       return this.currentImage.dateCreated ? this.currentImage.dateCreated.toLocaleDateString() : null
+    },
+    currentImageUsername: function() {
+      return this.currentImage.user ? this.currentImage.user.username : null
     }
   },
   created: function() {
-    this.randomImagePostService.getRandom().then(image => this.images.push(image));
+    const initialImageId = this.$route.params.initialId;
+    
+    if(initialImageId) {
+      this.imagePostService.getById(initialImageId).then(image => this.images.push(image))
+    } else {
+      this.randomImagePostService.getRandom().then(image => this.images.push(image));
+    }
   },
   methods: {
     nextImage: async function() {
       if(this.isShowingLastImage) {
         let newImage = await this.randomImagePostService.getRandom();
-        newImage.likes = 143;
-        newImage.comments = 5;
         this.images.push(newImage);
       }
 

@@ -4,12 +4,12 @@
         <h3 class="mt-4 text-center text-lg-left">Image Posts</h3>
         <ul class="row justify-content-center justify-content-lg-start">
             <li class="col-lg-4 d-flex flex-column mt-5" v-for="post in imagePosts" :key="post.id">
-                <image-post-image max-height="50vh" :imageUri="post.imageUri"/>
+                <image-post-image class="img-post-img" max-height="50vh" @click="() => viewImagePost(post.id)" :imageUri="post.imageUri"/>
                 <div class="d-flex flex-column flex-sm-row align-items-center justify-content-sm-between">
                     <image-post-feedback />
                     <more-dropdown>
                         <ul class="my-dropdown">
-                            <li class="px-3 py-2 my-dropdown-item">View</li>
+                            <li @click="() => viewImagePost(post.id)" class="px-3 py-2 my-dropdown-item">View</li>
                             <li class="px-3 py-2 my-dropdown-item">Edit</li>
                             <li class="px-3 py-2 my-dropdown-item">Delete</li>
                         </ul>
@@ -47,7 +47,14 @@ export default {
 
         if(user) {
             this.username = user.username
-            this.profileService.getImagePosts(this.username).then(posts => this.imagePosts = posts);
+            this.profileService.getImagePosts(this.username).then(posts => {
+                this.imagePosts = posts.sort((a, b) => new Date(b.dateCreated) - new Date(a.dateCreated))
+            });
+        }
+    },
+    methods: {
+        viewImagePost: function(imagePostId) {
+            this.$router.push({path: `explore/${imagePostId}`})
         }
     }
 }
@@ -56,6 +63,10 @@ export default {
 <style scoped>
 ul {
     list-style: none;
+}
+
+.img-post-img {
+    cursor: pointer;
 }
 
 .my-dropdown{

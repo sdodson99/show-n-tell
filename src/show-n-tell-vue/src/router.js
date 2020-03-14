@@ -15,12 +15,13 @@ const router = new VueRouter({
       redirect: "/explore",
     },
     {
-      path: "/explore",
+      path: "/explore/:initialId?",
       meta: {
         title: "Explore"
       },
       component: () => import("./pages/Explore"),
       props: {
+        imagePostService: ServiceContainer.ImagePostService,
         randomImagePostService: ServiceContainer.RandomImagePostService
       }
     },
