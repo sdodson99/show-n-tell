@@ -4,7 +4,7 @@
         <h3 class="mt-4 text-center text-lg-left">Image Posts</h3>
         <ul class="row justify-content-center justify-content-lg-start">
             <li class="col-lg-4 d-flex flex-column mt-5" v-for="post in imagePosts" :key="post.id">
-                <image-post-image class="img-post-img" max-height="50vh" @click="() => viewImagePost(post.id)" :imageUri="post.imageUri"/>
+                <image-post-image class="img-post-img" max-height="30vh" @click="() => viewImagePost(post.id)" :imageUri="post.imageUri"/>
                 <div class="d-flex flex-column flex-sm-row align-items-center justify-content-sm-between">
                     <image-post-feedback />
                     <more-dropdown>
