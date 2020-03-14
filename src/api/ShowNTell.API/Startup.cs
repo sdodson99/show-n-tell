@@ -45,6 +45,7 @@ namespace ShowNTell.API
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Show 'N Tell API", Version = "v1" });
             });
 
+            services.AddSingleton<IUserService, EFUserService>();
             services.AddSingleton<IImagePostService, EFImagePostService>();
             services.AddSingleton<IRandomImagePostService, EFRandomImagePostService>();
             services.AddSingleton<IImageStorage>(GetImageStorage());
