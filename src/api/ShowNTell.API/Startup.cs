@@ -1,5 +1,7 @@
 using System;
 using System.IO;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -38,7 +40,13 @@ namespace ShowNTell.API
         {
             services.AddControllers();
             services.AddGoogleJWTAuthentication();
-            services.AddAuthorization();
+            services.AddAuthorization(o =>
+            {
+                o.DefaultPolicy = new AuthorizationPolicyBuilder(JwtBearerDefaults.AuthenticationScheme)
+                    .RequireAuthenticatedUser()
+                    .Build();
+            });
+            services.AddCors();
 
             services.AddSwaggerGen(c =>
             {
@@ -93,7 +101,7 @@ namespace ShowNTell.API
 
         private Action<DbContextOptionsBuilder> GetDbContextOptionsBuilderAction()
         {
-            string connectionString = Configuration.GetConnectionString("database");
+            string connectionString = Configuration.GetConnectionString("local-database");
             return o => o.UseSqlServer(connectionString);
         }
 

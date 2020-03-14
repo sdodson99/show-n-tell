@@ -8,7 +8,7 @@ namespace ShowNTell.Domain.Services
 {
     public interface IImagePostService
     {
-        Task<IEnumerable<ImagePost>> GetAllByUserEmail(string email);
+        Task<IEnumerable<ImagePost>> GetAllByUsername(string username);
         Task<IEnumerable<ImagePost>> GetAllByTagId(int id);
         Task<ImagePost> GetById(int id);
         Task<ImagePost> Create(ImagePost imagePost);
