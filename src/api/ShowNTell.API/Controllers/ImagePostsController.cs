@@ -35,17 +35,6 @@ namespace ShowNTell.API.Controllers
         }
 
         [HttpGet]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public async Task<IActionResult> GetAllForUser()
-        {
-            User currentUser = HttpContext.GetUser();
-
-            IEnumerable<ImagePost> posts = await _imagePostService.GetAllByUserEmail(currentUser.Email);
-
-            return Ok(posts);
-        }
-
-        [HttpGet]
         [Route("random")]
         public async Task<IActionResult> GetRandom()
         {
