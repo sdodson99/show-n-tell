@@ -7,6 +7,7 @@ const TITLE_SUFFIX = " - Show 'N Tell";
 Vue.use(VueRouter);
 
 const router = new VueRouter({
+  mode: "history",
   routes: [
     {
       path: "/",
@@ -65,6 +66,10 @@ const router = new VueRouter({
       props: {
         authenticationService: ServiceContainer.AuthenticationService
       }
+    }, 
+    {
+      path: "*",
+      redirect: "/"
     }
   ]
 });
