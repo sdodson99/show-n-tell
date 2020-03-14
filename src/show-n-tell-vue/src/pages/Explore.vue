@@ -8,14 +8,20 @@
       <div id="image-container" class="mt-3 text-center">
         <img id="explore-image" :src="currentImage.imageUri"/>
       </div>
-      <div id="image-details" class="d-flex flex-column flex-sm-row align-items-center justify-content-between">
-        <div class="my-3 order-sm-2 text-center text-sm-right">
+      <div id="image-details" class="d-flex flex-column flex-md-row justify-content-between">
+        <div class="my-3 order-md-2 text-center text-md-right">
           <div>posted by {{ currentImage.userEmail }}</div>
           <div>{{ formattedDateCreated }}</div>
         </div>
-        <div class="order-sm-1 text-center text-sm-left">
-          <div>{{ currentImage.likes }} likes</div>
-          <div>{{ currentImage.comments }} comments</div>
+        <div class="my-3 d-flex flex-wrap order-md-1 justify-content-center text-center text-md-left">
+          <div class="d-flex align-items-center justify-content-center justify-content-md-start">
+            <img src="../assets/icons/like-white.png"/>
+            <div class="ml-1">{{ currentImage.likes }} likes</div>
+          </div>
+          <div class="ml-3 d-flex align-items-center justify-content-center justify-content-md-start">
+            <img class="mt-2" src="../assets/icons/comment.png"/>
+            <div class="ml-1">{{ currentImage.comments }} comments</div>
+          </div>
         </div>
       </div>
       <div class="my-3 text-center">
