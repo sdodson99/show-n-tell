@@ -43,7 +43,9 @@ namespace ShowNTell.EntityFramework.Services
         {
             using (ShowNTellDbContext context = _contextFactory.CreateDbContext())
             {
-                return await context.ImagePosts.FindAsync(id);
+                return await context.ImagePosts
+                    .Include(p => p.User)
+                    .FirstOrDefaultAsync(p => p.Id == id);
             }
         }
 
