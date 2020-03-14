@@ -39,10 +39,10 @@ export default {
     GoogleLogin
   },
   methods: {
-    onLoginSuccess: function(result) {
+    onLoginSuccess: async function(result) {
       const accessToken = result.getAuthResponse().id_token;
 
-      if (this.authenticationService.login(accessToken)) {
+      if (await this.authenticationService.login(accessToken)) {
         window.location.href = "/";
       }
     },

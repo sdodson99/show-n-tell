@@ -11,6 +11,7 @@ using System;
 namespace ShowNTell.API.Controllers
 {
     [ApiController]
+    [Route("auth")]
     public class AuthenticationController : ControllerBase
     {
         private readonly IUserService _userService;
@@ -21,25 +22,25 @@ namespace ShowNTell.API.Controllers
         }
 
         [HttpPost]
-        [Route("auth/google")]
+        [Route("google")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> GoogleLogin()
         {
             User currentUser = HttpContext.GetUser();
 
-            currentUser = await _userService.GetByEmail(currentUser.Email);
+            User existingUser = await _userService.GetByEmail(currentUser.Email);
             
             // User does not exist.
-            if(currentUser == null)
+            if(existingUser == null)
             {
                 string username = currentUser.Email.Substring(0, currentUser.Email.IndexOf('@'));
                 currentUser.Username = username;
                 currentUser.DateJoined = DateTime.Now;
 
-                currentUser = await _userService.Create(currentUser);
+                existingUser = await _userService.Create(currentUser);
             }
 
-            return Ok(currentUser);
+            return Ok(existingUser);
         }
     }
 }
