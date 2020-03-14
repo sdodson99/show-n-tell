@@ -82,8 +82,6 @@ namespace ShowNTell.API
             app.UseHttpsRedirection();
 
             app.UseRouting();
-            app.UseAuthorization();
-            app.UseAuthentication();
 
             //Add cors for all alternative domains.
             app.UseCors(policy =>
@@ -92,6 +90,9 @@ namespace ShowNTell.API
                     .AllowAnyHeader()
                     .AllowAnyMethod();
             });
+
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
