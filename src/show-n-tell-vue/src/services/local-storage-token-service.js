@@ -1,15 +1,19 @@
 class LocalStorageTokenService {
-  getToken() {
-    return window.localStorage.getItem("accessToken");
+  constructor() {
+    this.accessTokenKey = "accessToken"
   }
 
-  saveToken(token) {
-    window.localStorage.setItem("accessToken", token);
+  getToken() {
+    return window.localStorage.getItem(this.accessTokenKey);
+  }
+
+  setToken(token) {
+    window.localStorage.setItem(this.accessTokenKey, token);
     return true;
   }
 
   clearToken() {
-    window.localStorage.removeItem("accessToken");
+    window.localStorage.removeItem(this.accessTokenKey);
     return true;
   }
 }

@@ -1,7 +1,8 @@
 class APIGoogleAuthenticationService{
-    constructor(baseUrl, tokenService) {
+    constructor(baseUrl, tokenService, userService) {
         this.baseUrl = baseUrl
         this.tokenService = tokenService
+        this.userService = userService
     }
 
     async login(token) {
@@ -16,21 +17,20 @@ class APIGoogleAuthenticationService{
 
         let user = await apiResponse.json();
 
-        console.log(user);
-
         if(user) {
-            this.tokenService.saveToken(token)
+            this.tokenService.setToken(token)
+            this.userService.setUser(user)
         }
 
         return user;
     }
 
     logout() {
-        return this.tokenService.clearToken()
+        return this.userService.clearUser() && this.tokenService.clearToken() 
     }
 
     isLoggedIn() {
-        return this.tokenService.getToken() !== null
+        return this.userService.getUser() !== null && this.tokenService.getToken() !== null
     }
 }
 

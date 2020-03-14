@@ -5,24 +5,13 @@
       <button class="m-1 order-sm-1" type="button" :disabled="!hasPreviousImage" @click="previousImage">Previous</button>
     </div>
     <div id="image-post" class="p-1" v-if="currentImage.imageUri">
-      <div id="image-container" class="mt-3 text-center">
-        <img id="explore-image" :src="currentImage.imageUri"/>
-      </div>
+      <image-post-image class="mt-3" max-height="50vh" :imageUri="currentImage.imageUri"/>
       <div id="image-details" class="d-flex flex-column flex-md-row justify-content-between">
         <div class="my-3 order-md-2 text-center text-md-right">
           <div>posted by {{ currentImage.userEmail }}</div>
           <div>{{ formattedDateCreated }}</div>
         </div>
-        <div class="my-3 d-flex flex-wrap order-md-1 justify-content-center text-center text-md-left">
-          <div class="d-flex align-items-center justify-content-center justify-content-md-start">
-            <img src="../assets/icons/like-white.png"/>
-            <div class="ml-1">{{ currentImage.likes }}</div>
-          </div>
-          <div class="ml-3 d-flex align-items-center justify-content-center justify-content-md-start">
-            <img class="mt-2" src="../assets/icons/comment.png"/>
-            <div class="ml-1">{{ currentImage.comments }}</div>
-          </div>
-        </div>
+        <image-post-feedback class="my-3 justify-content-center text-center text-md-left order-md-1"/>
       </div>
       <div class="my-3 text-center">
         {{ currentImage.description }}
@@ -32,11 +21,18 @@
 </template>
 
 <script>
+import ImagePostImage from '../components/image-posts/ImagePostImage'
+import ImagePostFeedback from '../components/image-posts/ImagePostFeedback'
+
 export default {
   name: "Explore",
   props: {
     isLoggedIn: Boolean,
     randomImagePostService: Object
+  },
+  components: {
+    ImagePostImage,
+    ImagePostFeedback
   },
   data: function(){
     return {
@@ -82,18 +78,6 @@ export default {
 </script>
 
 <style scoped>
-  #image-container{
-    background: var(--color-grayscale-light);
-    border-radius: 3px;
-    border: 1px solid var(--color-primary-dark);
-  }
-
-  #explore-image{
-    max-height: 50vh;
-    max-width: 100%;
-    background: white;
-  }
-
   #image-post {
     max-width: 700px;
     margin: auto;

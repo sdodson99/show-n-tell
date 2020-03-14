@@ -43,7 +43,8 @@ const router = new VueRouter({
       },
       component: () => import("./pages/Profile"),
       props: {
-        imagePostService: ServiceContainer.RandomImagePostService
+        userService: ServiceContainer.UserService,
+        profileService: ServiceContainer.ProfileService
       }
     },
     {
