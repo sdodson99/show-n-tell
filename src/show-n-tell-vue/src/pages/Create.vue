@@ -44,7 +44,9 @@ export default {
 
         const createdImage = await this.imagePostService.create(newImage);
 
-        console.log(createdImage);
+        if(createdImage) {
+          this.$router.push({path: "profile"})
+        }
       },
       handleImageChange: function(event) {
         const file = event.target.files[0];

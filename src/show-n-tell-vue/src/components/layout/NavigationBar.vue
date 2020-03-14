@@ -35,7 +35,7 @@
             v-if="isLoggedIn"
             class="col-lg-auto row mx-1 justify-content-center text-center link hover-link"
             active-class="active-link"
-            to="profile"
+            to="/profile"
           >
             <div class="content px-3 p-2">Profile</div>
           </router-link>
@@ -43,7 +43,7 @@
             v-if="!isLoggedIn"
             class="col-lg-auto row mx-1 justify-content-center text-center link hover-link"
             active-class="active-link"
-            to="login"
+            to="/login"
           >
             <div class="content px-3 p-2">Login</div>
           </router-link>
@@ -51,7 +51,7 @@
             v-if="isLoggedIn"
             class="col-lg-auto row mx-1 justify-content-center text-center link hover-link"
             active-class="active-link"
-            to="logout"
+            to="/logout"
           >
             <div class="content px-3 p-2">Logout</div>
           </router-link>
