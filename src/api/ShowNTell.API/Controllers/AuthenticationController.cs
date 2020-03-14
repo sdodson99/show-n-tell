@@ -23,7 +23,7 @@ namespace ShowNTell.API.Controllers
 
         [HttpPost]
         [Route("google")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [Authorize]
         public async Task<IActionResult> GoogleLogin()
         {
             User currentUser = HttpContext.GetUser();
@@ -33,10 +33,7 @@ namespace ShowNTell.API.Controllers
             // User does not exist.
             if(existingUser == null)
             {
-                string username = currentUser.Email.Substring(0, currentUser.Email.IndexOf('@'));
-                currentUser.Username = username;
                 currentUser.DateJoined = DateTime.Now;
-
                 existingUser = await _userService.Create(currentUser);
             }
 

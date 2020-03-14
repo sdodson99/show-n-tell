@@ -16,7 +16,9 @@ namespace ShowNTell.EntityFramework.Tests.Services
     {
         private const int _validUserCount = 3;
         private const string _validUserEmail = "test@gmail.com";
+        private const string _validUsername = "test";
         private const string _invalidEmail = "badtest@gmail.com";
+        private const string _invalidUsername = "badtest@gmail.com";
         private const int _existingId = 1000;
         private const int _nonExistingId = 1001;
 
@@ -40,15 +42,16 @@ namespace ShowNTell.EntityFramework.Tests.Services
         }
 
         [Test]
-        public async Task GetAllByUserEmail_WithExistingRecords_ReturnsAllForEmail()
+        public async Task GetAllByUsername_WithExistingRecords_ReturnsAllForUsername()
         {
             int expectedCount = _validUserCount;
+            string expectedUsername = _validUsername;
 
-            IEnumerable<ImagePost> imagePosts = await _imagePostService.GetAllByUserEmail(_validUserEmail);
+            IEnumerable<ImagePost> imagePosts = await _imagePostService.GetAllByUsername(expectedUsername);
             int actualCount = imagePosts.Count();
 
             Assert.AreEqual(expectedCount, actualCount);
-            Assert.IsTrue(imagePosts.All(p => p.User.Email == _validUserEmail));
+            Assert.IsTrue(imagePosts.All(p => p.User.Username == expectedUsername));
         }
 
         [Test]
@@ -87,7 +90,6 @@ namespace ShowNTell.EntityFramework.Tests.Services
         {
             int expectedId = _existingId;
             string expectedDescription = "Updated description";
-            ImagePost storedImagePost = _context.ImagePosts.Find(expectedId);
             ImagePost newImagePost = new ImagePost()
             {
                 Description = expectedDescription
@@ -119,7 +121,6 @@ namespace ShowNTell.EntityFramework.Tests.Services
         {
             int expectedId = _existingId;
             string expectedDescription = "Updated description";
-            ImagePost storedImagePost = _context.ImagePosts.Find(expectedId);
 
             ImagePost updatedImagePost = await _imagePostService.UpdateDescription(expectedId, expectedDescription);
             int actualId = updatedImagePost.Id;
@@ -167,7 +168,7 @@ namespace ShowNTell.EntityFramework.Tests.Services
             {
                 imagePosts.Add(new ImagePost()
                 {
-                    UserEmail = _validUserEmail
+                    UserEmail = _validUserEmail,
                 });
             }
 
@@ -202,7 +203,8 @@ namespace ShowNTell.EntityFramework.Tests.Services
         {
             return new User()
             {
-                Email = _validUserEmail
+                Email = _validUserEmail,
+                Username = _validUsername
             };
         }
 
@@ -210,7 +212,8 @@ namespace ShowNTell.EntityFramework.Tests.Services
         {
             return new User()
             {
-                Email = _invalidEmail
+                Email = _invalidEmail,
+                Username = _invalidUsername
             };
         }
     }

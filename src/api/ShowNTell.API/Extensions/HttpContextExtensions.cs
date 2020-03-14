@@ -12,9 +12,13 @@ namespace ShowNTell.API.Extensions
     {
         public static User GetUser(this HttpContext context)
         {
+            string email = context.User.FindFirst(ClaimTypes.Email).Value;
+            string username = email.Substring(0, email.IndexOf('@'));
+
             return new User()
             {
-                Email = context.User.FindFirst(ClaimTypes.Email).Value
+                Email = email,
+                Username = username
             };
         }
     }

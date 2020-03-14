@@ -20,13 +20,13 @@ namespace ShowNTell.EntityFramework.Services
             _contextFactory = contextFactory;
         }
 
-        public async Task<IEnumerable<ImagePost>> GetAllByUserEmail(string email)
+        public async Task<IEnumerable<ImagePost>> GetAllByUsername(string username)
         {
             using (ShowNTellDbContext context = _contextFactory.CreateDbContext())
             {
                 return await context.ImagePosts
                     .Include(p => p.User)
-                    .Where(p => p.User.Email == email)
+                    .Where(p => p.User.Username == username)
                     .ToListAsync();
             }
         }
