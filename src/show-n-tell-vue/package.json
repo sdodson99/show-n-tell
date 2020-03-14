@@ -5,7 +5,7 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "deploy": "surge dist"
+    "deploy": "surge dist/ snt.seandodson.com"
   },
   "dependencies": {
     "bootstrap-vue": "^2.6.1",
