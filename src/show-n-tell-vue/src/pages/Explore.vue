@@ -16,11 +16,11 @@
         <div class="my-3 d-flex flex-wrap order-md-1 justify-content-center text-center text-md-left">
           <div class="d-flex align-items-center justify-content-center justify-content-md-start">
             <img src="../assets/icons/like-white.png"/>
-            <div class="ml-1">{{ currentImage.likes }} likes</div>
+            <div class="ml-1">{{ currentImage.likes }}</div>
           </div>
           <div class="ml-3 d-flex align-items-center justify-content-center justify-content-md-start">
             <img class="mt-2" src="../assets/icons/comment.png"/>
-            <div class="ml-1">{{ currentImage.comments }} comments</div>
+            <div class="ml-1">{{ currentImage.comments }}</div>
           </div>
         </div>
       </div>
