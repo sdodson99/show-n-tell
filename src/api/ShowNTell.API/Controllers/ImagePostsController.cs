@@ -56,7 +56,7 @@ namespace ShowNTell.API.Controllers
         }
 
         [HttpPost]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [Authorize]
         public async Task<IActionResult> Create([FromForm] CreateImagePostRequest imagePostRequest)
         {
             if(!ModelState.IsValid)
@@ -87,7 +87,7 @@ namespace ShowNTell.API.Controllers
 
         [HttpPut]
         [Route("{id:int}")]
-        // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [Authorize]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateImagePostRequest imagePostRequest)
         {
             if(!ModelState.IsValid)
@@ -96,10 +96,10 @@ namespace ShowNTell.API.Controllers
             }
 
             // Get the user making the request.
-            // User user = HttpContext.GetUser();
+            User user = HttpContext.GetUser();
 
             // Check if user owns the post.
-            bool userOwnsPost = true;
+            bool userOwnsPost = await _imagePostService.IsAuthor(id, user.Email);
 
             if(!userOwnsPost) 
             {
@@ -114,7 +114,7 @@ namespace ShowNTell.API.Controllers
 
         [HttpDelete]
         [Route("{id:int}")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [Authorize]
         public async Task<IActionResult> Delete(int id)
         {
             // Get the user making the request.

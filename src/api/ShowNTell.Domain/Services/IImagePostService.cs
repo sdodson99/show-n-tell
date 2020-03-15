@@ -15,5 +15,6 @@ namespace ShowNTell.Domain.Services
         Task<ImagePost> Update(int id, ImagePost imagePost);
         Task<ImagePost> UpdateDescription(int id, string description);
         Task<bool> Delete(int id);
+        Task<bool> IsAuthor(int id, string email);
     }
 }
