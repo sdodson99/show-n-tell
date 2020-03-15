@@ -37,6 +37,17 @@ const router = new VueRouter({
       }
     },
     {
+      path: "/imagePosts/:imagePostId/edit",
+      meta: {
+        title: "Edit",
+        authenticate: true
+      },
+      component: () => import("./pages/Edit"),
+      props: {
+        imagePostService: ServiceContainer.ImagePostService
+      }
+    },
+    {
       path: "/profile",
       meta: {
         title: "Profile",
@@ -44,6 +55,7 @@ const router = new VueRouter({
       },
       component: () => import("./pages/Profile"),
       props: {
+        imagePostService: ServiceContainer.ImagePostService,
         userService: ServiceContainer.UserService,
         profileService: ServiceContainer.ProfileService
       }
