@@ -58,9 +58,12 @@ export default {
     },
     currentImageUsername: function() {
       return this.currentImage.user ? this.currentImage.user.username : null
+    },
+    isShowingLastImage: function() {
+      return this.currentImageIndex + 1 === this.images.length
     }
   },
-  created: async function() {
+  created: async function() {    
     const initialImageId = this.$route.params.initialId;
     
     if(initialImageId) {
@@ -98,9 +101,6 @@ export default {
     },
     viewProfile: function() {
       this.$router.push({path: `/profile/${this.currentImageUsername}`})
-    },
-    isShowingLastImage: function() {
-      return this.currentImageIndex + 1 == this.images.length
     }
   }
 };

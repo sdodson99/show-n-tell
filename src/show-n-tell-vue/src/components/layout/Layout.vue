@@ -5,10 +5,7 @@
       {{ statusMessage }}
     </div>
     <div class="container">
-      <router-view class="m-5"
-        @alert-success="alertSuccess"
-        @alert-status="alertStatus"
-        @alert-error="alertError"></router-view>
+      <router-view class="m-5"></router-view>
     </div>
   </div>
 </template>
@@ -31,24 +28,31 @@ export default {
       timeoutHandle: 0
     }
   },
+  mounted: function(){
+    this.$el.addEventListener('alert-success', this.alertSuccess)
+    this.$el.addEventListener('alert-status', this.alertStatus)
+    this.$el.addEventListener('alert-error', this.alertError)
+  },
   methods: {
-    alertSuccess: function(message, duration) {
+    alertSuccess: function(e) {
       this.alertClass = "alert-success"
-      this._setMessage(message, duration)
+      this._setMessage(e)
     },
-    alertStatus: function(message, duration) {
+    alertStatus: function(e) {
       this.alertClass = "alert-primary"
-      this._setMessage(message, duration)
+      this._setMessage(e)
     },
-    alertError: function(message, duration) {
+    alertError: function(e) {
       this.alertClass = "alert-danger"
-      this._setMessage(message, duration)
-
+      this._setMessage(e)
     },
-    _setMessage: function(message, duration) {
+    _setMessage: function(e) {
+      const message = e.detail.message
+      const duration = e.detail.duration || 3000
+      
       this.statusMessage = message
       clearTimeout(this.timeoutHandle)
-      this.timeoutHandle = setTimeout(() => this.statusMessage = "", duration || 3000)
+      this.timeoutHandle = setTimeout(() => this.statusMessage = "", duration)
     }
   }
 };
