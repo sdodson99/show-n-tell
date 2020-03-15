@@ -17,6 +17,10 @@ class APIImagePostService {
         // Make the API request.
         const result = await this.apiClient.fetch(url)
 
+        if(result.status === 404) {
+            return null
+        }
+
         const imagePost = await result.json()
 
         // Convert the date to JS.

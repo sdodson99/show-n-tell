@@ -19,6 +19,8 @@
 </template>
 
 <script>
+import UnauthorizedError from '../errors/unauthorized-error'
+
 export default {
     name: "Create",
     props: {
@@ -42,11 +44,17 @@ export default {
           description: this.description
         }
 
-        const createdImage = await this.imagePostService.create(newImage);
+        try{
+          const createdImage = await this.imagePostService.create(newImage);
 
-        if(createdImage) {
-          this.$router.push({path: "profile"})
-        }
+          if(createdImage) {
+            this.$router.push({path: "profile"})
+          }
+        } catch (error) {
+              if(error instanceof UnauthorizedError) {
+                  this.$router.push({path: "/login"})
+              }
+          }
       },
       handleImageChange: function(event) {
         const file = event.target.files[0];

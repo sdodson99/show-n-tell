@@ -16,6 +16,10 @@ class APIRandomImagePostService {
 
     const apiResponse = await this.apiClient.fetch(url);
 
+    if(apiResponse.status === 404) {
+      return null
+    }
+
     let image = await apiResponse.json();
     image.dateCreated = new Date(image.dateCreated);
 
