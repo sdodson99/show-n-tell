@@ -1,21 +1,25 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using Azure;
 using Moq;
 using NUnit.Framework;
 using ShowNTell.AzureStorage.Services;
 using ShowNTell.AzureStorage.Services.BlobClientFactories;
 using ShowNTell.AzureStorage.Services.BlobClients;
+using ShowNTell.AzureStorage.Tests.MockResponses;
 
 namespace ShowNTell.AzureStorage.Tests
 {
-    public class AzureBlobImageSaverTest
+    public class AzureBlobImageStorageTest
     {
         private const string _blobClientBaseUri = "http://test.com/";
+        private const string _existingBlobName = "image.png";
+        private const string _nonExistingBlobName = "fake.png";
 
         private FileStream _imageStream;
         private string _imageExtension;
-        private AzureBlobImageStorage _imageSaver;
+        private AzureBlobImageStorage _imageStorage;
 
         [SetUp]
         public void Setup()
@@ -25,11 +29,13 @@ namespace ShowNTell.AzureStorage.Tests
 
             Mock<IBlobClient> mockBlobClient = new Mock<IBlobClient>();
             mockBlobClient.Setup(c => c.Uri).Returns(new Uri(_blobClientBaseUri));
+            mockBlobClient.Setup(c => c.DeleteBlobAsync(_existingBlobName)).ReturnsAsync(new SuccessResponse());
+            mockBlobClient.Setup(c => c.DeleteBlobAsync(It.Is<string>(n => n != _existingBlobName))).ReturnsAsync(new ErrorResponse());
 
             Mock<IBlobClientFactory> mockBlobClientFactory = new Mock<IBlobClientFactory>();
             mockBlobClientFactory.Setup(m => m.CreateBlobClient()).ReturnsAsync(mockBlobClient.Object);
 
-            _imageSaver = new AzureBlobImageStorage(mockBlobClientFactory.Object);
+            _imageStorage = new AzureBlobImageStorage(mockBlobClientFactory.Object);
         }
 
         [TearDown]
@@ -43,7 +49,7 @@ namespace ShowNTell.AzureStorage.Tests
         {
             string expectedBaseUri = _blobClientBaseUri;
 
-            string actualUri = await _imageSaver.SaveImage(_imageStream, _imageExtension);
+            string actualUri = await _imageStorage.SaveImage(_imageStream, _imageExtension);
 
             Assert.IsTrue(actualUri.StartsWith(expectedBaseUri));
         }
@@ -51,7 +57,7 @@ namespace ShowNTell.AzureStorage.Tests
         [Test]
         public async Task SaveImage_WithImageStream_ReturnsImageUriWithGuid()
         {
-            string actualUri = await _imageSaver.SaveImage(_imageStream, _imageExtension);
+            string actualUri = await _imageStorage.SaveImage(_imageStream, _imageExtension);
             // Get Guid part of Uri which is after the BaseUri and is as long as a typical Guid.
             string guidUri = actualUri.Substring(_blobClientBaseUri.Length, Guid.Empty.ToString().Length);
 
@@ -63,10 +69,30 @@ namespace ShowNTell.AzureStorage.Tests
         {
             string expectedExtension = _imageExtension;
 
-            string actualUri = await _imageSaver.SaveImage(_imageStream, _imageExtension);
+            string actualUri = await _imageStorage.SaveImage(_imageStream, _imageExtension);
             string actualExtension = actualUri.Substring(actualUri.LastIndexOf('.'));
 
             Assert.AreEqual(expectedExtension, actualExtension);
+        }
+
+        [Test]
+        public async Task DeleteImage_WithExistingImage_ReturnsTrue()
+        {
+            string fileUri = Path.Combine(_blobClientBaseUri, _existingBlobName);
+
+            bool success = await _imageStorage.DeleteImage(fileUri);
+
+            Assert.IsTrue(success);
+        }
+
+        [Test]
+        public async Task DeleteImage_WithNonExistingImage_ReturnsFalse()
+        {
+            string fileUri = Path.Combine(_blobClientBaseUri, _nonExistingBlobName);
+
+            bool success = await _imageStorage.DeleteImage(fileUri);
+
+            Assert.IsFalse(success);
         }
     }
 }
