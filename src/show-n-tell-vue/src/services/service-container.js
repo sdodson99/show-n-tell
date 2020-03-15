@@ -7,6 +7,7 @@ import APIProfileService from "./api-profile-service";
 import APIClient from "./authentication-api-client"
 
 const baseUrl = "https://localhost:5001";
+// const baseUrl = "http://show-n-tell.northcentralus.azurecontainer.io"
 const tokenService = new LocalStorageTokenService();
 const userService = new LocalStorageUserService();
 const apiClient = new APIClient(tokenService, userService);
