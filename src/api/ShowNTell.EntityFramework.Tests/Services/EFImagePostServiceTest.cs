@@ -20,6 +20,7 @@ namespace ShowNTell.EntityFramework.Tests.Services
         private const string _invalidEmail = "badtest@gmail.com";
         private const string _invalidUsername = "badtest@gmail.com";
         private const int _existingId = 1000;
+        private const string _existingEmail = "existing@gmail.com";
         private const int _nonExistingId = 1001;
 
         private ShowNTellDbContext _context;
@@ -159,6 +160,30 @@ namespace ShowNTell.EntityFramework.Tests.Services
             Assert.IsFalse(success);
         }
 
+        [Test]
+        public async Task IsAuthor_ForImagePostWithCorrectAuthorEmail_ReturnsTrue()
+        {
+            bool actual = await _imagePostService.IsAuthor(_existingId, _existingEmail);
+
+            Assert.IsTrue(actual);
+        }
+
+        [Test]
+        public async Task IsAuthor_ForImagePostWithIncorrectAuthorEmail_ReturnsFalse()
+        {
+            bool actual = await _imagePostService.IsAuthor(_existingId, _invalidEmail);
+
+            Assert.IsFalse(actual);
+        }
+
+        [Test]
+        public async Task IsAuthor_ForNonExistingImagePost_ReturnsFalse()
+        {
+            bool actual = await _imagePostService.IsAuthor(_nonExistingId, _existingEmail);
+
+            Assert.IsFalse(actual);
+        }
+
         private IEnumerable<ImagePost> GetImagePosts()
         {
             List<ImagePost> imagePosts = new List<ImagePost>();
@@ -176,7 +201,7 @@ namespace ShowNTell.EntityFramework.Tests.Services
             imagePosts.Add(new ImagePost()
             {
                 Id = _existingId,
-                UserEmail = _invalidEmail
+                UserEmail = _existingEmail
             });
 
             // Add some invalid user image posts.

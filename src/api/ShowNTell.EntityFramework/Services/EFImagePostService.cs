@@ -109,6 +109,16 @@ namespace ShowNTell.EntityFramework.Services
             }
         }
 
+        public async Task<bool> IsAuthor(int id, string email)
+        {
+            using (ShowNTellDbContext context = _contextFactory.CreateDbContext())
+            {
+                ImagePost storedImagePost = await context.ImagePosts.FindAsync(id);
+
+                return storedImagePost != null && storedImagePost.UserEmail == email;
+            }
+        }
+
         private static async Task<ImagePost> GetByIdFromContext(int id, ShowNTellDbContext context)
         {
             ImagePost storedImagePost = await context.ImagePosts.FindAsync(id);
