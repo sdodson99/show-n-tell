@@ -3,8 +3,9 @@ class APIImagePostService {
      * Initialize with a base url.
      * @param {string} baseUrl The base url of the API (not including ending /)
      */
-    constructor(baseUrl) {
+    constructor(baseUrl, apiClient) {
       this.baseUrl = baseUrl;
+      this.apiClient = apiClient;
     }
 
     /**
@@ -14,10 +15,11 @@ class APIImagePostService {
         const url = `${this.baseUrl}/imageposts/${id}`;
   
         // Make the API request.
-        const result = await fetch(url)
+        const result = await this.apiClient.fetch(url)
 
         const imagePost = await result.json()
 
+        // Convert the date to JS.
         if(imagePost.dateCreated) {
             imagePost.dateCreated = new Date(imagePost.dateCreated)
         }
@@ -37,15 +39,46 @@ class APIImagePostService {
         formData.append('description', imagePost.description)
 
         // Make the post request.
-        const result = await fetch(url, {
+        const result = await this.apiClient.authFetch(url, {
             method: 'POST',
-            headers: {
-                'Authorization': 'bearer ' + localStorage.getItem("accessToken")
-            },
             body: formData
         })
 
         return await result.json();
+    }
+
+    /**
+     * Update an image post by id.
+     * @param {Number} imagePostId 
+     * @param {Object} imagePost 
+     */
+    async update(imagePostId, imagePost) {
+        const url = `${this.baseUrl}/imageposts/${imagePostId}`
+
+        const result = await this.apiClient.authFetch(url, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(imagePost)
+        })
+
+        return await result.json();
+    }
+
+    /**
+     * Delete an image post.
+     * @param {Number} imagePostId 
+     */
+    async delete(imagePostId) {
+        const url = `${this.baseUrl}/imageposts/${imagePostId}`
+
+        // Make the delete request.
+        const result = await this.apiClient.authFetch(url, {
+            method: 'DELETE'
+        })
+
+        return result.ok;
     }
   }
   

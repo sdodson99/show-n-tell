@@ -3,8 +3,9 @@ class APIRandomImagePostService {
    * Initialize with a base url.
    * @param {string} baseUrl The base url of the API (not including ending /)
    */
-  constructor(baseUrl) {
+  constructor(baseUrl, apiClient) {
     this.baseUrl = baseUrl;
+    this.apiClient = apiClient;
   }
 
   /**
@@ -13,7 +14,7 @@ class APIRandomImagePostService {
   async getRandom() {
     const url = `${this.baseUrl}/imageposts/random`;
 
-    const apiResponse = await fetch(url);
+    const apiResponse = await this.apiClient.fetch(url);
 
     let image = await apiResponse.json();
     image.dateCreated = new Date(image.dateCreated);
