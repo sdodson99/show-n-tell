@@ -6,6 +6,9 @@ const TITLE_SUFFIX = " - Show 'N Tell";
 
 Vue.use(VueRouter);
 
+const currentUser = ServiceContainer.UserService.getUser()
+const currentUsername = currentUser ? currentUser.username : ""
+
 const router = new VueRouter({
   mode: "history",
   routes: [
@@ -53,11 +56,18 @@ const router = new VueRouter({
         title: "Profile",
         authenticate: true
       },
+      redirect: `/profile/${currentUsername}`
+    },
+    {
+      path: "/profile/:username",
+      meta: {
+        title: "Profile"
+      },
       component: () => import("./pages/Profile"),
       props: {
         imagePostService: ServiceContainer.ImagePostService,
-        userService: ServiceContainer.UserService,
-        profileService: ServiceContainer.ProfileService
+        profileService: ServiceContainer.ProfileService,
+        currentUser: currentUser
       }
     },
     {

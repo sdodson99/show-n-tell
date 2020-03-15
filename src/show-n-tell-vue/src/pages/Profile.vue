@@ -3,7 +3,7 @@
         <h1 class="text-center">{{ username }}</h1>
         <h3 class="mt-4 text-center text-lg-left">Image Posts</h3>
         <div v-if="hasNoImagePosts" class="mt-4 text-center">
-            You have not posted any images yet.
+            {{ hasNoImagePostsMessage }}
         </div>
         <ul v-else class="row justify-content-center justify-content-lg-start">
             <li class="col-lg-4 d-flex flex-column mt-5" v-for="post in imagePosts" :key="post.id">
@@ -13,8 +13,8 @@
                     <more-dropdown>
                         <ul class="my-dropdown">
                             <li @click="() => viewImagePost(post.id)" class="px-3 py-2 my-dropdown-item">View</li>
-                            <li @click="() => editImagePost(post.id)" class="px-3 py-2 my-dropdown-item">Edit</li>
-                            <li @click="() => deleteImagePost(post.id)" class="px-3 py-2 my-dropdown-item">Delete</li>
+                            <li v-if="isUsersProfile" @click="() => editImagePost(post.id)" class="px-3 py-2 my-dropdown-item">Edit</li>
+                            <li v-if="isUsersProfile" @click="() => deleteImagePost(post.id)" class="px-3 py-2 my-dropdown-item">Delete</li>
                         </ul>
                     </more-dropdown>
                 </div>
@@ -40,37 +40,52 @@ export default {
     props: {
         imagePostService: Object,
         profileService: Object,
-        userService: Object
+        currentUser: Object
     },
     data: function() {
         return {
-            imagePosts: [],
             username: "",
+            imagePosts: [],
             isLoaded: false
         }
     },
     computed: {
         hasNoImagePosts: function() {
             return this.isLoaded && this.imagePosts.length === 0
+        },
+        hasNoImagePostsMessage: function() {
+            return this.isUsersProfile ? 
+                "You have not posted any messages yet." :
+                "This user has not posted any messages yet."
+        },
+        isUsersProfile: function() {
+            return this.currentUser != null && this.currentUser.username === this.username
         }
     },
     created: function() {
-        const user = this.userService.getUser()
-
-        if(user) {
-            this.username = user.username
-            this.profileService.getImagePosts(this.username).then(posts => {
-                this.imagePosts = posts.sort((a, b) => new Date(b.dateCreated) - new Date(a.dateCreated))
-                this.isLoaded = true;
-            });
+        this.loadImagePosts()
+    },
+    watch: {
+        '$route.params.username': async function() {
+            await this.loadImagePosts()
         }
     },
     methods: {
+        loadImagePosts: async function() {
+            this.username = this.$route.params.username
+
+            if(this.username) {
+                const posts = await this.profileService.getImagePosts(this.username)
+
+                this.imagePosts = posts.sort((a, b) => new Date(b.dateCreated) - new Date(a.dateCreated))
+                this.isLoaded = true;
+            }
+        },
         viewImagePost: function(imagePostId) {
-            this.$router.push({path: `explore/${imagePostId}`})
+            this.$router.push({path: `/explore/${imagePostId}`})
         },
         editImagePost: function(imagePostId) {
-            this.$router.push({path: `imagePosts/${imagePostId}/edit`})
+            this.$router.push({path: `/imagePosts/${imagePostId}/edit`})
         },
         deleteImagePost: async function(imagePostId) {
             try {
