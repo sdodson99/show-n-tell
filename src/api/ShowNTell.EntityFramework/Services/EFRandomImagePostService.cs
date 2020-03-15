@@ -25,6 +25,8 @@ namespace ShowNTell.EntityFramework.Services
             {
                 return await context.ImagePosts
                     .Include(p => p.User)
+                    .Include(p => p.Likes)
+                    .Include(p => p.Comments)
                     .OrderBy(p => Guid.NewGuid())
                     .FirstOrDefaultAsync();
             }

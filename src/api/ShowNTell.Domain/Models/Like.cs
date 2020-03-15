@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
 namespace ShowNTell.Domain.Models
@@ -11,5 +12,6 @@ namespace ShowNTell.Domain.Models
         public DateTime DateCreated { get; set; }
 
         public User User { get; set; }
+        public ImagePost ImagePost { get; set; }
     }
 }

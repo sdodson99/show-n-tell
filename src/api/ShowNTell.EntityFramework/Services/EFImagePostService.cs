@@ -26,6 +26,8 @@ namespace ShowNTell.EntityFramework.Services
             {
                 return await context.ImagePosts
                     .Include(p => p.User)
+                    .Include(p => p.Likes)
+                    .Include(p => p.Comments)
                     .Where(p => p.User.Username == username)
                     .ToListAsync();
             }
@@ -45,6 +47,8 @@ namespace ShowNTell.EntityFramework.Services
             {
                 return await context.ImagePosts
                     .Include(p => p.User)
+                    .Include(p => p.Likes)
+                    .Include(p => p.Comments)
                     .FirstOrDefaultAsync(p => p.Id == id);
             }
         }
