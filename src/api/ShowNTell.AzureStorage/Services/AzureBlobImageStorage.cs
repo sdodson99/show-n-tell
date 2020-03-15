@@ -36,7 +36,7 @@ namespace ShowNTell.AzureStorage.Services
         {
             IBlobClient client = await _blobClientFactory.CreateBlobClient();
 
-            string imageName = fileUri.Substring(client.Uri.AbsoluteUri.Length);
+            string imageName = fileUri.Substring(client.Uri.AbsoluteUri.Length).Trim('/', '\\');
             Response deleteResponse = await client.DeleteBlobAsync(imageName);
 
             return deleteResponse.Status.ToString().StartsWith('2');

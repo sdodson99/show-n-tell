@@ -1,0 +1,15 @@
+Scripts for when CI/CD is setup.
+
+Build docker image...
+
+Delete Container Registry:
+az acr repository delete --name showntellapi --image api:latest
+
+Tag Image for Push:
+docker tag [IMAGE_ID] showntellapi.azurecr.io/api
+
+Push Image:
+docker push showntellapi.azurecr.io/api
+
+Restart Container:
+az container restart --name showntellapi --resource-group show-n-tell
