@@ -8,7 +8,7 @@
       <image-post-image class="mt-3" max-height="50vh" :imageUri="currentImage.imageUri"/>
       <div id="image-details" class="d-flex flex-column flex-md-row justify-content-between">
         <div class="my-3 order-md-2 text-center text-md-right">
-          <div>posted by {{ currentImageUsername }}</div>
+          <div>posted by <a @click="viewProfile">{{ currentImageUsername }}</a></div>
           <div>{{ formattedDateCreated }}</div>
         </div>
         <image-post-feedback class="my-3 justify-content-center text-center text-md-left order-md-1"/>
@@ -96,6 +96,9 @@ export default {
         this.currentImageIndex--;
       }
     },
+    viewProfile: function() {
+      this.$router.push({path: `/profile/${this.currentImageUsername}`})
+    },
     isShowingLastImage: function() {
       return this.currentImageIndex + 1 == this.images.length
     }
@@ -107,5 +110,11 @@ export default {
   #image-post {
     max-width: 700px;
     margin: auto;
+  }
+
+  a, a:hover{
+    color: unset;
+    text-decoration: underline;
+    cursor: pointer;
   }
 </style>

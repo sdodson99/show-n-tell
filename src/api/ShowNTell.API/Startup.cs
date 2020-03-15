@@ -102,7 +102,7 @@ namespace ShowNTell.API
 
         private Action<DbContextOptionsBuilder> GetDbContextOptionsBuilderAction()
         {
-            string connectionString = Configuration.GetConnectionString("local-database");
+            string connectionString = Configuration.GetConnectionString("database");
             return o => o.UseSqlServer(connectionString);
         }
 
