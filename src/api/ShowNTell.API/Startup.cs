@@ -54,6 +54,7 @@ namespace ShowNTell.API
             });
 
             services.AddSingleton<IUserService, EFUserService>();
+            services.AddSingleton<ILikeService, EFLikeService>();
             services.AddSingleton<IImagePostService, EFImagePostService>();
             services.AddSingleton<IRandomImagePostService, EFRandomImagePostService>();
             services.AddSingleton<IImageStorage>(GetImageStorage());
