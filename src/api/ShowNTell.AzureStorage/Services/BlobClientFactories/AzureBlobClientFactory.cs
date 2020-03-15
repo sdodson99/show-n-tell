@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
 using ShowNTell.AzureStorage.Services.BlobClients;
 
 namespace ShowNTell.AzureStorage.Services.BlobClientFactories
@@ -19,7 +20,7 @@ namespace ShowNTell.AzureStorage.Services.BlobClientFactories
         {
             BlobServiceClient blobService = new BlobServiceClient(_connectionString);
             BlobContainerClient client = blobService.GetBlobContainerClient(_blobContainerName);
-            await client.CreateIfNotExistsAsync();
+            await client.CreateIfNotExistsAsync(PublicAccessType.BlobContainer);
             
             return new AzureBlobClient(client);
         }
