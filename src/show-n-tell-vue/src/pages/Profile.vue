@@ -10,6 +10,7 @@
                 <image-post-image class="img-post-img" max-height="30vh" @click="() => viewImagePost(post.id)" :imageUri="post.imageUri"/>
                 <div class="d-flex flex-column flex-sm-row align-items-center justify-content-sm-between">
                     <image-post-feedback
+                        :canLike="!isUsersProfile"
                         :liked="isLiked(post)"
                         :likeCount="post.likes.length"
                         @liked="() => likeImage(post)"
@@ -113,10 +114,10 @@ export default {
             }
         },
         likeImage: async function(imagePost) {
-            imagePost.likes = await this._likeImage(imagePost, this.currentUser)
+            imagePost.likes = await this._likeImage(imagePost)
         },
         unlikeImage: async function(imagePost) {
-            imagePost.likes = await this._unlikeImage(imagePost, this.currentUser)
+            imagePost.likes = await this._unlikeImage(imagePost)
         }
     }
 }

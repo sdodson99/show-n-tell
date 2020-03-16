@@ -20,6 +20,7 @@
           <div>{{ formattedDateCreated }}</div>
         </div>
         <image-post-feedback class="my-3 justify-content-center text-center text-md-left order-md-1"
+          :canLike="!isUsersPost"
           :liked="isLiked"
           :likeCount="currentImage.likes.length"
           @liked="likeImage"
@@ -137,10 +138,10 @@ export default {
       this.$router.push({path: `/profile/${this.currentImageUsername}`})
     },
     likeImage: async function() {
-      this.currentImage.likes = await this._likeImage(this.currentImage, this.currentUser)
+      this.currentImage.likes = await this._likeImage(this.currentImage)
     },
     unlikeImage: async function() {
-      this.currentImage.likes = await this._unlikeImage(this.currentImage, this.currentUser)
+      this.currentImage.likes = await this._unlikeImage(this.currentImage)
     }
   }
 };
