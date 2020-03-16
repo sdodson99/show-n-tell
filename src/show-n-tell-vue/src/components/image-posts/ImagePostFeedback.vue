@@ -1,7 +1,8 @@
 <template>
     <div class="d-flex flex-wrap">
         <div class="d-flex align-items-center justify-content-center">
-            <img src="../../assets/icons/like-white.png"/>
+            <img v-if="!liked" @click="toggleLiked" src="../../assets/icons/like-white.png"/>
+            <img v-else @click="toggleLiked" src="../../assets/icons/like-black.png"/>
             <div class="ml-1">{{ likeCount }}</div>
         </div>
         <div class="ml-3 d-flex align-items-center justify-content-center">
@@ -15,16 +16,22 @@
 export default {
     name: "ImagePostFeedback",
     props: {
+        liked: {
+            type: Boolean,
+            default: function() {
+                return false
+            }
+        },
         likes: {
             type: Array,
             default: function() {
-                return [1,2,3,4,5]
+                return []
             }
         },
         comments: {
             type: Array,
             default: function() {
-                return [1,2]
+                return []
             }
         }
     },
@@ -34,6 +41,11 @@ export default {
         },
         commentCount: function(){
             return this.comments.length
+        }
+    },
+    methods: {
+        toggleLiked: function() {
+            this.$emit(this.liked ? 'unliked' : 'liked')
         }
     }
 }

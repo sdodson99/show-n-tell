@@ -6,6 +6,7 @@ using ShowNTell.API.Extensions;
 using ShowNTell.Domain.Services;
 using ShowNTell.Domain.Exceptions;
 using System;
+using Microsoft.Extensions.Logging;
 
 namespace ShowNTell.API.Controllers
 {
@@ -14,10 +15,12 @@ namespace ShowNTell.API.Controllers
     public class ImagePostDetailsController : ControllerBase
     {
         private readonly ILikeService _likeService;
+        private readonly ILogger<ImagePostDetailsController> _logger;
 
-        public ImagePostDetailsController(ILikeService likeService)
+        public ImagePostDetailsController(ILikeService likeService, ILogger<ImagePostDetailsController> logger)
         {
             _likeService = likeService;
+            _logger = logger;
         }
 
         [HttpPost]
