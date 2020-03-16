@@ -11,7 +11,9 @@
                 <div class="d-flex flex-column flex-sm-row align-items-center justify-content-sm-between">
                     <image-post-feedback
                         :liked="isLiked(post)"
-                        :likes="post.likes"/>
+                        :likeCount="post.likes.length"
+                        @liked="() => likeImage(post)"
+                        @unliked="() => unlikeImage(post)"/>
                     <more-dropdown>
                         <ul class="my-dropdown">
                             <li @click="() => viewImagePost(post.id)" class="px-3 py-2 my-dropdown-item">View</li>
@@ -31,6 +33,7 @@ import UnauthorizedError from '../errors/unauthorized-error'
 import ImagePostImage from '../components/image-posts/ImagePostImage'
 import ImagePostFeedback from '../components/image-posts/ImagePostFeedback'
 import MoreDropdown from '../components/utilities/MoreDropdown'
+import LikeServiceMixin from '../mixins/like-service-mixin'
 
 export default {
     name: "Profile",
@@ -39,8 +42,12 @@ export default {
         ImagePostFeedback,
         MoreDropdown
     },
+    mixins: [
+        LikeServiceMixin
+    ],
     props: {
         imagePostService: Object,
+        likeService: Object,
         profileService: Object,
         currentUser: Object
     },
@@ -104,6 +111,12 @@ export default {
                     this.$router.push({path: "/login"})
                 }
             }
+        },
+        likeImage: async function(imagePost) {
+            imagePost.likes = await this._likeImage(imagePost, this.currentUser)
+        },
+        unlikeImage: async function(imagePost) {
+            imagePost.likes = await this._unlikeImage(imagePost, this.currentUser)
         }
     }
 }
