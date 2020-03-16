@@ -4,6 +4,7 @@ import APIGoogleAuthenticationService from "./api-google-authentication-service"
 import APIRandomImagePostService from "./api-random-image-post-service";
 import APIImagePostService from "./api-image-post-service";
 import APIProfileService from "./api-profile-service";
+import APILikeService from "./api-like-service"
 import APIClient from "./authentication-api-client"
 
 const baseUrl = "https://localhost:5001";
@@ -18,6 +19,7 @@ const ServiceContainer = {
   UserService: userService,
   RandomImagePostService: new APIRandomImagePostService(baseUrl, apiClient),
   ImagePostService: new APIImagePostService(baseUrl, apiClient),
+  LikeService: new APILikeService(baseUrl, apiClient),
   ProfileService: new APIProfileService(baseUrl, apiClient)
 };
 

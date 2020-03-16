@@ -24,8 +24,10 @@ const router = new VueRouter({
       },
       component: () => import("./pages/Explore"),
       props: {
+        currentUser: currentUser,
         imagePostService: ServiceContainer.ImagePostService,
-        randomImagePostService: ServiceContainer.RandomImagePostService
+        randomImagePostService: ServiceContainer.RandomImagePostService,
+        likeService: ServiceContainer.LikeService
       }
     },
     {
@@ -53,10 +55,15 @@ const router = new VueRouter({
     {
       path: "/profile",
       meta: {
-        title: "Profile",
-        authenticate: true
+        title: "Profile"
       },
-      redirect: `/profile/${currentUsername}`
+      beforeEnter: (to, from, next) => {
+        if(currentUsername) {
+          next({path: `/profile/${currentUsername}`})
+        } else {
+          next({name: "Login"})
+        }
+      },
     },
     {
       path: "/profile/:username",
