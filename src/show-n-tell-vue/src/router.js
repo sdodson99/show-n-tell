@@ -74,6 +74,7 @@ const router = new VueRouter({
       props: {
         imagePostService: ServiceContainer.ImagePostService,
         profileService: ServiceContainer.ProfileService,
+        likeService: ServiceContainer.LikeService,
         currentUser: currentUser
       }
     },

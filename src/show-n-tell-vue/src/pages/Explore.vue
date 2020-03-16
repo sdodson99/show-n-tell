@@ -21,7 +21,7 @@
         </div>
         <image-post-feedback class="my-3 justify-content-center text-center text-md-left order-md-1"
           :liked="isLiked"
-          :likes="currentImage.likes"
+          :likeCount="currentImage.likes.length"
           @liked="likeImage"
           @unliked="unlikeImage"/>
       </div>
@@ -42,7 +42,8 @@
 <script>
 import ImagePostImage from '../components/image-posts/ImagePostImage'
 import ImagePostFeedback from '../components/image-posts/ImagePostFeedback'
-import UnauthorizedError from '../errors/unauthorized-error';
+import UnauthorizedError from '../errors/unauthorized-error'
+import LikeServiceMixin from '../mixins/like-service-mixin'
 
 export default {
   name: "Explore",
@@ -56,6 +57,9 @@ export default {
     ImagePostImage,
     ImagePostFeedback
   },
+  mixins: [
+    LikeServiceMixin
+  ],
   data: function(){
     return {
       images: [],
@@ -133,29 +137,10 @@ export default {
       this.$router.push({path: `/profile/${this.currentImageUsername}`})
     },
     likeImage: async function() {
-      if(!this.isUsersPost) {
-        try {
-          const like = await this.likeService.likeImagePost(this.currentImage.id)
-          this.currentImage.likes.push(like)
-        } catch (error) {
-          if(error instanceof UnauthorizedError){
-            this.$router.push({path: "/login"})
-          }          
-        }
-      }
+      this.currentImage.likes = await this._likeImage(this.currentImage, this.currentUser)
     },
     unlikeImage: async function() {
-      if(!this.isUsersPost) {
-        try {
-          if(await this.likeService.unlikeImagePost(this.currentImage.id)){
-            this.currentImage.likes = this.currentImage.likes.filter(l => l.userEmail !== this.currentUser.email)
-          }
-        } catch (error) {
-          if(error instanceof UnauthorizedError){
-            this.$router.push({path: "/login"})
-          }
-        }
-      }
+      this.currentImage.likes = await this._unlikeImage(this.currentImage, this.currentUser)
     }
   }
 };

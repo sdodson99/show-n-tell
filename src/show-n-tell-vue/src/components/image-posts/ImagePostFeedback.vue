@@ -16,31 +16,14 @@
 export default {
     name: "ImagePostFeedback",
     props: {
-        liked: {
-            type: Boolean,
-            default: function() {
-                return false
-            }
+        liked: Boolean,
+        likeCount: {
+            type: Number,
+            default: 0
         },
-        likes: {
-            type: Array,
-            default: function() {
-                return []
-            }
-        },
-        comments: {
-            type: Array,
-            default: function() {
-                return []
-            }
-        }
-    },
-    computed: {
-        likeCount: function(){
-            return this.likes.length
-        },
-        commentCount: function(){
-            return this.comments.length
+        commentCount: {
+            type: Number,
+            default: 0
         }
     },
     methods: {
