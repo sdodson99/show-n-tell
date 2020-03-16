@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using ShowNTell.Domain.Models;
 using ShowNTell.Domain.Services;
 using System;
+using ShowNTell.API.Models.Responses;
+using AutoMapper;
 
 namespace ShowNTell.API.Controllers
 {
@@ -15,10 +17,12 @@ namespace ShowNTell.API.Controllers
     public class AuthenticationController : ControllerBase
     {
         private readonly IUserService _userService;
+        private readonly IMapper _mapper;
 
-        public AuthenticationController(IUserService userService)
+        public AuthenticationController(IUserService userService, IMapper mapper)
         {
             _userService = userService;
+            _mapper = mapper;
         }
 
         [HttpPost]
@@ -37,7 +41,7 @@ namespace ShowNTell.API.Controllers
                 existingUser = await _userService.Create(currentUser);
             }
 
-            return Ok(existingUser);
+            return Ok(_mapper.Map<UserResponse>(existingUser));
         }
     }
 }

@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -10,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using SeanDodson.GoogleJWTAuthentication.Extensions;
+using ShowNTell.API.Models.MappingProfiles;
 using ShowNTell.API.Models.Requests;
 using ShowNTell.AzureStorage.Services;
 using ShowNTell.AzureStorage.Services.BlobClientFactories;
@@ -63,6 +65,8 @@ namespace ShowNTell.API
             Action<DbContextOptionsBuilder> dbContextOptionsBuilderAction = GetDbContextOptionsBuilderAction();
             services.AddSingleton<IShowNTellDbContextFactory>(new ShowNTellDbContextFactory(dbContextOptionsBuilderAction));
             services.AddDbContext<ShowNTellDbContext>(dbContextOptionsBuilderAction);
+
+            services.AddSingleton<IMapper>(CreateMapper());
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -103,19 +107,19 @@ namespace ShowNTell.API
 
         private Action<DbContextOptionsBuilder> GetDbContextOptionsBuilderAction()
         {
-            string connectionString = Configuration.GetConnectionString("database");
+            string connectionString = Configuration.GetConnectionString("local-database");
             return o => o.UseSqlServer(connectionString);
         }
 
         private IImageStorage GetImageStorage()
         {
-            IImageStorage imageSaver;
+            IImageStorage imageStorage;
 
             if(Environment.IsProduction())
             {
                 string connectionString = Configuration.GetConnectionString("blob-storage");
 
-                imageSaver = new AzureBlobImageStorage(new AzureBlobClientFactory(connectionString, "images"));
+                imageStorage = new AzureBlobImageStorage(new AzureBlobClientFactory(connectionString, "images"));
             }
             else
             {
@@ -123,10 +127,20 @@ namespace ShowNTell.API
                 string baseUrl = Configuration.GetValue<string>("BaseUrl");
                 string imageBaseUri = Path.Combine(baseUrl, STATIC_FILE_BASE_URI, IMAGE_DIRECTORY_NAME);
 
-                imageSaver = new LocalImageStorage(imageOutputPath, imageBaseUri);
+                imageStorage = new LocalImageStorage(imageOutputPath, imageBaseUri);
             }
 
-            return imageSaver;
+            return imageStorage;
+        }
+
+        private IMapper CreateMapper()
+        {
+            MapperConfiguration config = new MapperConfiguration((o) =>
+            {
+                o.AddProfile<ResponseDomainMappingProfile>();
+            });
+
+            return config.CreateMapper();
         }
     }
 }
