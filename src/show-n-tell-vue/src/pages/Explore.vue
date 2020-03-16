@@ -26,7 +26,7 @@
           @unliked="unlikeImage"/>
       </div>
       <div class="text-center">
-        <h3>{{ currentImage.description }}</h3>
+        <p>{{ currentImage.description }}</p>
       </div>
       <div class="my-4 text-center text-sm-left">
         <h3>Comments</h3>
@@ -69,7 +69,7 @@ export default {
       return this.images[this.currentImageIndex] || {};
     },
     currentImageUsername: function() {
-      return this.currentImage.user ? this.currentImage.user.username : null
+      return this.currentImage.user.username
     },
     isShowingLastImage: function() {
       return this.currentImageIndex + 1 === this.images.length
@@ -78,13 +78,13 @@ export default {
       return this.currentImageIndex > 0;
     },
     isLiked: function() {
-      return this.currentImage.likes ? this.currentImage.likes.length > 0 : false
+      return this.currentImage.likes.some(l => l.userEmail === (this.currentUser && this.currentUser.email))
     },
     isUsersPost: function() {
-      return this.currentImage.userEmail === (this.currentUser ? this.currentUser.email : "")
+      return this.currentImage.userEmail === (this.currentUser && this.currentUser.email)
     },
     formattedDateCreated: function() {
-      return this.currentImage.dateCreated ? this.currentImage.dateCreated.toLocaleDateString() : null
+      return this.currentImage.dateCreated.toLocaleDateString()
     },
   },
   created: async function() {    
@@ -113,7 +113,13 @@ export default {
     nextImage: async function() {
       if(this.isShowingLastImage) {
         let newImage = await this.randomImagePostService.getRandom();
-        this.images.push(newImage);
+
+        let existingImage = this.images.find(p => p.id === newImage.id)
+        if(existingImage) {
+          this.images.push(existingImage)
+        } else {
+          this.images.push(newImage)
+        }
       }
       
       this.currentImageIndex++;

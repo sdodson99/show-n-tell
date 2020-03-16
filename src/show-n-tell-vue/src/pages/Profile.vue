@@ -9,7 +9,9 @@
             <li class="col-lg-4 d-flex flex-column mt-5" v-for="post in imagePosts" :key="post.id">
                 <image-post-image class="img-post-img" max-height="30vh" @click="() => viewImagePost(post.id)" :imageUri="post.imageUri"/>
                 <div class="d-flex flex-column flex-sm-row align-items-center justify-content-sm-between">
-                    <image-post-feedback />
+                    <image-post-feedback
+                        :liked="isLiked(post)"
+                        :likes="post.likes"/>
                     <more-dropdown>
                         <ul class="my-dropdown">
                             <li @click="() => viewImagePost(post.id)" class="px-3 py-2 my-dropdown-item">View</li>
@@ -60,6 +62,9 @@ export default {
         },
         isUsersProfile: function() {
             return this.currentUser != null && this.currentUser.username === this.username
+        },
+        isLiked: function() {
+            return post => post.likes.some(l => l.userEmail === this.currentUser.email)
         }
     },
     created: function() {
