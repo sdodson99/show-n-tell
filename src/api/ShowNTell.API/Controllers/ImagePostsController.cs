@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -9,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using ShowNTell.API.Extensions;
 using ShowNTell.API.Models.Requests;
+using ShowNTell.API.Models.Responses;
 using ShowNTell.Domain.Models;
 using ShowNTell.Domain.Services;
 using ShowNTell.Domain.Services.ImageStorages;
@@ -22,15 +24,18 @@ namespace ShowNTell.API.Controllers
         private readonly IImagePostService _imagePostService;
         private readonly IRandomImagePostService _randomImagePostService;
         private readonly IImageStorage _imageStorage;
+        private readonly IMapper _mapper;
         private readonly ILogger<ImagePostsController> _logger;
 
         public ImagePostsController(IImagePostService imagePostService, IRandomImagePostService randomImagePostService, 
             IImageStorage imageStorage, 
+            IMapper mapper,
             ILogger<ImagePostsController> logger)
         {
             _imagePostService = imagePostService;
             _randomImagePostService = randomImagePostService;
             _imageStorage = imageStorage;
+            _mapper = mapper;
             _logger = logger;
         }
 
@@ -45,14 +50,16 @@ namespace ShowNTell.API.Controllers
                 return NotFound();
             }
 
-            return Ok(randomPost);
+            return Ok(_mapper.Map<ImagePostResponse>(randomPost));
         }
 
         [HttpGet]
         [Route("{id:int}")]
         public async Task<IActionResult> GetById(int id)
         {
-            return Ok(await _imagePostService.GetById(id));
+            ImagePost post = await _imagePostService.GetById(id);
+
+            return Ok(_mapper.Map<ImagePostResponse>(post));
         }
 
         [HttpPost]
@@ -82,7 +89,7 @@ namespace ShowNTell.API.Controllers
 
             newImagePost = await _imagePostService.Create(newImagePost);
 
-            return Ok(newImagePost);
+            return Ok(_mapper.Map<ImagePostResponse>(newImagePost));
         }
 
         [HttpPut]
@@ -107,9 +114,9 @@ namespace ShowNTell.API.Controllers
             }
 
             // Update image database record.
-            ImagePost updateImagePost = await _imagePostService.UpdateDescription(id, imagePostRequest.Description);
+            ImagePost updatedImagePost = await _imagePostService.UpdateDescription(id, imagePostRequest.Description);
 
-            return Ok(updateImagePost);
+            return Ok(_mapper.Map<ImagePostResponse>(updatedImagePost));
         }
 
         [HttpDelete]

@@ -7,6 +7,8 @@ using ShowNTell.Domain.Services;
 using ShowNTell.Domain.Exceptions;
 using System;
 using Microsoft.Extensions.Logging;
+using AutoMapper;
+using ShowNTell.API.Models.Responses;
 
 namespace ShowNTell.API.Controllers
 {
@@ -15,11 +17,13 @@ namespace ShowNTell.API.Controllers
     public class ImagePostDetailsController : ControllerBase
     {
         private readonly ILikeService _likeService;
+        private readonly IMapper _mapper;
         private readonly ILogger<ImagePostDetailsController> _logger;
 
-        public ImagePostDetailsController(ILikeService likeService, ILogger<ImagePostDetailsController> logger)
+        public ImagePostDetailsController(ILikeService likeService, IMapper mapper, ILogger<ImagePostDetailsController> logger)
         {
             _likeService = likeService;
+            _mapper = mapper;
             _logger = logger;
         }
 
@@ -34,7 +38,7 @@ namespace ShowNTell.API.Controllers
             {
                 Like createdLike = await _likeService.LikeImagePost(id, currentUser.Email);
                 
-                return Ok(createdLike);
+                return Ok(_mapper.Map<LikeResponse>(createdLike));
             }
             catch (Exception)
             {
