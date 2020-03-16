@@ -99,7 +99,7 @@ export default {
         this.noImageMessage = "The selected image does not exist."
       }
     } else {
-      const image = await this.randomImagePostService.getRandom();
+      const image = await this.randomImagePostService.getRandom();      
 
       if(image) {
         this.images.push(image)
@@ -113,7 +113,6 @@ export default {
     nextImage: async function() {
       if(this.isShowingLastImage) {
         let newImage = await this.randomImagePostService.getRandom();
-        newImage.likes = []
         this.images.push(newImage);
       }
       
@@ -131,7 +130,7 @@ export default {
       if(!this.isUsersPost) {
         try {
           const like = await this.likeService.likeImagePost(this.currentImage.id)
-          console.log(like); 
+          this.currentImage.likes.push(like)
         } catch (error) {
           if(error instanceof UnauthorizedError){
             this.$router.push({path: "/login"})
@@ -143,7 +142,7 @@ export default {
       if(!this.isUsersPost) {
         try {
           if(await this.likeService.unlikeImagePost(this.currentImage.id)){
-            console.log('success');
+            this.currentImage.likes = this.currentImage.likes.filter(l => l.userEmail !== this.currentUser.email)
           }
         } catch (error) {
           if(error instanceof UnauthorizedError){
