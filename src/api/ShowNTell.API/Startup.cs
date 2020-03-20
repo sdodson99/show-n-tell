@@ -52,7 +52,34 @@ namespace ShowNTell.API
 
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Show 'N Tell API", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo 
+                { 
+                    Title = "Show 'N Tell API", 
+                    Version = "v1" 
+                });
+
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme 
+                { 
+                    In = ParameterLocation.Header,
+                    Description = "Please enter 'Bearer' following by a space and the JWT", 
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.ApiKey
+                });
+
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement 
+                {
+                    { 
+                        new OpenApiSecurityScheme 
+                        { 
+                            Reference = new OpenApiReference 
+                            { 
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer" 
+                            } 
+                        },
+                        new string[] { } 
+                    } 
+                });
             });
 
             services.AddSingleton<IUserService, EFUserService>();
