@@ -14,5 +14,6 @@ namespace ShowNTell.Domain.Models
         public DateTime DateCreated { get; set; }
 
         public User User { get; set; }
+        public ImagePost ImagePost { get;set; }
     }
 }
