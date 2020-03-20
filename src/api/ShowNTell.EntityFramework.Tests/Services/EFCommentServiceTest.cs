@@ -12,12 +12,16 @@ namespace ShowNTell.EntityFramework.Tests.Services
     [TestFixture]
     public class EFCommentServiceTest
     {
+        private string _databaseName;
+
         private EFCommentService _commentService;
 
 
         [SetUp]
         public void Setup()
         {
+            _databaseName = Guid.NewGuid().ToString();
+
             Mock<IShowNTellDbContextFactory> contextFactory = new Mock<IShowNTellDbContextFactory>();
             contextFactory.Setup(c => c.CreateDbContext()).Returns(() => GetDbContext());
 
@@ -44,7 +48,7 @@ namespace ShowNTell.EntityFramework.Tests.Services
 
         private ShowNTellDbContext GetDbContext()
         {
-            DbContextOptions options = new DbContextOptionsBuilder().UseInMemoryDatabase(Guid.NewGuid().ToString()).Options;
+            DbContextOptions options = new DbContextOptionsBuilder().UseInMemoryDatabase(_databaseName).Options;
 
             ShowNTellDbContext context = new ShowNTellDbContext(options);
 
