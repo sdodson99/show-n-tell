@@ -70,6 +70,7 @@ export default {
         submit: function() {
             if(this.validComment) {
                 this.$emit('commented', this.newCommentContent)
+                this.newCommentContent = ""
             }
         },
         getFormattedDateCreated: function(date) {
