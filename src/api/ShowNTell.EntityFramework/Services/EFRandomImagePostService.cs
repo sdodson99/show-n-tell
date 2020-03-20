@@ -27,6 +27,7 @@ namespace ShowNTell.EntityFramework.Services
                     .Include(p => p.User)
                     .Include(p => p.Likes)
                     .Include(p => p.Comments)
+                        .ThenInclude(c => c.User)
                     .OrderBy(p => Guid.NewGuid())
                     .FirstOrDefaultAsync();
             }
