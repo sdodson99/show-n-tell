@@ -15,5 +15,6 @@ namespace ShowNTell.API.Models.Responses
 
         public UserResponse User { get; set; }
         public ICollection<LikeResponse> Likes { get; set; }
+        public ICollection<CommentResponse> Comments { get; set; }
     }
 }
