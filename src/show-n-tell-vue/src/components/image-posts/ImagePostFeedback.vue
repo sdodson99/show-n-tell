@@ -1,8 +1,10 @@
 <template>
     <div class="d-flex flex-wrap">
         <div class="d-flex align-items-center justify-content-center">
-            <img v-if="!isLiked" @click="toggleLiked" src="../../assets/icons/like-white.png"/>
-            <img v-else @click="toggleLiked" src="../../assets/icons/like-black.png"/>
+            <div :class="likeButtonClass">
+                <img v-if="!isLiked" @click="toggleLiked" src="../../assets/icons/like-white.png"/>
+                <img v-else @click="toggleLiked" src="../../assets/icons/like-black.png"/>
+            </div>
             <div class="ml-1">{{ numLikes }}</div>
         </div>
         <div class="ml-3 d-flex align-items-center justify-content-center">
@@ -33,6 +35,11 @@ export default {
             numLikes: this.likeCount
         }
     },
+    computed: {
+        likeButtonClass: function(){
+            return this.canLike ? "like-button" : ""
+        }
+    },
     watch: {
         liked: function() {
             this.isLiked = this.liked
@@ -54,5 +61,7 @@ export default {
 </script>
 
 <style>
-
+.like-button{
+    cursor: pointer;
+}
 </style>
