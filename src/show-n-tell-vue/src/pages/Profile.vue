@@ -72,7 +72,7 @@ export default {
             return this.currentUser != null && this.currentUser.username === this.username
         },
         isLiked: function() {
-            return post => post.likes.some(l => l.userEmail === this.currentUser.email)
+            return post => this.currentUser != null && post.likes.some(l => l.userEmail === this.currentUser.email)
         }
     },
     created: function() {
