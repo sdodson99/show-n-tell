@@ -27,7 +27,8 @@ const router = new VueRouter({
         currentUser: currentUser,
         imagePostService: ServiceContainer.ImagePostService,
         randomImagePostService: ServiceContainer.RandomImagePostService,
-        likeService: ServiceContainer.LikeService
+        likeService: ServiceContainer.LikeService,
+        commentService: ServiceContainer.CommentService
       }
     },
     {

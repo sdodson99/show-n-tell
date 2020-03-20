@@ -4,6 +4,7 @@ import APIGoogleAuthenticationService from "./api-google-authentication-service"
 import APIRandomImagePostService from "./api-random-image-post-service";
 import APIImagePostService from "./api-image-post-service";
 import APIProfileService from "./api-profile-service";
+import APICommentService from "./api-comment-service"
 import APILikeService from "./api-like-service"
 import APIClient from "./authentication-api-client"
 
@@ -20,6 +21,7 @@ const ServiceContainer = {
   RandomImagePostService: new APIRandomImagePostService(baseUrl, apiClient),
   ImagePostService: new APIImagePostService(baseUrl, apiClient),
   LikeService: new APILikeService(baseUrl, apiClient),
+  CommentService: new APICommentService(baseUrl, apiClient),
   ProfileService: new APIProfileService(baseUrl, apiClient)
 };
 
