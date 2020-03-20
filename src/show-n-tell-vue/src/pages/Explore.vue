@@ -31,6 +31,9 @@
       </div>
       <div class="my-4 text-center text-sm-left">
         <h3>Comments</h3>
+        <image-post-comment-list class="mt-3" 
+          :can-comment="isLoggedIn"
+          @commented="commented"/>
       </div>
     </div>
     <div class="mt-3"
@@ -43,6 +46,7 @@
 <script>
 import ImagePostImage from '../components/image-posts/ImagePostImage'
 import ImagePostFeedback from '../components/image-posts/ImagePostFeedback'
+import ImagePostCommentList from '../components/image-posts/ImagePostCommentList'
 import UnauthorizedError from '../errors/unauthorized-error'
 import LikeServiceMixin from '../mixins/like-service-mixin'
 
@@ -56,7 +60,8 @@ export default {
   },
   components: {
     ImagePostImage,
-    ImagePostFeedback
+    ImagePostFeedback,
+    ImagePostCommentList
   },
   mixins: [
     LikeServiceMixin
@@ -83,14 +88,17 @@ export default {
       return this.currentImageIndex > 0;
     },
     isLiked: function() {
-      return this.currentImage.likes.some(l => l.userEmail === (this.currentUser && this.currentUser.email))
+      return this.isLoggedIn && this.currentImage.likes.some(l => l.userEmail === this.currentUser.email)
     },
     isUsersPost: function() {
-      return this.currentImage.userEmail === (this.currentUser && this.currentUser.email)
+      return this.isLoggedIn && this.currentImage.userEmail === this.currentUser.email
     },
     formattedDateCreated: function() {
       return this.currentImage.dateCreated.toLocaleDateString()
     },
+    isLoggedIn: function() {
+      return this.currentUser !== null
+    }
   },
   created: async function() {    
     const initialImageId = this.$route.params.initialId;
@@ -142,6 +150,10 @@ export default {
     },
     unlikeImage: async function() {
       this.currentImage.likes = await this._unlikeImage(this.currentImage)
+    },
+    commented: async function(comment) {
+      console.log(comment);
+      
     }
   }
 };
@@ -160,7 +172,14 @@ export default {
 
   a, a:hover{
     color: unset;
-    text-decoration: underline;
     cursor: pointer;
+  }
+
+  a {
+    font-weight: bold;
+  }
+
+  a:hover {
+    text-decoration: underline;
   }
 </style>
