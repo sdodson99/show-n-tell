@@ -32,8 +32,9 @@
       <div class="my-4 text-center text-sm-left">
         <h3>Comments</h3>
         <image-post-comment-list class="mt-3" 
+          :comments="currentImage.comments"
           :can-comment="isLoggedIn"
-          @commented="commented"/>
+          @commented="createComment"/>
       </div>
     </div>
     <div class="mt-3"
@@ -56,7 +57,8 @@ export default {
     currentUser: Object,
     imagePostService: Object,
     randomImagePostService: Object,
-    likeService: Object
+    likeService: Object,
+    commentService: Object
   },
   components: {
     ImagePostImage,
@@ -105,7 +107,7 @@ export default {
     
     if(initialImageId) {
       const image = await this.imagePostService.getById(initialImageId);
-
+  
       if(image) {
         this.images.push(image)
       } else {
@@ -151,9 +153,19 @@ export default {
     unlikeImage: async function() {
       this.currentImage.likes = await this._unlikeImage(this.currentImage)
     },
-    commented: async function(comment) {
-      console.log(comment);
-      
+    createComment: async function(comment) {
+      if(comment) {
+        try {
+          const createdComment = await this.commentService.createComment(this.currentImage.id, comment)
+          createdComment.username = this.currentUser.username
+
+          this.currentImage.comments.push(createdComment)
+        } catch (error) {
+          if(error instanceof UnauthorizedError){
+            this.$router.push({path: "/login"})
+          }
+        }
+      }
     }
   }
 };

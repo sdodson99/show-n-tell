@@ -18,11 +18,11 @@
                 :key="comment.id">
                 <div class="d-flex flex-column flex-sm-row">
                     <div class="font-weight-bold">
-                        {{ comment.author }}
+                        {{ comment.username }}
                     </div>
                     <div class="mx-3 d-none d-sm-block">|</div>
                     <div>
-                        {{ comment.datePosted }}
+                        {{ getFormattedDateCreated(comment.dateCreated) }}
                     </div>
                 </div>
                 <div class="mt-2">
@@ -70,6 +70,9 @@ export default {
             if(this.validComment) {
                 this.$emit('commented', this.newCommentContent)
             }
+        },
+        getFormattedDateCreated: function(date) {
+            return new Date(date).toLocaleDateString()
         }
     }
 }
