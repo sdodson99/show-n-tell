@@ -68,16 +68,16 @@ namespace ShowNTell.EntityFramework.Services
 
                 try
                 {
-                    Like like = await context.Likes
-                        .FirstOrDefaultAsync(l => l.ImagePostId == imagePostId && l.UserEmail == userEmail);
-
-                    if(like != null) 
+                    Like like = new Like()
                     {
-                        context.Likes.Remove(like);
-                        await context.SaveChangesAsync();
+                        ImagePostId = imagePostId,
+                        UserEmail = userEmail
+                    };
+                    
+                    context.Entry(like).State = EntityState.Deleted;
+                    await context.SaveChangesAsync();
 
-                        success = true;
-                    }
+                    success = true;
                 }
                 catch (Exception)
                 {
