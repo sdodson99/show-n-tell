@@ -15,7 +15,7 @@
       <div id="image-details" class="d-flex flex-column flex-md-row justify-content-between">
         <div class="my-3 order-md-2 text-center text-md-right">
           <div>posted by 
-            <a @click="viewProfile">{{ currentImageUsername }}</a>
+            <a @click="() => viewProfile(this.currentImageUsername)">{{ currentImageUsername }}</a>
           </div>
           <div>{{ formattedDateCreated }}</div>
         </div>
@@ -34,7 +34,8 @@
         <image-post-comment-list class="mt-3" 
           :comments="currentImage.comments"
           :can-comment="isLoggedIn"
-          @commented="createComment"/>
+          @commented="createComment"
+          @usernameClicked="viewProfile"/>
       </div>
     </div>
     <div class="mt-3"
@@ -144,8 +145,8 @@ export default {
         this.currentImageIndex--;
       }
     },
-    viewProfile: function() {
-      this.$router.push({path: `/profile/${this.currentImageUsername}`})
+    viewProfile: function(username) {
+      this.$router.push({path: `/profile/${username}`})
     },
     likeImage: async function() {
       this.currentImage.likes = await this._likeImage(this.currentImage)

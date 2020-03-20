@@ -17,7 +17,8 @@
                 v-for="comment in comments"
                 :key="comment.id">
                 <div class="d-flex flex-column flex-sm-row">
-                    <div class="font-weight-bold">
+                    <div class="username font-weight-bold"
+                        @click="() => usernameClicked(comment.username)">
                         {{ comment.username }}
                     </div>
                     <div class="mx-3 d-none d-sm-block">|</div>
@@ -73,13 +74,16 @@ export default {
         },
         getFormattedDateCreated: function(date) {
             return new Date(date).toLocaleDateString()
+        },
+        usernameClicked: function(username) {
+            this.$emit('usernameClicked', username)
         }
     }
 }
 </script>
 
 <style scoped>
-textarea{
+textarea {
     min-width: 100%;
 }
 
@@ -87,7 +91,15 @@ ul {
     list-style: none;
 }
 
-.comment-item{
+.comment-item {
     border-top: 1px solid var(--color-grayscale-light);
+}
+
+.username {
+    cursor: pointer;
+}
+
+.username:hover {
+    text-decoration: underline;
 }
 </style>
