@@ -65,8 +65,8 @@ export default {
         },
         hasNoImagePostsMessage: function() {
             return this.isUsersProfile ? 
-                "You have not posted any messages yet." :
-                "This user has not posted any messages yet."
+                "You have not posted any images yet." :
+                "This user has not posted any images yet."
         },
         isUsersProfile: function() {
             return this.currentUser != null && this.currentUser.username === this.username
