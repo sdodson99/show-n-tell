@@ -13,6 +13,7 @@ namespace ShowNTell.API.Models.MappingProfiles
         public ResponseDomainMappingProfile()
         {
             CreateMap<Like, LikeResponse>().ReverseMap();
+            CreateMap<Comment, CommentResponse>().ReverseMap();
             CreateMap<User, UserResponse>().ReverseMap();
             CreateMap<ImagePost, ImagePostResponse>().ReverseMap();
         }

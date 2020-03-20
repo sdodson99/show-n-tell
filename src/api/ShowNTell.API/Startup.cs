@@ -57,6 +57,7 @@ namespace ShowNTell.API
 
             services.AddSingleton<IUserService, EFUserService>();
             services.AddSingleton<ILikeService, EFLikeService>();
+            services.AddSingleton<ICommentService, EFCommentService>();
             services.AddSingleton<IImagePostService, EFImagePostService>();
             services.AddSingleton<IRandomImagePostService, EFRandomImagePostService>();
             services.AddSingleton<IImageStorage>(GetImageStorage());
@@ -107,7 +108,7 @@ namespace ShowNTell.API
 
         private Action<DbContextOptionsBuilder> GetDbContextOptionsBuilderAction()
         {
-            string connectionString = Configuration.GetConnectionString("local-database");
+            string connectionString = Configuration.GetConnectionString("database");
             return o => o.UseSqlServer(connectionString);
         }
 
