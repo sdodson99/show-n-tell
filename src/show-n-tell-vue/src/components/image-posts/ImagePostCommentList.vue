@@ -8,7 +8,7 @@
                 :disabled="!validComment"
                 @click="submit">Submit</button>
          </div>
-         <div class="text-center"
+         <div class="text-center mb-3"
             v-else>
             You must be logged in to comment.
          </div>
