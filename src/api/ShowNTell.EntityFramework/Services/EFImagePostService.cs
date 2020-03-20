@@ -28,6 +28,7 @@ namespace ShowNTell.EntityFramework.Services
                     .Include(p => p.User)
                     .Include(p => p.Likes)
                     .Include(p => p.Comments)
+                        .ThenInclude(c => c.User)
                     .Where(p => p.User.Username == username)
                     .ToListAsync();
             }
@@ -49,6 +50,7 @@ namespace ShowNTell.EntityFramework.Services
                     .Include(p => p.User)
                     .Include(p => p.Likes)
                     .Include(p => p.Comments)
+                        .ThenInclude(c => c.User)
                     .FirstOrDefaultAsync(p => p.Id == id);
             }
         }
