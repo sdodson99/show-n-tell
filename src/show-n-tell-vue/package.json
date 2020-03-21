@@ -8,8 +8,10 @@
     "deploy": "surge dist/ snt.seandodson.com"
   },
   "dependencies": {
+    "blueimp-load-image": "^2.26.0",
     "bootstrap-vue": "^2.6.1",
     "core-js": "^3.6.4",
+    "exif-js": "^2.3.0",
     "surge": "^0.21.3",
     "vue": "^2.6.11",
     "vue-google-login": "^2.0.3",
