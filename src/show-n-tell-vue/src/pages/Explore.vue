@@ -23,6 +23,7 @@
           :canLike="!isUsersPost"
           :liked="isLiked"
           :likeCount="currentImage.likes.length"
+          :commentCount="currentImage.comments.length"
           @liked="likeImage"
           @unliked="unlikeImage"/>
       </div>

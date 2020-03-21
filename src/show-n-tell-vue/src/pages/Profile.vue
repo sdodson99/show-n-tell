@@ -13,6 +13,7 @@
                         :canLike="!isUsersProfile"
                         :liked="isLiked(post)"
                         :likeCount="post.likes.length"
+                        :commentCount="post.comments.length"
                         @liked="() => likeImage(post)"
                         @unliked="() => unlikeImage(post)"/>
                     <more-dropdown>
