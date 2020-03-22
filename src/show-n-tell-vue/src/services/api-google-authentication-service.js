@@ -30,6 +30,10 @@ class APIGoogleAuthenticationService{
         return this.userService.clearUser() && this.tokenService.clearToken() 
     }
 
+    getUser() {
+        return this.userService.getUser()
+    }
+
     isLoggedIn() {
         return this.userService.getUser() !== null && this.tokenService.getToken() !== null
     }

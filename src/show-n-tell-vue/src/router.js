@@ -16,7 +16,7 @@ const router = new VueRouter({
 })
 
 // Create services that depend on router.
-const likeVueService = new LikeVueService(ServiceContainer.LikeService, router, currentUser)
+const likeVueService = new LikeVueService(ServiceContainer.LikeService, ServiceContainer.AuthenticationService, router)
 
 router.addRoutes([
   {
