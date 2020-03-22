@@ -1,15 +1,15 @@
 <template>
   <div id="nav-root">
     <div class="container">
-      <nav :class="{ open: open }" class="row p-3 align-items-start justify-content-center">
+      <nav :class="{ open: open }" class="row p-3 align-items-center justify-content-center">
         <div class="col-lg-auto d-flex flex-column align-items-center justify-content-center">
           <router-link
             class="row justify-content-center mx-1 link"
             to="/"
           >
-            <div class="content text-center px-3 p-2">Show 'N Tell</div>
+            <img id="logo" class="ml-3 ml-lg-0" src="../../assets/showntell.png"/>
           </router-link>
-          <Hamburger id="ham" class="d-lg-none" 
+          <Hamburger id="ham" class="d-lg-none mt-3" 
             @toggleOn="opened" @toggleOff="closed" :toggled="open"
             toggle-on-style="stroke: var(--color-secondary-medium)"
             toggle-off-style="stroke: var(--color-primary-dark)"></Hamburger>
@@ -92,6 +92,11 @@ export default {
 #ham{
   height: 1.5em;
   width: 1.5em;
+}
+
+#logo {
+  max-height: 75px;
+  max-width: 100%;
 }
 
 #nav-root {
