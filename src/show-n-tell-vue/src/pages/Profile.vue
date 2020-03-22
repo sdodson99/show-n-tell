@@ -35,7 +35,6 @@ import UnauthorizedError from '../errors/unauthorized-error'
 import ImagePostImage from '../components/image-posts/ImagePostImage'
 import ImagePostFeedback from '../components/image-posts/ImagePostFeedback'
 import MoreDropdown from '../components/utilities/MoreDropdown'
-import LikeServiceMixin from '../mixins/like-service-mixin'
 
 export default {
     name: "Profile",
@@ -44,12 +43,9 @@ export default {
         ImagePostFeedback,
         MoreDropdown
     },
-    mixins: [
-        LikeServiceMixin
-    ],
     props: {
         imagePostService: Object,
-        likeService: Object,
+        likeVueService: Object,
         profileService: Object,
         currentUser: Object
     },
@@ -115,10 +111,10 @@ export default {
             }
         },
         likeImage: async function(imagePost) {
-            imagePost.likes = await this._likeImage(imagePost)
+            imagePost.likes = await this.likeVueService.likeImagePost(imagePost)
         },
         unlikeImage: async function(imagePost) {
-            imagePost.likes = await this._unlikeImage(imagePost)
+            imagePost.likes = await this.likeVueService.unlikeImagePost(imagePost)
         }
     }
 }
