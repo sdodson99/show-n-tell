@@ -28,7 +28,6 @@ namespace ShowNTell.EntityFramework.Services
         {
             using(ShowNTellDbContext context = _contextFactory.CreateDbContext())
             {
-
                 try
                 {
                     context.Users.Add(user);

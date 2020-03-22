@@ -16,7 +16,6 @@ namespace ShowNTell.EntityFramework.Tests.Services
 
         private EFCommentService _commentService;
 
-
         [SetUp]
         public void Setup()
         {
