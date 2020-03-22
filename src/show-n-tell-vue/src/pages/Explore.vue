@@ -51,7 +51,6 @@ import ImagePostImage from '../components/image-posts/ImagePostImage'
 import ImagePostFeedback from '../components/image-posts/ImagePostFeedback'
 import ImagePostCommentList from '../components/image-posts/ImagePostCommentList'
 import UnauthorizedError from '../errors/unauthorized-error'
-import LikeServiceMixin from '../mixins/like-service-mixin'
 
 export default {
   name: "Explore",
@@ -59,7 +58,7 @@ export default {
     currentUser: Object,
     imagePostService: Object,
     randomImagePostService: Object,
-    likeService: Object,
+    likeVueService: Object,
     commentService: Object
   },
   components: {
@@ -67,9 +66,6 @@ export default {
     ImagePostFeedback,
     ImagePostCommentList
   },
-  mixins: [
-    LikeServiceMixin
-  ],
   data: function(){
     return {
       images: [],
@@ -150,10 +146,10 @@ export default {
       this.$router.push({path: `/profile/${username}`})
     },
     likeImage: async function() {
-      this.currentImage.likes = await this._likeImage(this.currentImage)
+      this.currentImage.likes = await this.likeVueService.likeImagePost(this.currentImage)
     },
     unlikeImage: async function() {
-      this.currentImage.likes = await this._unlikeImage(this.currentImage)
+      this.currentImage.likes = await this.likeVueService.unlikeImagePost(this.currentImage)
     },
     createComment: async function(comment) {
       if(comment) {

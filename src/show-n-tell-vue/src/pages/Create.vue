@@ -48,7 +48,7 @@ export default {
           const createdImage = await this.imagePostService.create(newImage);
 
           if(createdImage) {
-            this.$router.push({path: "/profile"})
+            this.$router.push({path: `/explore/${createdImage.id}`})
           }
         } catch (error) {
               if(error instanceof UnauthorizedError) {
