@@ -45,10 +45,13 @@ export default {
                 } else {
                     this.setImage(loadedImage)
                 }
-
             })  
         },
         setImage: function(image) {
+            if(image instanceof Image) {
+                image.removeAttribute('width')
+                image.removeAttribute('height')
+            }
             image.style.maxHeight = this.maxHeight
             image.style.maxWidth = "100%"
 
