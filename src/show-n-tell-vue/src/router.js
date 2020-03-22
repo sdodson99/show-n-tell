@@ -50,7 +50,7 @@ router.addRoutes([
     }
   },
   {
-    path: "/imagePosts/:imagePostId/edit",
+    path: "/imageposts/:imagePostId/edit",
     meta: {
       title: "Edit",
       authenticate: true

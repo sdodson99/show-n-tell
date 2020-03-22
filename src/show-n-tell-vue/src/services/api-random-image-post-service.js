@@ -1,3 +1,5 @@
+import ImagePost from "../models/image-post";
+
 class APIRandomImagePostService {
   /**
    * Initialize with a base url.
@@ -20,10 +22,9 @@ class APIRandomImagePostService {
       return null
     }
 
-    let image = await apiResponse.json();
-    image.dateCreated = new Date(image.dateCreated);
+    const imagePostResponse = await apiResponse.json();
 
-    return image;
+    return ImagePost.fromJSON(imagePostResponse);
   }
 }
 

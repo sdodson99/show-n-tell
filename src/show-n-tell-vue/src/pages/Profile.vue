@@ -66,10 +66,10 @@ export default {
                 "This user has not posted any images yet."
         },
         isUsersProfile: function() {
-            return this.currentUser != null && this.currentUser.username === this.username
+            return this.currentUser !== null && this.currentUser.username === this.username
         },
         isLiked: function() {
-            return post => this.currentUser != null && post.likes.some(l => l.userEmail === this.currentUser.email)
+            return post => this.currentUser !== null && post.likes.some(l => l.userEmail === this.currentUser.email)
         }
     },
     created: function() {
