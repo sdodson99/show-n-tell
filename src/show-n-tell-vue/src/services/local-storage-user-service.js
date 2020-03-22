@@ -1,3 +1,5 @@
+import User from "../models/user";
+
 class LocalStorageUserService{
     constructor(){
         this.userKey = "user"
@@ -7,7 +9,8 @@ class LocalStorageUserService{
         let user = window.localStorage.getItem(this.userKey);
 
         if(user !== null) {
-            return JSON.parse(user)
+            const userResponse = JSON.parse(user)
+            return User.fromJSON(userResponse)
         } else {
             return null
         }

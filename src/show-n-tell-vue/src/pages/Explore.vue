@@ -15,7 +15,7 @@
       <div id="image-details" class="d-flex flex-column flex-md-row justify-content-between">
         <div class="my-3 order-md-2 text-center text-md-right">
           <div>posted by 
-            <a @click="() => viewProfile(this.currentImageUsername)">{{ currentImageUsername }}</a>
+            <a @click="() => viewProfile(this.currentImage.username)">{{ currentImage.username }}</a>
           </div>
           <div>{{ formattedDateCreated }}</div>
         </div>
@@ -78,9 +78,6 @@ export default {
     currentImage: function() {
       return this.images[this.currentImageIndex] || {};
     },
-    currentImageUsername: function() {
-      return this.currentImage.user.username
-    },
     isShowingLastImage: function() {
       return this.currentImageIndex + 1 === this.images.length
     },
@@ -103,6 +100,7 @@ export default {
   created: async function() {    
     const initialImageId = this.$route.params.initialId;
     
+    // If initial id is provided, show the image with the id.
     if(initialImageId) {
       const image = await this.imagePostService.getById(initialImageId);
   
@@ -111,8 +109,9 @@ export default {
       } else {
         this.noImageMessage = "The selected image does not exist."
       }
+    // If no initial id is provided, show a random image.
     } else {
-      const image = await this.randomImagePostService.getRandom();      
+      const image = await this.randomImagePostService.getRandom();     
 
       if(image) {
         this.images.push(image)
@@ -124,9 +123,11 @@ export default {
   },
   methods: {
     nextImage: async function() {
+      // If the last image is being shown, we need to ask for another image.
       if(this.isShowingLastImage) {
         let newImage = await this.randomImagePostService.getRandom();
 
+        // If the new image already exists in the history, add the already existing image.
         let existingImage = this.images.find(p => p.id === newImage.id)
         if(existingImage) {
           this.images.push(existingImage)

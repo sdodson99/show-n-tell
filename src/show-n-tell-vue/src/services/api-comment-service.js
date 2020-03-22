@@ -1,3 +1,5 @@
+import Comment from '../models/comment'
+
 class APICommentService{
     constructor(baseUrl, apiClient) {
         this.baseUrl = baseUrl
@@ -12,7 +14,7 @@ class APICommentService{
     async createComment(id, content) {
         const url = `${this.baseUrl}/imageposts/${id}/comments`
 
-        const comment = {
+        const commentRequest = {
             content: content
         }
 
@@ -21,10 +23,12 @@ class APICommentService{
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(comment)
+            body: JSON.stringify(commentRequest)
         });        
 
-        return await apiResponse.json();
+        const commentResponse = await apiResponse.json();
+
+        return Comment.fromJSON(commentResponse)
     }
 }
 

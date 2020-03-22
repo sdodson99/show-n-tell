@@ -1,3 +1,5 @@
+import ImagePost from '../models/image-post'
+
 class APIProfileService{
     constructor(baseUrl, apiClient) {
         this.baseUrl = baseUrl
@@ -9,7 +11,9 @@ class APIProfileService{
 
         const apiResponse = await this.apiClient.fetch(url);
 
-        return await apiResponse.json();
+        const imagePostsResponse = await apiResponse.json()
+
+        return imagePostsResponse.map(p => ImagePost.fromJSON(p))
     }
 }
 

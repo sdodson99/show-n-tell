@@ -1,3 +1,5 @@
+import ImagePost from '../models/image-post'
+
 class APIImagePostService {
     /**
      * Initialize with a base url.
@@ -15,20 +17,15 @@ class APIImagePostService {
         const url = `${this.baseUrl}/imageposts/${id}`;
   
         // Make the API request.
-        const result = await this.apiClient.fetch(url)
+        const apiResponse = await this.apiClient.fetch(url)
 
-        if(result.status === 404) {
+        if(apiResponse.status === 404) {
             return null
         }
 
-        const imagePost = await result.json()
+        const imagePostResponse = await apiResponse.json()
 
-        // Convert the date to JS.
-        if(imagePost.dateCreated) {
-            imagePost.dateCreated = new Date(imagePost.dateCreated)
-        }
-
-        return imagePost
+        return ImagePost.fromJSON(imagePostResponse)
     }
   
     /**
@@ -43,12 +40,14 @@ class APIImagePostService {
         formData.append('description', imagePost.description)
 
         // Make the post request.
-        const result = await this.apiClient.authFetch(url, {
+        const apiResponse = await this.apiClient.authFetch(url, {
             method: 'POST',
             body: formData
         })
 
-        return await result.json();
+        const imagePostResponse = await apiResponse.json()
+        
+        return ImagePost.fromJSON(imagePostResponse);
     }
 
     /**
@@ -59,7 +58,7 @@ class APIImagePostService {
     async update(imagePostId, imagePost) {
         const url = `${this.baseUrl}/imageposts/${imagePostId}`
 
-        const result = await this.apiClient.authFetch(url, {
+        const apiResponse = await this.apiClient.authFetch(url, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
@@ -67,7 +66,9 @@ class APIImagePostService {
             body: JSON.stringify(imagePost)
         })
 
-        return await result.json();
+        const imagePostResponse = await apiResponse.json()
+
+        return ImagePost.fromJSON(imagePostResponse);
     }
 
     /**

@@ -1,3 +1,5 @@
+import Like from '../models/like'
+
 class APILikeService{
     constructor(baseUrl, apiClient) {
         this.baseUrl = baseUrl
@@ -11,7 +13,9 @@ class APILikeService{
             method: "POST"
         });        
 
-        return await apiResponse.json();
+        const likeResponse = await apiResponse.json()
+
+        return Like.fromJSON(likeResponse);
     }
 
     async unlikeImagePost(id) {

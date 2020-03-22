@@ -1,3 +1,5 @@
+import User from '../models/user'
+
 class APIGoogleAuthenticationService{
     constructor(baseUrl, tokenService, userService) {
         this.baseUrl = baseUrl
@@ -15,12 +17,11 @@ class APIGoogleAuthenticationService{
             }
         });
 
-        let user = await apiResponse.json();
-
-        if(user) {
-            this.tokenService.setToken(token)
-            this.userService.setUser(user)
-        }
+        const userResponse = await apiResponse.json();
+        const user = User.fromJSON(userResponse)
+        
+        this.tokenService.setToken(token)
+        this.userService.setUser(user)
 
         return user;
     }
