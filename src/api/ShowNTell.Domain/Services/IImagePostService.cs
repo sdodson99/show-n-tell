@@ -8,7 +8,6 @@ namespace ShowNTell.Domain.Services
 {
     public interface IImagePostService
     {
-        Task<IEnumerable<ImagePost>> GetAllByUsername(string username);
         Task<ImagePost> GetById(int id);
         Task<ImagePost> Create(ImagePost imagePost);
         Task<ImagePost> Update(int id, ImagePost imagePost);

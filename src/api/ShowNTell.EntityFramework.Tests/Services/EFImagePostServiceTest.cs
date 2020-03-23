@@ -43,19 +43,6 @@ namespace ShowNTell.EntityFramework.Tests.Services
         }
 
         [Test]
-        public async Task GetAllByUsername_WithExistingRecords_ReturnsAllForUsername()
-        {
-            int expectedCount = _validUserCount;
-            string expectedUsername = _validUsername;
-
-            IEnumerable<ImagePost> imagePosts = await _imagePostService.GetAllByUsername(expectedUsername);
-            int actualCount = imagePosts.Count();
-
-            Assert.AreEqual(expectedCount, actualCount);
-            Assert.IsTrue(imagePosts.All(p => p.User.Username == expectedUsername));
-        }
-
-        [Test]
         public async Task GetById_WithExistingId_ReturnsImagePostWithId()
         {
             int expectedId = _existingId;

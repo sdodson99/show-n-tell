@@ -12,12 +12,14 @@ namespace ShowNTell.API.Controllers
     [Route("[controller]/{username}")]
     public class ProfilesController : ControllerBase
     {
-        private readonly IImagePostService _imagePostService;
+        private readonly IProfileService _profileService;
+        private readonly IFollowService _followService;
         private readonly IMapper _mapper;
 
-        public ProfilesController(IImagePostService imagePostService, IMapper mapper)
+        public ProfilesController(IProfileService profileService, IFollowService followService, IMapper mapper)
         {
-            _imagePostService = imagePostService;
+            _profileService = profileService;
+            _followService = followService;
             _mapper = mapper;
         }
 
@@ -25,7 +27,7 @@ namespace ShowNTell.API.Controllers
         [Route("imageposts")]
         public async Task<IActionResult> GetImagePosts(string username)
         {
-            IEnumerable<ImagePost> imagePosts = await _imagePostService.GetAllByUsername(username);
+            IEnumerable<ImagePost> imagePosts = await _profileService.GetImagePosts(username);
 
             return Ok(_mapper.Map<IEnumerable<ImagePostResponse>>(imagePosts));
         }
