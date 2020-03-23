@@ -24,6 +24,14 @@ namespace ShowNTell.API.Controllers
         }
 
         [HttpGet]
+        public async Task<IActionResult> GetProfile(string username)
+        {
+            User profile = await _profileService.GetProfile(username);
+
+            return Ok(_mapper.Map<ProfileResponse>(profile));
+        }
+
+        [HttpGet]
         [Route("imageposts")]
         public async Task<IActionResult> GetImagePosts(string username)
         {

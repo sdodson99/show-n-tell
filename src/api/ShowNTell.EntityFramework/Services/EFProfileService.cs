@@ -28,7 +28,6 @@ namespace ShowNTell.EntityFramework.Services
                         .ThenInclude(p => p.Likes)
                     .Include(u => u.ImagePosts)
                         .ThenInclude(p => p.Comments)
-                            .ThenInclude(c => c.User)
                     .Include(u => u.Followers)
                         .ThenInclude(f => f.Follower)
                     .Include(u => u.Following)
