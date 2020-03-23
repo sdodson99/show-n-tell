@@ -20,28 +20,6 @@ namespace ShowNTell.EntityFramework.Services
             _contextFactory = contextFactory;
         }
 
-        public async Task<IEnumerable<ImagePost>> GetAllByUsername(string username)
-        {
-            using (ShowNTellDbContext context = _contextFactory.CreateDbContext())
-            {
-                return await context.ImagePosts
-                    .Include(p => p.User)
-                    .Include(p => p.Likes)
-                    .Include(p => p.Comments)
-                        .ThenInclude(c => c.User)
-                    .Where(p => p.User.Username == username)
-                    .ToListAsync();
-            }
-        }
-
-        public async Task<IEnumerable<ImagePost>> GetAllByTagId(int id)
-        {
-            using (ShowNTellDbContext context = _contextFactory.CreateDbContext())
-            {
-                throw new NotImplementedException();
-            }
-        }
-
         public async Task<ImagePost> GetById(int id)
         {
             using (ShowNTellDbContext context = _contextFactory.CreateDbContext())

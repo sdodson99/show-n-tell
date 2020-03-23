@@ -11,6 +11,7 @@ namespace ShowNTell.Domain.Models
         public string Username { get; set; }
         public DateTime DateJoined { get; set; }
 
+        public ICollection<ImagePost> ImagePosts { get; set; }
         public ICollection<Follow> Followers { get; set; }
         public ICollection<Follow> Following { get; set; }
     }
