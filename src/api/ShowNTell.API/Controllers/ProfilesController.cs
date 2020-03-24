@@ -1,5 +1,7 @@
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using ShowNTell.API.Extensions;
 using ShowNTell.API.Models.Responses;
 using ShowNTell.Domain.Models;
 using ShowNTell.Domain.Services;
@@ -28,6 +30,11 @@ namespace ShowNTell.API.Controllers
         {
             User profile = await _profileService.GetProfile(username);
 
+            if(profile == null) 
+            {
+                return NotFound();
+            }
+
             return Ok(_mapper.Map<ProfileResponse>(profile));
         }
 
@@ -38,6 +45,42 @@ namespace ShowNTell.API.Controllers
             IEnumerable<ImagePost> imagePosts = await _profileService.GetImagePosts(username);
 
             return Ok(_mapper.Map<IEnumerable<ImagePostResponse>>(imagePosts));
+        }
+
+        [HttpPost]
+        [Route("follow")]
+        [Authorize]
+        public async Task<IActionResult> Follow(string username)
+        {
+            User currentUser = HttpContext.GetUser();
+
+            try
+            {
+                Follow newFollow = await _followService.FollowUser(username, currentUser.Email);
+
+                return Ok(_mapper.Map<FollowResponse>(newFollow));
+            }
+            catch (System.Exception)
+            {
+                return BadRequest();
+            }
+        }
+
+        [HttpDelete]
+        [Route("follow")]
+        [Authorize]
+        public async Task<IActionResult> Unfollow(string username)
+        {
+            User currentUser = HttpContext.GetUser();
+
+            bool success = await _followService.UnfollowUser(username, currentUser.Email);
+
+            if(!success)
+            {
+                return BadRequest();
+            }
+
+            return NoContent();
         }
     }
 }

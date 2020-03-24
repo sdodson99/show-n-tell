@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using ShowNTell.Domain.Exceptions;
 using ShowNTell.Domain.Models;
 using ShowNTell.Domain.Services;
 using ShowNTell.EntityFramework.ShowNTellDbContextFactories;
@@ -18,13 +19,20 @@ namespace ShowNTell.EntityFramework.Services
             _contextFactory = contextFactory;
         }
 
-        public async Task<Follow> FollowUser(string userEmail, string followerEmail)
+        public async Task<Follow> FollowUser(string userUsername, string followerEmail)
         {
             using(ShowNTellDbContext context = _contextFactory.CreateDbContext())
             {
+                User user = await context.Users.FirstOrDefaultAsync(u => u.Username == userUsername);
+
+                if(user == null)
+                {
+                    throw new EntityNotFoundException<string>(userUsername, typeof(User));
+                }
+
                 Follow newFollow = new Follow()
                 {
-                    UserEmail = userEmail,
+                    UserEmail = user.Email,
                     FollowerEmail = followerEmail
                 };
 
@@ -35,24 +43,29 @@ namespace ShowNTell.EntityFramework.Services
             }
         }
 
-        public async Task<bool> UnfollowUser(string userEmail, string followerEmail)
+        public async Task<bool> UnfollowUser(string userUsername, string followerEmail)
         {
             using (ShowNTellDbContext context = _contextFactory.CreateDbContext())
             {
                 bool success = false;
 
-                Follow existingFollow = new Follow()
-                {
-                    UserEmail = userEmail,
-                    FollowerEmail = followerEmail
-                };
-
                 try
                 {
-                    context.Entry(existingFollow).State = EntityState.Deleted;
-                    await context.SaveChangesAsync();
+                    User user = await context.Users.FirstOrDefaultAsync(u => u.Username == userUsername);
 
-                    success = true;
+                    if(user != null)
+                    {
+                        Follow existingFollow = new Follow()
+                        {
+                            UserEmail = user.Email,
+                            FollowerEmail = followerEmail
+                        };
+
+                        context.Entry(existingFollow).State = EntityState.Deleted;
+                        await context.SaveChangesAsync();
+
+                        success = true;
+                    }
                 }
                 catch (Exception)
                 {

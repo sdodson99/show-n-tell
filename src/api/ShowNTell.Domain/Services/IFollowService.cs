@@ -8,7 +8,7 @@ namespace ShowNTell.Domain.Services
 {
     public interface IFollowService
     {
-        Task<Follow> FollowUser(string userEmail, string followerEmail);
-        Task<bool> UnfollowUser(string userEmail, string followerEmail);
+        Task<Follow> FollowUser(string username, string followerEmail);
+        Task<bool> UnfollowUser(string username, string followerEmail);
     }
 }
