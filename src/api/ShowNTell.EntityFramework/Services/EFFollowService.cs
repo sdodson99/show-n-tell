@@ -30,6 +30,11 @@ namespace ShowNTell.EntityFramework.Services
                     throw new EntityNotFoundException<string>(userUsername, typeof(User));
                 }
 
+                if(user.Email == followerEmail)
+                {
+                    throw new OwnProfileFollowException(followerEmail);
+                }
+
                 Follow newFollow = new Follow()
                 {
                     UserEmail = user.Email,

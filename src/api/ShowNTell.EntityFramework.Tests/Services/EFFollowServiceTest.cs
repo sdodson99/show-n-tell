@@ -81,6 +81,17 @@ namespace ShowNTell.EntityFramework.Tests.Services
         }
 
         [Test]
+        public void FollowUser_WithMatchingUserAndFollower_ThrowsOwnProfileFollowExceptionWithUserEmail()
+        {
+            string expectedUserEmail = EXISTING_USER_EMAIL_1;
+
+            OwnProfileFollowException actualException = Assert.ThrowsAsync<OwnProfileFollowException>(() => _followService.FollowUser(EXISTING_USER_USERNAME_1, expectedUserEmail));
+            string actualUserEmail = actualException.UserEmail;
+
+            Assert.AreEqual(expectedUserEmail, actualUserEmail);        
+        }
+
+        [Test]
         public async Task UnfollowUser_WithExistingFollow_ReturnsTrue()
         {
             bool actual = await _followService.UnfollowUser(EXISTING_FOLLOW_USER_USERNAME, EXISTING_FOLLOW_FOLLOWER_EMAIL);
