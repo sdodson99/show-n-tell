@@ -9,9 +9,9 @@ function ImagePost(id, userEmail, imageUri, description, dateCreated, user, like
     this.description = description
     this.dateCreated = new Date(dateCreated)
 
-    this.user = User.fromJSON(user)
-    this.likes = likes.map(l => Like.fromJSON(l))
-    this.comments = comments.map(c => Comment.fromJSON(c))
+    this.user = user
+    this.likes = likes
+    this.comments = comments
 
     this.username = this.user.username
 }
@@ -23,9 +23,9 @@ ImagePost.fromJSON = function(imagePost) {
         imagePost.imageUri, 
         imagePost.description, 
         imagePost.dateCreated, 
-        imagePost.user || {}, 
-        imagePost.likes || [], 
-        imagePost.comments || [])
+        imagePost.user ? User.fromJSON(imagePost.user) : {}, 
+        imagePost.likes ? imagePost.likes.map(l => Like.fromJSON(l)) : [], 
+        imagePost.comments ? imagePost.comments.map(c => Comment.fromJSON(c)) : [])
 }
 
 export default ImagePost
