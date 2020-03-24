@@ -6,6 +6,7 @@ import APIImagePostService from "./api-image-post-service";
 import APIProfileService from "./api-profile-service";
 import APICommentService from "./api-comment-service"
 import APILikeService from "./api-like-service"
+import APIFollowService from "./api-follow-service"
 import APIClient from "./authentication-api-client"
 
 const baseUrl = "https://localhost:5001";
@@ -22,7 +23,8 @@ const ServiceContainer = {
   ImagePostService: new APIImagePostService(baseUrl, apiClient),
   LikeService: new APILikeService(baseUrl, apiClient),
   CommentService: new APICommentService(baseUrl, apiClient),
-  ProfileService: new APIProfileService(baseUrl, apiClient)
+  ProfileService: new APIProfileService(baseUrl, apiClient),
+  FollowService: new APIFollowService(baseUrl, apiClient)
 };
 
 export default ServiceContainer;

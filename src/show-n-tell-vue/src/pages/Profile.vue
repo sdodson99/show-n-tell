@@ -67,6 +67,7 @@ export default {
         imagePostService: Object,
         likeVueService: Object,
         profileService: Object,
+        followService: Object,
         currentUser: Object
     },
     data: function() {
@@ -93,7 +94,7 @@ export default {
             return this.profile.following && this.profile.following.length
         },
         isFollowing: function() {
-            return this.currentUser !== null && this.profile.followers && this.profile.followers.some(f => f.followEmail === this.currentUser.email)
+            return this.currentUser !== null && this.profile.followers && this.profile.followers.some(f => f.followerEmail === this.currentUser.email)
         }
     },
     created: function() {
@@ -145,10 +146,27 @@ export default {
             imagePost.likes = await this.likeVueService.unlikeImagePost(imagePost)
         },
         followProfile: async function() {
-
+            try {
+                const follow = await this.followService.follow(this.profile.username)
+                this.profile.followers.push(follow)
+            } catch (error) {
+                if(error instanceof UnauthorizedError) {
+                    this.$router.push({path: "/login"})
+                }
+            }
         },
         unfollowProfile: async function() {
+            try {
+                const success = await this.followService.unfollow(this.profile.username)
 
+                if(success) {
+                    this.profile.followers = this.profile.followers.filter(f => f.followerEmail !== this.currentUser.email)
+                }
+            } catch (error) {
+                if(error instanceof UnauthorizedError) {
+                    this.$router.push({path: "/login"})
+                }
+            }
         },
         viewExplore: function() {
             this.$router.push({path: "/explore"})

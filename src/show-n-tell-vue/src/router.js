@@ -82,6 +82,7 @@ router.addRoutes([
     props: {
       imagePostService: ServiceContainer.ImagePostService,
       profileService: ServiceContainer.ProfileService,
+      followService: ServiceContainer.FollowService,
       likeVueService: likeVueService,
       currentUser: currentUser
     }
