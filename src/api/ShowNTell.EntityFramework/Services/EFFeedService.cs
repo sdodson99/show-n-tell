@@ -32,6 +32,7 @@ namespace ShowNTell.EntityFramework.Services
                                     .ThenInclude(p => p.Comments)
                     .Where(u => u.Email == userEmail)
                     .SelectMany(u => u.Following.SelectMany(f => f.User.ImagePosts))
+                    .OrderByDescending(p => p.DateCreated)
                     .ToListAsync();
             }
         }

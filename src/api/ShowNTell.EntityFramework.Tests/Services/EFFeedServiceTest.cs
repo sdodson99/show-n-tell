@@ -14,6 +14,8 @@ namespace ShowNTell.EntityFramework.Tests.Services
     [TestFixture]
     public class EFFeedServiceTest
     {
+        private readonly DateTime[] FEED_IMAGE_POST_CREATION_DATES = new []{ DateTime.Now.AddDays(1), DateTime.Now };
+
         private User _existingUser;
         private string _databaseName;
         private EFFeedService _feedService;
@@ -40,7 +42,7 @@ namespace ShowNTell.EntityFramework.Tests.Services
         }
 
         [Test]
-        public async Task GetFeed_WithExistingUser_ReturnsImagePostWithNonNullNavigationProperties()
+        public async Task GetFeed_WithExistingUser_ReturnsImagePostsWithNonNullNavigationProperties()
         {
             IEnumerable<ImagePost> actualImagePosts = await _feedService.GetFeed(_existingUser.Email);
             ImagePost actualImagePost = actualImagePosts.First();
@@ -48,6 +50,17 @@ namespace ShowNTell.EntityFramework.Tests.Services
             Assert.IsNotNull(actualImagePost.User);
             Assert.IsNotNull(actualImagePost.Comments);
             Assert.IsNotNull(actualImagePost.Likes);
+        }
+
+        [Test]
+        public async Task GetFeed_WithExistingUser_ReturnsImagePostsOrderedByNewestFirst()
+        {
+            IEnumerable<DateTime> expectedCreationDates = FEED_IMAGE_POST_CREATION_DATES;
+
+            IEnumerable<ImagePost> actualImagePosts = await _feedService.GetFeed(_existingUser.Email);
+            IEnumerable<DateTime> actualCreationDates = actualImagePosts.Select(p => p.DateCreated);
+
+            Assert.IsTrue(expectedCreationDates.SequenceEqual(actualCreationDates));
         }
 
         private ShowNTellDbContext GetDbContext()
@@ -85,6 +98,9 @@ namespace ShowNTell.EntityFramework.Tests.Services
                             ImagePosts = new List<ImagePost>()
                             {
                                 new ImagePost()
+                                {
+                                    DateCreated = FEED_IMAGE_POST_CREATION_DATES[0]
+                                }
                             }
                         }
                     },
@@ -96,6 +112,9 @@ namespace ShowNTell.EntityFramework.Tests.Services
                             ImagePosts = new List<ImagePost>()
                             {
                                 new ImagePost()
+                                {
+                                    DateCreated = FEED_IMAGE_POST_CREATION_DATES[1]
+                                }
                             }
                         }
                     }
