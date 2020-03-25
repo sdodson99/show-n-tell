@@ -27,6 +27,14 @@
             v-if="isLoggedIn"
             class="col-lg-auto row mx-1 justify-content-center text-center link hover-link"
             active-class="active-link"
+            to="/feed"
+          >
+            <div class="content px-3 p-2">Feed</div>
+          </router-link>
+          <router-link
+            v-if="isLoggedIn"
+            class="col-lg-auto row mx-1 justify-content-center text-center link hover-link"
+            active-class="active-link"
             to="/create"
           >
             <div class="content px-3 p-2">Create</div>
