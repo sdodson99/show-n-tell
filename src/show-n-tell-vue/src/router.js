@@ -25,6 +25,18 @@ router.addRoutes([
     redirect: "/explore",
   },
   {
+    path: "/feed",
+    meta: {
+      title: "Feed",
+      authenticate: true
+    },
+    component: () => import("./pages/Feed"),
+    props: {
+      currentUser: currentUser,
+      feedService: ServiceContainer.FeedService
+    }
+  },
+  {
     path: "/explore/:initialId?",
     meta: {
       title: "Explore"
