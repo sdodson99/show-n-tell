@@ -13,12 +13,9 @@
       <image-post-image class="mt-3" max-height="50vh" 
         :imageUri="currentImage.imageUri"/>
       <div id="image-details" class="d-flex flex-column flex-md-row justify-content-between">
-        <div class="my-3 order-md-2 text-center text-md-right">
-          <div>posted by 
-            <a @click="() => viewProfile(this.currentImage.username)">{{ currentImage.username }}</a>
-          </div>
-          <div>{{ formattedDateCreated }}</div>
-        </div>
+        <image-post-details class="my-3 order-md-2 text-center text-md-right"
+          :username="this.currentImage.username"
+          :dateCreated="this.currentImage.dateCreated"/>
         <image-post-feedback class="my-3 justify-content-center text-center text-md-left order-md-1"
           :canLike="!isUsersPost"
           :liked="isLiked"
@@ -50,6 +47,7 @@
 import ImagePostImage from '../components/image-posts/ImagePostImage'
 import ImagePostFeedback from '../components/image-posts/ImagePostFeedback'
 import ImagePostCommentList from '../components/image-posts/ImagePostCommentList'
+import ImagePostDetails from '../components/image-posts/ImagePostDetails'
 import UnauthorizedError from '../errors/unauthorized-error'
 
 export default {
@@ -65,7 +63,8 @@ export default {
   components: {
     ImagePostImage,
     ImagePostFeedback,
-    ImagePostCommentList
+    ImagePostCommentList,
+    ImagePostDetails
   },
   data: function(){
     return {
@@ -90,9 +89,6 @@ export default {
     },
     isUsersPost: function() {
       return this.isLoggedIn && this.currentImage.userEmail === this.currentUser.email
-    },
-    formattedDateCreated: function() {
-      return this.currentImage.dateCreated.toLocaleDateString()
     },
     isLoggedIn: function() {
       return this.currentUser !== null
@@ -169,18 +165,5 @@ export default {
   .image-post-description {
     border: 1px solid var(--color-primary-dark);
     border-radius: 3px;
-  }
-
-  a, a:hover{
-    color: unset;
-    cursor: pointer;
-  }
-
-  a {
-    font-weight: bold;
-  }
-
-  a:hover {
-    text-decoration: underline;
   }
 </style>
