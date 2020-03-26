@@ -3,6 +3,7 @@ import VueRouter from "vue-router";
 
 import ServiceContainer from "./services/service-container";
 import LikeVueService from "./services/vue-services/like-vue-service";
+import CommentVueService from "./services/vue-services/comment-vue-service";
 
 const TITLE_SUFFIX = " - Show 'N Tell";
 
@@ -17,6 +18,7 @@ const router = new VueRouter({
 
 // Create services that depend on router.
 const likeVueService = new LikeVueService(ServiceContainer.LikeService, ServiceContainer.AuthenticationService, router)
+const commentVueService = new CommentVueService(ServiceContainer.CommentService, ServiceContainer.AuthenticationService, router)
 
 router.addRoutes([
   {
@@ -33,6 +35,8 @@ router.addRoutes([
     component: () => import("./pages/Feed"),
     props: {
       currentUser: currentUser,
+      likeVueService: likeVueService,
+      commentVueService: commentVueService,
       feedService: ServiceContainer.FeedService
     }
   },
@@ -47,7 +51,7 @@ router.addRoutes([
       imagePostService: ServiceContainer.ImagePostService,
       randomImagePostService: ServiceContainer.RandomImagePostService,
       likeVueService: likeVueService,
-      commentService: ServiceContainer.CommentService
+      commentVueService: commentVueService
     }
   },
   {

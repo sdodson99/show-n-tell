@@ -59,6 +59,7 @@ export default {
     imagePostService: Object,
     randomImagePostService: Object,
     likeVueService: Object,
+    commentVueService: Object,
     commentService: Object
   },
   components: {
@@ -153,18 +154,7 @@ export default {
       this.currentImage.likes = await this.likeVueService.unlikeImagePost(this.currentImage)
     },
     createComment: async function(comment) {
-      if(comment) {
-        try {
-          const createdComment = await this.commentService.createComment(this.currentImage.id, comment)
-          createdComment.username = this.currentUser.username
-
-          this.currentImage.comments.push(createdComment)
-        } catch (error) {
-          if(error instanceof UnauthorizedError){
-            this.$router.push({path: "/login"})
-          }
-        }
-      }
+      this.currentImage.comments = await this.commentVueService.createComment(this.currentImage, comment)
     }
   }
 };
