@@ -7,7 +7,7 @@
         <div v-else>
             <h1 class="text-center">{{ profile.username }}</h1>
             <div class="d-flex flex-column align-items-center">
-                <div v-if="!isUsersProfile" class="mt-4">
+                <div v-if="isLoaded && !isUsersProfile" class="mt-4">
                     <button v-if="!isFollowing" type="submit" @click="followProfile">Follow</button>
                     <button v-else type="submit" @click="unfollowProfile">Unfollow</button>
                 </div>
