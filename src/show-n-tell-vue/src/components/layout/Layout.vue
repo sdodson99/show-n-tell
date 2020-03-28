@@ -5,7 +5,7 @@
       {{ statusMessage }}
     </div>
     <div class="container">
-      <router-view class="m-5"></router-view>
+      <router-view class="my-5 mx-3"></router-view>
     </div>
   </div>
 </template>

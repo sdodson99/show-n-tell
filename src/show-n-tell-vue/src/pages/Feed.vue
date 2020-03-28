@@ -2,7 +2,7 @@
     <div>
         <h1 class="text-center">Feed</h1>
         <ul v-if="isLoaded && imagePosts.length > 0">
-            <li class="image-post mx-5 py-5" v-for="post in imagePosts" :key="post.id">
+            <li class="image-post py-5" v-for="post in imagePosts" :key="post.id">
                 <image-post-image
                     :imageUri="post.imageUri"
                     maxHeight="50vh"/>
