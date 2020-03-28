@@ -21,11 +21,16 @@
                 <div class="mt-3 text-center">
                     <p>{{ post.description }}</p>
                 </div>
-                <image-post-comment-list class="mt-5"
-                    :comments="post.comments"
-                    :canComment="isLoggedIn"
-                    @commented="(comment) => createComment(post, comment)"
-                    @usernameClicked="viewProfile"/>
+                <button class="mt-3 w-100" v-b-toggle="'comments-accordion' + post.id">
+                    <div>Comments</div>
+                </button>
+                <b-collapse :id="'comments-accordion' + post.id" accordion>
+                    <image-post-comment-list class="mt-3"
+                        :comments="post.comments"
+                        :canComment="isLoggedIn"
+                        @commented="(comment) => createComment(post, comment)"
+                        @usernameClicked="viewProfile"/>
+                </b-collapse>
             </li>
         </ul>
         <div class="text-center"
@@ -117,6 +122,10 @@ ul {
 
 .image-post {
     border-bottom: 1px solid var(--color-grayscale-medium);
+}
+
+.image-post:last-child {
+    border-bottom: none
 }
 
 .link{
