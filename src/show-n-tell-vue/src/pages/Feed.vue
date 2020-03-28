@@ -1,7 +1,7 @@
 <template>
     <div>
         <h1 class="text-center">Feed</h1>
-        <ul v-if="imagePosts.length > 0">
+        <ul v-if="isLoaded && imagePosts.length > 0">
             <li class="image-post mx-5 py-5" v-for="post in imagePosts" :key="post.id">
                 <image-post-image
                     :imageUri="post.imageUri"
@@ -29,11 +29,15 @@
             </li>
         </ul>
         <div class="text-center"
-            v-else>
+            v-else-if="isLoaded">
             <div class="mt-4">Your feed is empty.</div>
             <div class="link mt-3" @click="$router.push({path:'/explore'})">
                 Explore posts and follow users who have posted in order to populate your feed.
             </div>
+        </div>
+        <div class="text-center"
+            v-else-if="!isLoaded">
+            <div class="mt-4">Loading your feed...</div>
         </div>
     </div>
 </template>
@@ -43,6 +47,7 @@ import ImagePostImage from '../components/image-posts/ImagePostImage'
 import ImagePostFeedback from '../components/image-posts/ImagePostFeedback'
 import ImagePostCommentList from '../components/image-posts/ImagePostCommentList'
 import ImagePostDetails from '../components/image-posts/ImagePostDetails'
+import UnauthorizedError from '../errors/unauthorized-error'
 
 export default {
     name: "Feed",
@@ -60,7 +65,8 @@ export default {
     },
     data: function() {
         return {
-            imagePosts: []
+            imagePosts: [],
+            isLoaded: false
         }
     },
     computed: {
@@ -75,7 +81,15 @@ export default {
         }
     },
     created: async function() {
-        this.imagePosts = await this.feedService.getFeed()
+        try {  
+            this.imagePosts = await this.feedService.getFeed()
+        } catch (error) {
+            if(error instanceof UnauthorizedError) {
+                this.$router.push({path: "/login"})
+            }
+        }
+
+        this.isLoaded = true;
     },
     methods: {
         likeImagePost: async function(imagePost) {
