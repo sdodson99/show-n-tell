@@ -22,22 +22,18 @@ namespace ShowNTell.EntityFramework.Tests.Services
         private const int _existingId = 1000;
         private const string _existingEmail = "existing@gmail.com";
         private const int _nonExistingId = 1001;
+        private const string _existingTagContent = "Funny";
 
-        private ShowNTellDbContext _context;
+        private string _databaseName;
         private EFImagePostService _imagePostService;
 
         [SetUp]
         public void Setup()
         {
-            DbContextOptions options = new DbContextOptionsBuilder().UseInMemoryDatabase(Guid.NewGuid().ToString()).Options;
-            _context = new ShowNTellDbContext(options);
-            _context.Users.Add(GetValidUser());
-            _context.Users.Add(GetInvalidUser());
-            _context.ImagePosts.AddRange(GetImagePosts());
-            _context.SaveChanges();
+            _databaseName = Guid.NewGuid().ToString();
 
             Mock<IShowNTellDbContextFactory> contextFactory = new Mock<IShowNTellDbContextFactory>();
-            contextFactory.Setup(c => c.CreateDbContext()).Returns(_context);
+            contextFactory.Setup(c => c.CreateDbContext()).Returns(GetDbContext());
 
             _imagePostService = new EFImagePostService(contextFactory.Object);
         }
@@ -74,6 +70,40 @@ namespace ShowNTell.EntityFramework.Tests.Services
         }
 
         [Test]
+        public async Task Create_WithImagePostWithNewTags_SavesTagsInDatabase()
+        {
+            IEnumerable<string> expectedTags = new []{ "Fun", "Cool" };
+            ImagePost newImagePost = new ImagePost()
+            {
+                Tags = expectedTags.Select((t) => new ImagePostTag(){ Tag = new Tag() { Content = t } }).ToList()
+            };
+
+            ImagePost createdImagePost = await _imagePostService.Create(newImagePost);
+            IEnumerable<string> actualTags = GetDbContext().Tags.Select(t => t.Content);
+
+            foreach (string expectedTag in expectedTags)
+            {
+                Assert.Contains(expectedTag, actualTags.ToList());
+            }
+        }
+
+        [Test]
+        public async Task Create_WithImagePostWithNewAndExistingTags_DoesNotDuplicateExistingTag()
+        {
+            int expectedExistingTagCount = 1;
+            IEnumerable<string> newTags = new []{ "Fun", _existingTagContent };
+            ImagePost newImagePost = new ImagePost()
+            {
+                Tags = newTags.Select((t) => new ImagePostTag(){ Tag = new Tag() { Content = t } }).ToList()
+            };
+
+            ImagePost createdImagePost = await _imagePostService.Create(newImagePost);
+            int actualExistingTagCount = GetDbContext().Tags.Count(t => t.Content == _existingTagContent);
+
+            Assert.AreEqual(expectedExistingTagCount, actualExistingTagCount);
+        }
+
+        [Test]
         public async Task Update_WithExistingImagePostId_ReturnsUpdatedImagePostWithId()
         {
             int expectedId = _existingId;
@@ -105,12 +135,12 @@ namespace ShowNTell.EntityFramework.Tests.Services
         }
 
         [Test]
-        public async Task UpdateDescription_WithExistingImagePostId_ReturnsUpdatedImagePostWithIdAndDescription()
+        public async Task Update_WithExistingImagePostIdAndDescription_ReturnsUpdatedImagePostWithIdAndDescription()
         {
             int expectedId = _existingId;
             string expectedDescription = "Updated description";
 
-            ImagePost updatedImagePost = await _imagePostService.UpdateDescription(expectedId, expectedDescription);
+            ImagePost updatedImagePost = await _imagePostService.Update(expectedId, expectedDescription);
             int actualId = updatedImagePost.Id;
             string actualDescription = updatedImagePost.Description;
 
@@ -119,13 +149,13 @@ namespace ShowNTell.EntityFramework.Tests.Services
         }
 
         [Test]
-        public void UpdateDescription_WithNonExistingImagePostId_ThrowsEntityNotFoundExceptionWithId()
+        public void Update_WithNonExistingImagePostIdAndDescription_ThrowsEntityNotFoundExceptionWithId()
         {
             int expectedId = _nonExistingId;
             ImagePost createdImagePost = new ImagePost();
 
             EntityNotFoundException<int> exception = Assert.ThrowsAsync<EntityNotFoundException<int>>(() => 
-                _imagePostService.UpdateDescription(expectedId, "Updated Description"));
+                _imagePostService.Update(expectedId, "Updated Description"));
             int actualId = exception.EntityId;
 
             Assert.AreEqual(expectedId, actualId);
@@ -169,6 +199,24 @@ namespace ShowNTell.EntityFramework.Tests.Services
             bool actual = await _imagePostService.IsAuthor(_nonExistingId, _existingEmail);
 
             Assert.IsFalse(actual);
+        }
+
+        private ShowNTellDbContext GetDbContext()
+        {
+            DbContextOptions options = new DbContextOptionsBuilder().UseInMemoryDatabase(_databaseName).Options;
+            ShowNTellDbContext context = new ShowNTellDbContext(options);
+
+            if(!context.Users.Any())
+            {
+                context.Users.Add(GetValidUser());
+                context.Users.Add(GetInvalidUser());
+                context.Tags.Add(new Tag() { Content = _existingTagContent });
+                context.ImagePosts.AddRange(GetImagePosts());
+            }
+
+            context.SaveChanges();
+
+            return context;
         }
 
         private IEnumerable<ImagePost> GetImagePosts()
