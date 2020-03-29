@@ -11,6 +11,7 @@ namespace ShowNTell.EntityFramework
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Like>().HasKey(l => new {l.ImagePostId, l.UserEmail });
+            modelBuilder.Entity<ImagePostTag>().HasKey(t => new {t.ImagePostId, t.TagId });
 
             modelBuilder.Entity<User>().HasKey(u => u.Email);
 
@@ -29,6 +30,7 @@ namespace ShowNTell.EntityFramework
 
         public DbSet<ImagePost> ImagePosts { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<Tag> Tags { get;set; }
         public DbSet<Like> Likes { get; set; }
         public DbSet<Comment> Comments { get; set; }
         public DbSet<Follow> Follows { get; set; }
