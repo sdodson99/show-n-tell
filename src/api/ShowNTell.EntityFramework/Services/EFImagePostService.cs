@@ -29,6 +29,8 @@ namespace ShowNTell.EntityFramework.Services
                     .Include(p => p.Likes)
                     .Include(p => p.Comments)
                         .ThenInclude(c => c.User)
+                    .Include(p => p.Tags)
+                        .ThenInclude(t => t.Tag)
                     .FirstOrDefaultAsync(p => p.Id == id);
             }
         }
@@ -37,6 +39,42 @@ namespace ShowNTell.EntityFramework.Services
         {
             using(ShowNTellDbContext context = _contextFactory.CreateDbContext())
             {
+                if(imagePost.Tags != null)
+                {
+                    // Get all the tags on the image post.
+                    IEnumerable<Tag> newImagePostTags = imagePost.Tags.Select(t => t.Tag);
+
+                    // Find the new image post tags that are already in the database.
+                    IEnumerable<Tag> existingTags = await context.Tags
+                        .Where(t => newImagePostTags.Select(t => t.Content).Contains(t.Content))
+                        .ToListAsync();
+                    HashSet<string> existingTagContent = existingTags.Select(t => t.Content).ToHashSet();
+
+                    // Merge new image post tags in with the existing tags.
+                    List<Tag> mergedImagePostTags = new List<Tag>(existingTags);
+                    foreach(Tag newTag in newImagePostTags)
+                    {
+                        if(!existingTagContent.Contains(newTag.Content))
+                        {
+                            existingTagContent.Add(newTag.Content);
+                            mergedImagePostTags.Add(newTag);
+                        }
+                    }
+
+                    // Set the image post tags to the list of existing database tags and new tags.
+                    imagePost.Tags = new List<ImagePostTag>(mergedImagePostTags.Select(t => t.Id == 0 ? new ImagePostTag()
+                    {
+                        Tag = new Tag()
+                        {
+                            Id = t.Id,
+                            Content = t.Content
+                        }
+                    } : new ImagePostTag()
+                    {
+                        TagId = t.Id
+                    }));
+                }
+
                 context.ImagePosts.Add(imagePost);
                 await context.SaveChangesAsync();
 
@@ -60,7 +98,7 @@ namespace ShowNTell.EntityFramework.Services
                 return storedImagePost;
             }
         }
-        public async Task<ImagePost> UpdateDescription(int id, string description)
+        public async Task<ImagePost> Update(int id, string description)
         {
             using (ShowNTellDbContext context = _contextFactory.CreateDbContext())
             {

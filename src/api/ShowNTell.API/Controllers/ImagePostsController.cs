@@ -114,7 +114,7 @@ namespace ShowNTell.API.Controllers
             }
 
             // Update image database record.
-            ImagePost updatedImagePost = await _imagePostService.UpdateDescription(id, imagePostRequest.Description);
+            ImagePost updatedImagePost = await _imagePostService.Update(id, imagePostRequest.Description);
 
             return Ok(_mapper.Map<ImagePostResponse>(updatedImagePost));
         }
