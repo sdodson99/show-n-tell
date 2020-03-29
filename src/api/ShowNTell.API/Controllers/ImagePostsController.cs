@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -84,7 +85,15 @@ namespace ShowNTell.API.Controllers
                 UserEmail = user.Email,
                 Description = imagePostRequest.Description,
                 ImageUri = imageUri,
-                DateCreated = DateTime.Now
+                DateCreated = DateTime.Now,
+                Tags = imagePostRequest.Tags
+                    .Select(content => new ImagePostTag()
+                    {
+                        Tag = new Tag()
+                        {
+                            Content = content
+                        }
+                    }).ToList()
             };
 
             newImagePost = await _imagePostService.Create(newImagePost);
