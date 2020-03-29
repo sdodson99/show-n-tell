@@ -12,6 +12,7 @@ namespace ShowNTell.API.Models.MappingProfiles
     {
         public ResponseDomainMappingProfile()
         {
+            CreateMap<Tag, TagResponse>();
             CreateMap<Like, LikeResponse>();
             CreateMap<Comment, CommentResponse>()
                 .ForMember(dest => dest.Username, opt => opt.MapFrom(src => src.User.Username));
@@ -20,7 +21,8 @@ namespace ShowNTell.API.Models.MappingProfiles
                 .ForMember(dest => dest.FollowerUsername, opt => opt.MapFrom(src => src.Follower.Username));
             CreateMap<User, ProfileResponse>();
             CreateMap<User, UserResponse>();
-            CreateMap<ImagePost, ImagePostResponse>();
+            CreateMap<ImagePost, ImagePostResponse>()
+                .ForMember(dest => dest.Tags, opt => opt.MapFrom(src => src.Tags.Select(t => t.Tag).ToList()));
         }
     }
 }

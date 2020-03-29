@@ -14,6 +14,7 @@ namespace ShowNTell.API.Models.Responses
         public DateTime DateCreated { get; set; }
 
         public UserResponse User { get; set; }
+        public ICollection<TagResponse> Tags { get; set; }
         public ICollection<LikeResponse> Likes { get; set; }
         public ICollection<CommentResponse> Comments { get; set; }
     }

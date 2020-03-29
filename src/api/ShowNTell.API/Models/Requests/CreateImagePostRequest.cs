@@ -12,5 +12,12 @@ namespace ShowNTell.API.Models.Requests
         [Required]
         public IFormFile Image {get; set; }
         public string Description { get; set; }
+
+        private IEnumerable<string> _tags;
+        public IEnumerable<string> Tags
+        {
+            get => _tags;
+            set => _tags = value.Aggregate((s1, s2) => $"{s1.Trim(',')},{s2.Trim(',')}").Trim(',').Split(',');
+        }
     }
 }
