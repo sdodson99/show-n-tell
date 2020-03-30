@@ -11,7 +11,11 @@
       </div>
       <div class="my-3">
         <h3 class="mx-1 text-center">Description</h3>
-        <textarea class="m-1 form-control" placeholder="Once upon a time..." v-model="description"></textarea>
+        <textarea class="m-1 form-control" rows="3" placeholder="Once upon a time..." v-model="description"></textarea>
+      </div>
+      <div class="my-3">
+        <h3 class="mx-1 text-center">Tags</h3>
+        <textarea class="m-1 form-control" rows="1" placeholder="Tags (separate with comma)" v-model="tags"></textarea>
       </div>
       <button class="m-1 p-3 align-self-center" type="button" @click="createImage">Create</button>
     </form>
@@ -29,7 +33,8 @@ export default {
     data: function() {
       return {
         image: null,
-        description: ""
+        description: "",
+        tags: ""
       }
     },
     computed: {
@@ -41,7 +46,8 @@ export default {
       createImage: async function() {
         const newImage = {
           image: this.image,
-          description: this.description
+          description: this.description,
+          tags: this.tags.split(",").map(t => t.trim())
         }
 
         try{
