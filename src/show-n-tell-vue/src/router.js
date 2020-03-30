@@ -41,6 +41,19 @@ router.addRoutes([
     }
   },
   {
+    path: "/search",
+    meta: {
+      title: "Search"
+    },
+    component: () => import("./pages/Search"),
+    props: (route) => {
+      return {
+        query: route.query.q,
+        currentUser: currentUser
+      }
+    }
+  },
+  {
     path: "/explore/:initialId?",
     meta: {
       title: "Explore"

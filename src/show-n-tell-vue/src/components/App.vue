@@ -1,7 +1,6 @@
 <template>
   <div id="app">
-    <Layout :is-logged-in="isLoggedIn"
-      @searched="search"/>
+    <Layout :is-logged-in="isLoggedIn"/>
   </div>
 </template>
 
@@ -16,11 +15,6 @@ export default {
   props: {
     imagePostService: Object,
     isLoggedIn: Boolean
-  },
-  methods: {
-    search: async function(searchContent) {
-      console.log('test');
-    }
   }
 };
 </script>

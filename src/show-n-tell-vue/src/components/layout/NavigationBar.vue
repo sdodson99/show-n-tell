@@ -100,7 +100,7 @@ export default {
       this.open = false;
     },
     search: function() {
-      this.$emit('searched', this.searchContent)
+      this.$router.push({path: "/search", query: { q: this.searchContent }})
     }
   }
 };
