@@ -16,9 +16,11 @@
             toggle-off-style="stroke: var(--color-primary-dark)"></Hamburger>
         </div>
         <b-collapse id="menu-items" class="flex-grow-1 flex-column flex-lg-row align-items-center justify-content-lg-end">
-          <form id="search-form" class="flex-grow-1 form-inline mx-4 my-2">
-            <input class="form-control w-100" type="search" placeholder="Search" aria-label="Search">
-            <!-- <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button> -->
+          <form id="search-form" class="d-flex flex-grow-1 mx-4 my-2">
+            <input id="search-input" class="form-control flex-grow-1"
+              v-model="searchContent"
+              type="search" placeholder="Search images..." aria-label="Search"/>
+            <button id="search-button" type="button" @click="search">Search</button>
           </form>
 
           <router-link
@@ -86,7 +88,8 @@ export default {
   },
   data: function(){
     return {
-      open: false
+      open: false,
+      searchContent: ""
     }
   },
   methods: {
@@ -95,6 +98,9 @@ export default {
     },
     closed: function() {
       this.open = false;
+    },
+    search: function() {
+      this.$emit('searched', this.searchContent)
     }
   }
 };
@@ -148,6 +154,21 @@ export default {
 
 #search-form {
   max-width: 300px;
+}
+
+#search-input {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  box-shadow: none;
+}
+
+#search-button {
+  margin: 0;
+  padding: 2px 10px;
+  min-width: auto;
+  font-size: 0.75em;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
 }
 
 @media screen and (min-width: 992px) {
