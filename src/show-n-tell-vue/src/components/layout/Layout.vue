@@ -1,6 +1,6 @@
 <template>
   <div>
-    <NavigationBar v-bind:is-logged-in="isLoggedIn" />
+    <NavigationBar @searched="searched" :is-logged-in="isLoggedIn" />
     <div v-if="statusMessage" :class="alertClass" class="alert text-center">
       {{ statusMessage }}
     </div>
@@ -34,6 +34,9 @@ export default {
     this.$el.addEventListener('alert-error', this.alertError)
   },
   methods: {
+    searched: function(searchContent) {
+      this.$emit('searched', searchContent)
+    },
     alertSuccess: function(e) {
       this.alertClass = "alert-success"
       this._setMessage(e)

@@ -1,6 +1,7 @@
 <template>
   <div id="app">
-    <Layout v-bind:is-logged-in="isLoggedIn" />
+    <Layout :is-logged-in="isLoggedIn"
+      @searched="search"/>
   </div>
 </template>
 
@@ -13,7 +14,13 @@ export default {
     Layout
   },
   props: {
+    imagePostService: Object,
     isLoggedIn: Boolean
+  },
+  methods: {
+    search: async function(searchContent) {
+      console.log('test');
+    }
   }
 };
 </script>
