@@ -39,7 +39,7 @@ namespace ShowNTell.EntityFramework.Services
         {
             using(ShowNTellDbContext context = _contextFactory.CreateDbContext())
             {
-                if(imagePost.Tags != null)
+                if(imagePost.Tags != null && imagePost.Tags.Count > 0)
                 {
                     // Get all the tags on the image post.
                     IEnumerable<Tag> newImagePostTags = imagePost.Tags.Select(t => t.Tag);

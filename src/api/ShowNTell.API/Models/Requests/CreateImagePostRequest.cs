@@ -13,11 +13,17 @@ namespace ShowNTell.API.Models.Requests
         public IFormFile Image {get; set; }
         public string Description { get; set; }
 
-        private IEnumerable<string> _tags;
+        private IEnumerable<string> _tags = new string[] {};
         public IEnumerable<string> Tags
         {
             get => _tags;
-            set => _tags = value.Aggregate((s1, s2) => $"{s1.Trim(',')},{s2.Trim(',')}").Trim(',').Split(',');
+            set
+            {
+                if(value.Count() > 0 && value.FirstOrDefault().Length > 0)
+                {
+                    _tags = value.Aggregate((s1, s2) => $"{s1.Trim(',')},{s2.Trim(',')}").Trim(',').Split(',');
+                }
+            }
         }
     }
 }
