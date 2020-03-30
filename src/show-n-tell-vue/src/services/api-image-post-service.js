@@ -38,6 +38,7 @@ class APIImagePostService {
         const formData = new FormData()
         formData.append('image', imagePost.image)
         formData.append('description', imagePost.description)
+        formData.append('tags', imagePost.tags.join(','))
 
         // Make the post request.
         const apiResponse = await this.apiClient.authFetch(url, {
