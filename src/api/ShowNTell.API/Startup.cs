@@ -89,6 +89,7 @@ namespace ShowNTell.API
             services.AddSingleton<ILikeService, EFLikeService>();
             services.AddSingleton<ICommentService, EFCommentService>();
             services.AddSingleton<IImagePostService, EFImagePostService>();
+            services.AddSingleton<ISearchService, EFSearchService>();
             services.AddSingleton<IRandomImagePostService, EFRandomImagePostService>();
             services.AddSingleton<IImageStorage>(GetImageStorage());
             services.AddSingleton<AdminDataSeeder>();
