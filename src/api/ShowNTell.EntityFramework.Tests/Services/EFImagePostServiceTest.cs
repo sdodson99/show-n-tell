@@ -5,6 +5,7 @@ using ShowNTell.Domain.Exceptions;
 using ShowNTell.Domain.Models;
 using ShowNTell.EntityFramework.Services;
 using ShowNTell.EntityFramework.ShowNTellDbContextFactories;
+using ShowNTell.EntityFramework.Tests.BaseFixtures;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace ShowNTell.EntityFramework.Tests.Services
 {
-    public class EFImagePostServiceTest
+    public class EFImagePostServiceTest : EFTest
     {
         private const int _validUserCount = 3;
         private const string _validUserEmail = "test@gmail.com";
@@ -24,18 +25,12 @@ namespace ShowNTell.EntityFramework.Tests.Services
         private const int _nonExistingId = 1001;
         private const string _existingTagContent = "Funny";
 
-        private string _databaseName;
         private EFImagePostService _imagePostService;
 
         [SetUp]
         public void Setup()
         {
-            _databaseName = Guid.NewGuid().ToString();
-
-            Mock<IShowNTellDbContextFactory> contextFactory = new Mock<IShowNTellDbContextFactory>();
-            contextFactory.Setup(c => c.CreateDbContext()).Returns(GetDbContext());
-
-            _imagePostService = new EFImagePostService(contextFactory.Object);
+            _imagePostService = new EFImagePostService(_contextFactory);
         }
 
         [Test]
@@ -201,22 +196,12 @@ namespace ShowNTell.EntityFramework.Tests.Services
             Assert.IsFalse(actual);
         }
 
-        private ShowNTellDbContext GetDbContext()
+        protected override void Seed(ShowNTellDbContext context)
         {
-            DbContextOptions options = new DbContextOptionsBuilder().UseInMemoryDatabase(_databaseName).Options;
-            ShowNTellDbContext context = new ShowNTellDbContext(options);
-
-            if(!context.Users.Any())
-            {
-                context.Users.Add(GetValidUser());
-                context.Users.Add(GetInvalidUser());
-                context.Tags.Add(new Tag() { Content = _existingTagContent });
-                context.ImagePosts.AddRange(GetImagePosts());
-            }
-
-            context.SaveChanges();
-
-            return context;
+            context.Users.Add(GetValidUser());
+            context.Users.Add(GetInvalidUser());
+            context.Tags.Add(new Tag() { Content = _existingTagContent });
+            context.ImagePosts.AddRange(GetImagePosts());
         }
 
         private IEnumerable<ImagePost> GetImagePosts()

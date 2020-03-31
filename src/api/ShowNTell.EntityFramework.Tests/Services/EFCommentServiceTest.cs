@@ -6,25 +6,19 @@ using NUnit.Framework;
 using ShowNTell.Domain.Models;
 using ShowNTell.EntityFramework.Services;
 using ShowNTell.EntityFramework.ShowNTellDbContextFactories;
+using ShowNTell.EntityFramework.Tests.BaseFixtures;
 
 namespace ShowNTell.EntityFramework.Tests.Services
 {
     [TestFixture]
-    public class EFCommentServiceTest
+    public class EFCommentServiceTest : EFTest
     {
-        private string _databaseName;
-
         private EFCommentService _commentService;
 
         [SetUp]
         public void Setup()
         {
-            _databaseName = Guid.NewGuid().ToString();
-
-            Mock<IShowNTellDbContextFactory> contextFactory = new Mock<IShowNTellDbContextFactory>();
-            contextFactory.Setup(c => c.CreateDbContext()).Returns(() => GetDbContext());
-
-            _commentService = new EFCommentService(contextFactory.Object);
+            _commentService = new EFCommentService(_contextFactory);
         }   
 
         [Test]
@@ -45,13 +39,6 @@ namespace ShowNTell.EntityFramework.Tests.Services
             Assert.AreNotEqual(nonExpectedId, actualId);
         }
 
-        private ShowNTellDbContext GetDbContext()
-        {
-            DbContextOptions options = new DbContextOptionsBuilder().UseInMemoryDatabase(_databaseName).Options;
-
-            ShowNTellDbContext context = new ShowNTellDbContext(options);
-
-            return context;
-        }
+        protected override void Seed(ShowNTellDbContext context){}
     }
 }

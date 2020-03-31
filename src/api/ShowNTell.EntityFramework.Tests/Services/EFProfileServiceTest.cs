@@ -4,6 +4,7 @@ using NUnit.Framework;
 using ShowNTell.Domain.Models;
 using ShowNTell.EntityFramework.Services;
 using ShowNTell.EntityFramework.ShowNTellDbContextFactories;
+using ShowNTell.EntityFramework.Tests.BaseFixtures;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +14,7 @@ using System.Threading.Tasks;
 namespace ShowNTell.EntityFramework.Tests.Services
 {
     [TestFixture]
-    public class EFProfileServiceTest
+    public class EFProfileServiceTest : EFTest
     {
         private const int EXISTING_USER_IMAGE_POST_COUNT = 3;
         private const string EXISTING_USER_EMAIL = "test@gmail.com";
@@ -21,19 +22,12 @@ namespace ShowNTell.EntityFramework.Tests.Services
         private const string NON_EXISTING_USER_USERNAME = "fakeuser";
         private const string ALTERNATE_USER_EMAIL = "alternate@gmail.com";
 
-        private string _databaseName;
-
         private EFProfileService _profileService;
 
         [SetUp]
         public void Setup()
         {
-            _databaseName = Guid.NewGuid().ToString();
-
-            Mock<IShowNTellDbContextFactory> contextFactory = new Mock<IShowNTellDbContextFactory>();
-            contextFactory.Setup(c => c.CreateDbContext()).Returns(() => GetDbContext());
-
-            _profileService = new EFProfileService(contextFactory.Object);
+            _profileService = new EFProfileService(_contextFactory);
         }
 
         [Test]
@@ -86,43 +80,32 @@ namespace ShowNTell.EntityFramework.Tests.Services
             Assert.IsEmpty(actualImagePosts);
         }
 
-        private ShowNTellDbContext GetDbContext()
+        protected override void Seed(ShowNTellDbContext context)
         {
-            DbContextOptions options = new DbContextOptionsBuilder().UseInMemoryDatabase(_databaseName).Options;
-
-            ShowNTellDbContext context = new ShowNTellDbContext(options);
-
-            if (!context.Users.Any())
+            context.Users.Add(new User()
             {
-                context.Users.Add(new User()
-                {
-                    Email = EXISTING_USER_EMAIL,
-                    Username = EXISTING_USER_USERNAME
-                });
+                Email = EXISTING_USER_EMAIL,
+                Username = EXISTING_USER_USERNAME
+            });
 
-                for (int i = 0; i < EXISTING_USER_IMAGE_POST_COUNT; i++)
-                {
-                    context.ImagePosts.Add(new ImagePost()
-                    {
-                        UserEmail = EXISTING_USER_EMAIL
-                    });
-                }
-
-                // Add an alternate user image post.
-                context.Users.Add(new User()
-                {
-                    Email = ALTERNATE_USER_EMAIL
-                });
-
+            for (int i = 0; i < EXISTING_USER_IMAGE_POST_COUNT; i++)
+            {
                 context.ImagePosts.Add(new ImagePost()
                 {
-                    UserEmail = ALTERNATE_USER_EMAIL
+                    UserEmail = EXISTING_USER_EMAIL
                 });
             }
 
-            context.SaveChanges();
+            // Add an alternate user image post.
+            context.Users.Add(new User()
+            {
+                Email = ALTERNATE_USER_EMAIL
+            });
 
-            return context;
+            context.ImagePosts.Add(new ImagePost()
+            {
+                UserEmail = ALTERNATE_USER_EMAIL
+            });
         }
     }
 }

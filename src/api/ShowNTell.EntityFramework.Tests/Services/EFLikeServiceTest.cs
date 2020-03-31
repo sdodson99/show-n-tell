@@ -8,11 +8,12 @@ using ShowNTell.Domain.Exceptions;
 using ShowNTell.Domain.Models;
 using ShowNTell.EntityFramework.Services;
 using ShowNTell.EntityFramework.ShowNTellDbContextFactories;
+using ShowNTell.EntityFramework.Tests.BaseFixtures;
 
 namespace ShowNTell.EntityFramework.Tests.Services
 {
     [TestFixture]
-    public class EFLikeServiceTest
+    public class EFLikeServiceTest : EFTest
     {
         private const int _existingImagePostId = 1;
         private const int _nonExistingImagePostId = 1000;
@@ -22,22 +23,12 @@ namespace ShowNTell.EntityFramework.Tests.Services
         private const string _likedImagePostLikerEmail = "like@gmail.com";
         private const string _likedImagePostOwnerEmail = "user@gmail.com";
 
-        private ShowNTellDbContext _context;
         private EFLikeService _likeService;
 
         [SetUp]
         public void SetUp()
         {
-            DbContextOptions options = new DbContextOptionsBuilder().UseInMemoryDatabase(Guid.NewGuid().ToString()).Options;
-            _context = new ShowNTellDbContext(options);
-            _context.Users.AddRange(GetUsers());
-            _context.ImagePosts.AddRange(GetImagePosts());
-            _context.SaveChanges();
-
-            Mock<IShowNTellDbContextFactory> contextFactory = new Mock<IShowNTellDbContextFactory>();
-            contextFactory.Setup(c => c.CreateDbContext()).Returns(_context);
-
-            _likeService = new EFLikeService(contextFactory.Object);
+            _likeService = new EFLikeService(_contextFactory);
         }
 
         [Test]
@@ -132,6 +123,12 @@ namespace ShowNTell.EntityFramework.Tests.Services
             bool actual = await _likeService.UnlikeImagePost(_likedImagePostId, _nonExistingUserEmail);
 
             Assert.IsFalse(actual);
+        }
+
+        protected override void Seed(ShowNTellDbContext context)
+        {
+            context.Users.AddRange(GetUsers());
+            context.ImagePosts.AddRange(GetImagePosts());
         }
 
         private IEnumerable<User> GetUsers()
