@@ -1,16 +1,20 @@
 <template>
     <div>
         <h1 class="text-center">Search results: {{ query }}</h1>
+        <div class="mt-4 text-center" 
+            v-if="isLoading">
+            Searching for <b>{{ query }}</b>...
+        </div>
+        <div class="mt-4 text-center" 
+            v-else-if="!hasImagePosts">
+            Your search for <b>{{ query }}</b> did not match any image posts. 
+        </div>
         <image-post-listing
-            v-if="hasImagePosts"
+            v-else-if="hasImagePosts && !isLoading"
             :image-posts="imagePosts"
             :image-post-service="imagePostService"
             :like-vue-service="likeVueService"
             :current-user="currentUser"/>
-        <div class="mt-4 text-center" 
-            v-else>
-            Your search for <b>{{ query }}</b> did not match any image posts. 
-        </div>
     </div>
 </template>
 
@@ -31,7 +35,8 @@ export default {
     },
     data: function() {
         return {
-            imagePosts: []
+            imagePosts: [],
+            isLoading: true
         }
     },
     computed: {
@@ -49,7 +54,9 @@ export default {
     },
     methods: {
         searchImagePosts: async function() {
+            this.isLoading = true
             this.imagePosts = await this.searchService.searchImagePosts(this.query)
+            this.isLoading = false
         }
     }
 }
