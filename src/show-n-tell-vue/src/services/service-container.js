@@ -8,6 +8,7 @@ import APICommentService from "./api-comment-service"
 import APILikeService from "./api-like-service"
 import APIFollowService from "./api-follow-service"
 import APIFeedService from "./api-feed-service"
+import APISearchService from "./api-search-service"
 import APIClient from "./authentication-api-client"
 
 const baseUrl = "https://localhost:5001";
@@ -26,7 +27,8 @@ const ServiceContainer = {
   CommentService: new APICommentService(baseUrl, apiClient),
   ProfileService: new APIProfileService(baseUrl, apiClient),
   FollowService: new APIFollowService(baseUrl, apiClient),
-  FeedService: new APIFeedService(baseUrl, apiClient)
+  FeedService: new APIFeedService(baseUrl, apiClient),
+  SearchService: new APISearchService(baseUrl, apiClient)
 };
 
 export default ServiceContainer;

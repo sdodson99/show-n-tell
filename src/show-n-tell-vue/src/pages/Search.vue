@@ -49,7 +49,7 @@ export default {
     },
     methods: {
         searchImagePosts: async function() {
-            this.imagePosts = await this.searchService.getImagePosts('sc.dodson4')
+            this.imagePosts = await this.searchService.searchImagePosts(this.query)
         }
     }
 }
