@@ -8,28 +8,24 @@ using NUnit.Framework;
 using ShowNTell.Domain.Models;
 using ShowNTell.EntityFramework.Services;
 using ShowNTell.EntityFramework.ShowNTellDbContextFactories;
+using ShowNTell.EntityFramework.Tests.BaseFixtures;
 
 namespace ShowNTell.EntityFramework.Tests.Services
 {
     [TestFixture]
-    public class EFFeedServiceTest
+    public class EFFeedServiceTest : EFTest
     {
         private readonly DateTime[] FEED_IMAGE_POST_CREATION_DATES = new []{ DateTime.Now.AddDays(1), DateTime.Now };
 
         private User _existingUser;
-        private string _databaseName;
         private EFFeedService _feedService;
 
         [SetUp]
         public void Setup() 
         {
-            _databaseName = Guid.NewGuid().ToString();
             _existingUser = GetExistingUser();
 
-            Mock<IShowNTellDbContextFactory> contextFactory = new Mock<IShowNTellDbContextFactory>();
-            contextFactory.Setup(c => c.CreateDbContext()).Returns(() => GetDbContext());
-
-            _feedService = new EFFeedService(contextFactory.Object);
+            _feedService = new EFFeedService(_contextFactory);
         }
 
         [Test]
@@ -63,24 +59,13 @@ namespace ShowNTell.EntityFramework.Tests.Services
             Assert.IsTrue(expectedCreationDates.SequenceEqual(actualCreationDates));
         }
 
-        private ShowNTellDbContext GetDbContext()
+        protected override void Seed(ShowNTellDbContext context)
         {
-            DbContextOptions options = new DbContextOptionsBuilder().UseInMemoryDatabase(_databaseName).Options;
+            context.ImagePosts.Add(new ImagePost());
+            context.ImagePosts.Add(new ImagePost());
+            context.ImagePosts.Add(new ImagePost());
 
-            ShowNTellDbContext context = new ShowNTellDbContext(options);
-
-            if (!context.Users.Any())
-            {
-                context.ImagePosts.Add(new ImagePost());
-                context.ImagePosts.Add(new ImagePost());
-                context.ImagePosts.Add(new ImagePost());
-
-                context.Users.Add(GetExistingUser());
-            }
-
-            context.SaveChanges();
-
-            return context;
+            context.Users.Add(GetExistingUser());
         }
 
         private User GetExistingUser()
