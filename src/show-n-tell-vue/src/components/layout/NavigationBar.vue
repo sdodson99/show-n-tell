@@ -16,11 +16,12 @@
             toggle-off-style="stroke: var(--color-primary-dark)"></Hamburger>
         </div>
         <b-collapse id="menu-items" class="flex-grow-1 flex-column flex-lg-row align-items-center justify-content-lg-end">
-          <form id="search-form" class="d-flex flex-grow-1 mx-4 my-2"
+          <form ref="searchForm" id="search-form" class="d-flex flex-grow-1 mx-4 my-2"
             @submit.prevent="search">
             <input id="search-input" class="form-control flex-grow-1"
               v-model="searchContent"
-              type="search" placeholder="Search images..." aria-label="Search"/>
+              type="search" placeholder="Search images..." aria-label="Search"
+              required/>
             <button id="search-button" type="button" @click="search">Search</button>
           </form>
 
@@ -101,7 +102,9 @@ export default {
       this.open = false;
     },
     search: function() {
-      this.$router.push({path: "/search", query: { q: this.searchContent }})
+      if(this.$refs.searchForm.reportValidity()) {
+        this.$router.push({path: "/search", query: { q: this.searchContent }})
+      }
     }
   }
 };
