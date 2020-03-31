@@ -11,7 +11,7 @@ namespace ShowNTell.EntityFramework.Tests.Services
     [TestFixture]
     public class EFSearchServiceTest : EFTest
     {
-        private const string DESCRIPTION_QUERY = "query";
+        private const string DESCRIPTION_QUERY = "awesome description";
         private const string TAG_QUERY = "beautiful";
         private const string USER_EMAIL_QUERY = "testuser";
 
@@ -23,6 +23,8 @@ namespace ShowNTell.EntityFramework.Tests.Services
         public void Setup()
         {
             _searchService = new EFSearchService(_contextFactory);
+
+            _imagePostCount = GetDbContext().ImagePosts.Count();
         }
 
         [Test]
@@ -33,6 +35,7 @@ namespace ShowNTell.EntityFramework.Tests.Services
             IEnumerable<ImagePost> actualImagePosts = await _searchService.SearchImagePosts(query);
 
             Assert.IsTrue(actualImagePosts.All(p => p.Description.Contains(query)));
+            Assert.IsTrue(actualImagePosts.Count() > 0);
         }
 
         [Test]
@@ -43,6 +46,7 @@ namespace ShowNTell.EntityFramework.Tests.Services
             IEnumerable<ImagePost> actualImagePosts = await _searchService.SearchImagePosts(query);
 
             Assert.IsTrue(actualImagePosts.All(p => p.Tags.Select(t => t.Tag.Content).Any(c => c.Contains(query))));
+            Assert.IsTrue(actualImagePosts.Count() > 0);
         }
 
         [Test]
@@ -53,6 +57,7 @@ namespace ShowNTell.EntityFramework.Tests.Services
             IEnumerable<ImagePost> actualImagePosts = await _searchService.SearchImagePosts(query);
 
             Assert.IsTrue(actualImagePosts.All(p => p.UserEmail.Contains(query)));
+            Assert.IsTrue(actualImagePosts.Count() > 0);
         }
 
         [Test]
@@ -69,23 +74,23 @@ namespace ShowNTell.EntityFramework.Tests.Services
 
         protected override void Seed(ShowNTellDbContext context)
         {
-            context.Add(new ImagePost()
+            context.ImagePosts.Add(new ImagePost()
             {
                 Description = $"this contains {DESCRIPTION_QUERY} the description"
             });
 
-            context.Add(new ImagePost()
+            context.ImagePosts.Add(new ImagePost()
             {
                 Description = $"i also contain {DESCRIPTION_QUERY} the description"
             });
 
-            context.Add(new ImagePost()
+            context.ImagePosts.Add(new ImagePost()
             {
                 UserEmail = USER_EMAIL_QUERY,
                 Description = $"i do not contain the description query"
             });
 
-            context.Add(new ImagePost()
+            context.ImagePosts.Add(new ImagePost()
             {
                 UserEmail = USER_EMAIL_QUERY,
                 Tags = new List<ImagePostTag>()
@@ -100,7 +105,7 @@ namespace ShowNTell.EntityFramework.Tests.Services
                 }
             });
 
-            context.Add(new ImagePost()
+            context.ImagePosts.Add(new ImagePost()
             {
                 Tags = new List<ImagePostTag>()
                 {
@@ -114,7 +119,7 @@ namespace ShowNTell.EntityFramework.Tests.Services
                 }
             });
 
-            context.Add(new ImagePost()
+            context.ImagePosts.Add(new ImagePost()
             {
                 Tags = new List<ImagePostTag>()
                 {
@@ -122,13 +127,11 @@ namespace ShowNTell.EntityFramework.Tests.Services
                     {
                         Tag = new Tag
                         {
-                            Content = $"random"
+                            Content = "random"
                         }
                     }
                 }
             });
-
-            _imagePostCount = context.ImagePosts.Count();
         }
     }
 }

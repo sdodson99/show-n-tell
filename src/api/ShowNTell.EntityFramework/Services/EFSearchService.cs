@@ -28,9 +28,9 @@ namespace ShowNTell.EntityFramework.Services
                         .ThenInclude(c => c.User)
                     .Include(p => p.Tags)
                         .ThenInclude(t => t.Tag)
-                    .Where(p => p.UserEmail.Contains(query))
-                    .Where(p => p.Description.Contains(query))
-                    .Where(p => p.Tags.Select(t => t.Tag.Content).Any(t => t.Contains(query)))
+                    .Where(p => p.UserEmail.Contains(query) ||
+                        p.Description.Contains(query) ||
+                        p.Tags.Select(t => t.Tag.Content).Any(t => t.Contains(query)))
                     .ToListAsync();
             }
         }
