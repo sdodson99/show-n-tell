@@ -16,7 +16,8 @@
             toggle-off-style="stroke: var(--color-primary-dark)"></Hamburger>
         </div>
         <b-collapse id="menu-items" class="flex-grow-1 flex-column flex-lg-row align-items-center justify-content-lg-end">
-          <form id="search-form" class="d-flex flex-grow-1 mx-4 my-2">
+          <form id="search-form" class="d-flex flex-grow-1 mx-4 my-2"
+            @submit.prevent="search">
             <input id="search-input" class="form-control flex-grow-1"
               v-model="searchContent"
               type="search" placeholder="Search images..." aria-label="Search"/>
