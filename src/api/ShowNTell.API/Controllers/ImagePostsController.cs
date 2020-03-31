@@ -47,6 +47,11 @@ namespace ShowNTell.API.Controllers
         [HttpGet]
         public async Task<IActionResult> Search([FromQuery(Name = "search")] string searchQuery)
         {
+            if(searchQuery == null)
+            {
+                searchQuery = string.Empty;
+            }
+            
             IEnumerable<ImagePost> searchResult = await _searchService.SearchImagePosts(searchQuery);
 
             return Ok(_mapper.Map<IEnumerable<ImagePostResponse>>(searchResult));

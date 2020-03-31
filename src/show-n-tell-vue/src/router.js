@@ -49,7 +49,7 @@ router.addRoutes([
     props: (route) => {
       return {
         query: route.query.q,
-        searchService: ServiceContainer.ProfileService,
+        searchService: ServiceContainer.SearchService,
         imagePostService: ServiceContainer.ImagePostService,
         likeVueService: likeVueService,
         currentUser: currentUser
