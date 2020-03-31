@@ -6,11 +6,12 @@ using NUnit.Framework;
 using ShowNTell.Domain.Models;
 using ShowNTell.EntityFramework.Services;
 using ShowNTell.EntityFramework.ShowNTellDbContextFactories;
+using ShowNTell.EntityFramework.Tests.BaseFixtures;
 
 namespace ShowNTell.EntityFramework.Tests.Services
 {
     [TestFixture]
-    public class EFUserServiceTest
+    public class EFUserServiceTest : EFTest
     {
         private const string EXISTING_EMAIL = "test@gmail.com";
         private const string NON_EXISTING_EMAIL = "missing@gmail.com";
@@ -19,15 +20,7 @@ namespace ShowNTell.EntityFramework.Tests.Services
         [SetUp]
         public void Setup()
         {
-            DbContextOptionsBuilder optionsBuilder = new DbContextOptionsBuilder().UseInMemoryDatabase(Guid.NewGuid().ToString());
-            ShowNTellDbContext context = new ShowNTellDbContext(optionsBuilder.Options);
-            context.Users.Add(GetUser());
-            context.SaveChanges();
-
-            Mock<IShowNTellDbContextFactory> mockContextFactory = new Mock<IShowNTellDbContextFactory>();
-            mockContextFactory.Setup(c => c.CreateDbContext()).Returns(context);
-
-            _userService = new EFUserService(mockContextFactory.Object);
+            _userService = new EFUserService(_contextFactory);
         }
 
         [Test]
@@ -77,6 +70,11 @@ namespace ShowNTell.EntityFramework.Tests.Services
             string actualInvalidParamName = exception.ParamName;
 
             Assert.AreEqual(expectedInvalidParamName, actualInvalidParamName);
+        }
+
+        protected override void Seed(ShowNTellDbContext context)
+        {
+            context.Add(GetUser());
         }
 
         private User GetUser()

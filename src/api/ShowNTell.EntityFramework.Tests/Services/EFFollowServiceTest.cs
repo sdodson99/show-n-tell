@@ -5,6 +5,7 @@ using ShowNTell.Domain.Exceptions;
 using ShowNTell.Domain.Models;
 using ShowNTell.EntityFramework.Services;
 using ShowNTell.EntityFramework.ShowNTellDbContextFactories;
+using ShowNTell.EntityFramework.Tests.BaseFixtures;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +15,7 @@ using System.Threading.Tasks;
 namespace ShowNTell.EntityFramework.Tests.Services
 {
     [TestFixture]
-    public class EFFollowServiceTest
+    public class EFFollowServiceTest : EFTest
     {
         private const string EXISTING_USER_EMAIL_1 = "test1@gmail.com";
         private const string EXISTING_USER_USERNAME_1 = "test1";
@@ -26,19 +27,12 @@ namespace ShowNTell.EntityFramework.Tests.Services
         private const string EXISTING_FOLLOW_FOLLOWER_USERNAME = "follower";
         private const string NON_EXISTING_USER_USERNAME = "non_existing_username";
 
-        private string _databaseName;
-
         private EFFollowService _followService;
 
         [SetUp]
         public void Setup()
         {
-            _databaseName = Guid.NewGuid().ToString();
-
-            Mock<IShowNTellDbContextFactory> contextFactory = new Mock<IShowNTellDbContextFactory>();
-            contextFactory.Setup(c => c.CreateDbContext()).Returns(() => GetDbContext());
-
-            _followService = new EFFollowService(contextFactory.Object);
+            _followService = new EFFollowService(_contextFactory);
         }
 
         [Test]
@@ -115,48 +109,37 @@ namespace ShowNTell.EntityFramework.Tests.Services
             Assert.IsFalse(actual);
         }
 
-        private ShowNTellDbContext GetDbContext()
+        protected override void Seed(ShowNTellDbContext context)
         {
-            DbContextOptions options = new DbContextOptionsBuilder().UseInMemoryDatabase(_databaseName).Options;
-
-            ShowNTellDbContext context = new ShowNTellDbContext(options);
-
-            if(!context.Users.Any())
+            context.Users.Add(new User
             {
-                context.Users.Add(new User
-                {
-                    Email = EXISTING_USER_EMAIL_1,
-                    Username = EXISTING_USER_USERNAME_1
-                });
+                Email = EXISTING_USER_EMAIL_1,
+                Username = EXISTING_USER_USERNAME_1
+            });
 
-                context.Users.Add(new User
-                {
-                    Email = EXISTING_USER_EMAIL_2,
-                    Username = EXISTING_USER_USERNAME_2
-                });
+            context.Users.Add(new User
+            {
+                Email = EXISTING_USER_EMAIL_2,
+                Username = EXISTING_USER_USERNAME_2
+            });
 
-                context.Users.Add(new User
-                {
-                    Email = EXISTING_FOLLOW_USER_EMAIL,
-                    Username = EXISTING_FOLLOW_USER_USERNAME
-                });
+            context.Users.Add(new User
+            {
+                Email = EXISTING_FOLLOW_USER_EMAIL,
+                Username = EXISTING_FOLLOW_USER_USERNAME
+            });
 
-                context.Users.Add(new User
-                {
-                    Email = EXISTING_FOLLOW_FOLLOWER_EMAIL,
-                    Username = EXISTING_FOLLOW_FOLLOWER_USERNAME
-                });
+            context.Users.Add(new User
+            {
+                Email = EXISTING_FOLLOW_FOLLOWER_EMAIL,
+                Username = EXISTING_FOLLOW_FOLLOWER_USERNAME
+            });
 
-                context.Follows.Add(new Follow()
-                {
-                    UserEmail = EXISTING_FOLLOW_USER_EMAIL,
-                    FollowerEmail = EXISTING_FOLLOW_FOLLOWER_EMAIL
-                });
-            }
-
-            context.SaveChanges();
-
-            return context;
+            context.Follows.Add(new Follow()
+            {
+                UserEmail = EXISTING_FOLLOW_USER_EMAIL,
+                FollowerEmail = EXISTING_FOLLOW_FOLLOWER_EMAIL
+            });
         }
     }
 }

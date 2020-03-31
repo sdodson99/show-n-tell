@@ -4,6 +4,7 @@ using NUnit.Framework;
 using ShowNTell.Domain.Models;
 using ShowNTell.EntityFramework.Services;
 using ShowNTell.EntityFramework.ShowNTellDbContextFactories;
+using ShowNTell.EntityFramework.Tests.BaseFixtures;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -12,28 +13,24 @@ using System.Threading.Tasks;
 namespace ShowNTell.EntityFramework.Tests.Services
 {
     [TestFixture]
-    public class EFRandomImagePostServiceTest
+    public class EFRandomImagePostServiceTest : EFTest
     {
-        private ShowNTellDbContext _context;
         private EFRandomImagePostService _randomImagePostService;
 
         [SetUp]
         public void Setup()
         {
-            DbContextOptions options = new DbContextOptionsBuilder().UseInMemoryDatabase(Guid.NewGuid().ToString()).Options;
-            _context = new ShowNTellDbContext(options);
-
-            Mock<IShowNTellDbContextFactory> mockContextFactory = new Mock<IShowNTellDbContextFactory>();
-            mockContextFactory.Setup(c => c.CreateDbContext()).Returns(_context);
-
-            _randomImagePostService = new EFRandomImagePostService(mockContextFactory.Object);
+            _randomImagePostService = new EFRandomImagePostService(_contextFactory);
         }
 
         [Test]
         public async Task GetRandom_WithExistingImagePosts_ReturnsImagePost()
         {
-            _context.ImagePosts.Add(new ImagePost());
-            await _context.SaveChangesAsync();
+            using(ShowNTellDbContext context = GetDbContext())
+            {
+                context.ImagePosts.Add(new ImagePost());
+                context.SaveChanges();
+            }
 
             ImagePost actual = await _randomImagePostService.GetRandom();
 
@@ -47,5 +44,7 @@ namespace ShowNTell.EntityFramework.Tests.Services
 
             Assert.IsNull(actual);
         }
+
+        protected override void Seed(ShowNTellDbContext context){}
     }
 }
