@@ -24,20 +24,32 @@ namespace ShowNTell.API.Controllers
     {
         private readonly IImagePostService _imagePostService;
         private readonly IRandomImagePostService _randomImagePostService;
+        private readonly ISearchService _searchService;
         private readonly IImageStorage _imageStorage;
         private readonly IMapper _mapper;
         private readonly ILogger<ImagePostsController> _logger;
 
-        public ImagePostsController(IImagePostService imagePostService, IRandomImagePostService randomImagePostService, 
+        public ImagePostsController(IImagePostService imagePostService, 
+            IRandomImagePostService randomImagePostService, 
+            ISearchService searchService,
             IImageStorage imageStorage, 
             IMapper mapper,
             ILogger<ImagePostsController> logger)
         {
             _imagePostService = imagePostService;
             _randomImagePostService = randomImagePostService;
+            _searchService = searchService;
             _imageStorage = imageStorage;
             _mapper = mapper;
             _logger = logger;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Search([FromQuery(Name = "search")] string searchQuery)
+        {
+            IEnumerable<ImagePost> searchResult = await _searchService.SearchImagePosts(searchQuery);
+
+            return Ok(_mapper.Map<IEnumerable<ImagePostResponse>>(searchResult));
         }
 
         [HttpGet]
