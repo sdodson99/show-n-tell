@@ -49,6 +49,9 @@ router.addRoutes([
     props: (route) => {
       return {
         query: route.query.q,
+        searchService: ServiceContainer.ProfileService,
+        imagePostService: ServiceContainer.ImagePostService,
+        likeVueService: likeVueService,
         currentUser: currentUser
       }
     }
