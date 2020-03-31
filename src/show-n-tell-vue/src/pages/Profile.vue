@@ -24,44 +24,23 @@
             <div v-else-if="hasNoImagePosts" class="mt-4 text-center">
                 This user has not posted any images yet.
             </div>
-            <ul v-else class="row justify-content-center justify-content-lg-start">
-                <li class="col-lg-4 d-flex flex-column mt-5" v-for="post in profile.imagePosts" :key="post.id">
-                    <image-post-image class="img-post-img" max-height="30vh" @click="() => viewImagePost(post.id)" :imageUri="post.imageUri"/>
-                    <div class="d-flex flex-column flex-sm-row align-items-center justify-content-sm-between">
-                        <image-post-feedback class="mt-2 mt-sm-0"
-                            :canLike="!isUsersProfile"
-                            :liked="isLiked(post)"
-                            :likeCount="post.likes.length"
-                            :commentCount="post.comments.length"
-                            @liked="() => likeImage(post)"
-                            @unliked="() => unlikeImage(post)"/>
-                        <more-dropdown>
-                            <ul class="my-dropdown">
-                                <li @click="() => viewImagePost(post.id)" class="px-3 py-2 my-dropdown-item">View</li>
-                                <li v-if="isUsersProfile" @click="() => editImagePost(post.id)" class="px-3 py-2 my-dropdown-item">Edit</li>
-                                <li v-if="isUsersProfile" @click="() => deleteImagePost(post.id)" class="px-3 py-2 my-dropdown-item">Delete</li>
-                            </ul>
-                        </more-dropdown>
-                    </div>
-                </li>
-            </ul>
+            <image-post-listing 
+                :image-posts="profile.imagePosts" 
+                :like-vue-service="likeVueService"
+                :image-post-service="imagePostService"
+                :current-user="currentUser"/>
         </div>
     </div>
 </template>
 
 <script>
 import UnauthorizedError from '../errors/unauthorized-error'
-
-import ImagePostImage from '../components/image-posts/ImagePostImage'
-import ImagePostFeedback from '../components/image-posts/ImagePostFeedback'
-import MoreDropdown from '../components/utilities/MoreDropdown'
+import ImagePostListing from '../components/image-posts/ImagePostListing'
 
 export default {
     name: "Profile",
     components: {
-        ImagePostImage,
-        ImagePostFeedback,
-        MoreDropdown
+        ImagePostListing
     },
     props: {
         imagePostService: Object,
@@ -83,9 +62,6 @@ export default {
         },
         isUsersProfile: function() {
             return this.currentUser !== null && this.currentUser.username === this.profile.username
-        },
-        isLiked: function() {
-            return post => this.currentUser !== null && post.likes.some(l => l.userEmail === this.currentUser.email)
         },
         followerCount: function() {
             return this.profile.followers && this.profile.followers.length
@@ -120,31 +96,6 @@ export default {
             
             this.isLoaded = true;
         },
-        viewImagePost: function(imagePostId) {
-            this.$router.push({path: `/explore/${imagePostId}`})
-        },
-        editImagePost: function(imagePostId) {
-            this.$router.push({path: `/imagePosts/${imagePostId}/edit`})
-        },
-        deleteImagePost: async function(imagePostId) {
-            try {
-                const success = await this.imagePostService.delete(imagePostId)
-
-                if(success) {
-                    this.profile.imagePosts = this.profile.imagePosts.filter(p => p.id !== imagePostId)
-                }
-            } catch (error) {
-                if(error instanceof UnauthorizedError) {
-                    this.$router.push({path: "/login"})
-                }
-            }
-        },
-        likeImage: async function(imagePost) {
-            imagePost.likes = await this.likeVueService.likeImagePost(imagePost)
-        },
-        unlikeImage: async function(imagePost) {
-            imagePost.likes = await this.likeVueService.unlikeImagePost(imagePost)
-        },
         followProfile: async function() {
             try {
                 const follow = await this.followService.follow(this.profile.username)
@@ -176,28 +127,6 @@ export default {
 </script>
 
 <style scoped>
-ul {
-    list-style: none;
-}
-
-.img-post-img {
-    cursor: pointer;
-}
-
-.my-dropdown{
-    border: 1px solid var(--color-primary-dark);
-    border-radius: 3px;
-    background: white;
-}
-
-.my-dropdown-item{
-    white-space: nowrap;
-    cursor: pointer;
-}
-
-.my-dropdown-item:hover {
-    background: var(--color-grayscale-light);
-}
 
 .pointer {
     cursor: pointer;
