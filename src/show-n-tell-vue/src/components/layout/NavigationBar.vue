@@ -15,7 +15,7 @@
             toggle-on-style="stroke: var(--color-secondary-medium)"
             toggle-off-style="stroke: var(--color-primary-dark)"></Hamburger>
         </div>
-        <b-collapse id="menu-items" class="flex-grow-1 flex-column flex-lg-row align-items-center justify-content-lg-end">
+        <b-collapse id="menu-items" class="flex-grow-1 align-items-center justify-content-lg-end">
           <form ref="searchForm" id="search-form" class="d-flex flex-grow-1 mx-4 my-2"
             @submit.prevent="search">
             <input id="search-input" class="form-control flex-grow-1"
@@ -114,15 +114,12 @@ export default {
 #ham{
   height: 1.5em;
   width: 1.5em;
+  cursor: pointer;
 }
 
 #logo {
   max-height: 75px;
   max-width: 100%;
-}
-
-#menu-items {
-  display: flex;
 }
 
 #nav-root {
@@ -164,6 +161,7 @@ export default {
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
   box-shadow: none;
+  overflow: hidden;
 }
 
 #search-button {
