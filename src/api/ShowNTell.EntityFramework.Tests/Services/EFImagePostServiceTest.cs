@@ -22,6 +22,7 @@ namespace ShowNTell.EntityFramework.Tests.Services
         private const string _invalidUsername = "badtest@gmail.com";
         private const int _existingId = 1000;
         private const string _existingEmail = "existing@gmail.com";
+        private const string _existingUri = "C:/images/test.jpg";
         private const int _nonExistingId = 1001;
         private const string _existingTagContent = "Funny";
 
@@ -99,37 +100,6 @@ namespace ShowNTell.EntityFramework.Tests.Services
         }
 
         [Test]
-        public async Task Update_WithExistingImagePostId_ReturnsUpdatedImagePostWithId()
-        {
-            int expectedId = _existingId;
-            string expectedDescription = "Updated description";
-            ImagePost newImagePost = new ImagePost()
-            {
-                Description = expectedDescription
-            };
-
-            ImagePost updatedImagePost = await _imagePostService.Update(expectedId, newImagePost);
-            int actualId = updatedImagePost.Id;
-            string actualDescription = updatedImagePost.Description;
-
-            Assert.AreEqual(expectedId, actualId);
-            Assert.AreEqual(expectedDescription, actualDescription);
-        }
-
-        [Test]
-        public void Update_WithNonExistingImagePostId_ThrowsEntityNotFoundExceptionWithId()
-        {
-            int expectedId = _nonExistingId;
-            ImagePost createdImagePost = new ImagePost();
-
-            EntityNotFoundException<int> exception = Assert.ThrowsAsync<EntityNotFoundException<int>>(() => 
-                _imagePostService.Update(expectedId, createdImagePost));
-            int actualId = exception.EntityId;
-
-            Assert.AreEqual(expectedId, actualId);
-        }
-
-        [Test]
         public async Task Update_WithExistingImagePostIdAndDescription_ReturnsUpdatedImagePostWithIdAndDescription()
         {
             int expectedId = _existingId;
@@ -141,6 +111,29 @@ namespace ShowNTell.EntityFramework.Tests.Services
 
             Assert.AreEqual(expectedId, actualId);
             Assert.AreEqual(expectedDescription, actualDescription);
+        }
+
+        [Test]
+        public async Task Update_WithExistingImagePostIdAndDescription_ChangesStoredImagePostDescription()
+        {
+            string expectedDescription = "New description";
+
+            ImagePost updatedImagePost = await _imagePostService.Update(_existingId, expectedDescription);
+            ShowNTellDbContext context = GetDbContext();
+            string actualDescription = GetDbContext().ImagePosts.Find(_existingId).Description;
+
+            Assert.AreEqual(expectedDescription, actualDescription);
+        }
+
+        [Test]
+        public async Task Update_WithExistingImagePostIdAndDescription_DoesNotChangeStoredImagePostUri()
+        {
+            string expectedUri = GetDbContext().ImagePosts.Find(_existingId).ImageUri;
+
+            ImagePost updatedImagePost = await _imagePostService.Update(_existingId, "New description");
+            string actualUri = GetDbContext().ImagePosts.Find(_existingId).ImageUri;
+
+            Assert.AreEqual(expectedUri, actualUri);
         }
 
         [Test]
@@ -221,7 +214,8 @@ namespace ShowNTell.EntityFramework.Tests.Services
             imagePosts.Add(new ImagePost()
             {
                 Id = _existingId,
-                UserEmail = _existingEmail
+                UserEmail = _existingEmail,
+                ImageUri = _existingUri
             });
 
             // Add some invalid user image posts.
