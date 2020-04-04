@@ -38,7 +38,6 @@ namespace ShowNTell.EntityFramework.Tests.Services
         [Test]
         public async Task FollowUser_WithExistingUsers_ReturnsSuccessfulFollow()
         {
-            string expectedUserEmail = EXISTING_USER_EMAIL_1;
             string expectedUserUsername = EXISTING_USER_USERNAME_1;
             string expectedFollowerEmail = EXISTING_USER_EMAIL_2;
 
@@ -48,7 +47,19 @@ namespace ShowNTell.EntityFramework.Tests.Services
 
             Assert.AreEqual(expectedUserUsername, actualUserUsername);
             Assert.AreEqual(expectedFollowerEmail, actualFollowerEmail);
-            Assert.IsNotNull(GetDbContext().Follows.Find(expectedUserEmail, expectedFollowerEmail));
+        }
+
+        [Test]
+        public async Task FollowUser_WithExistingUsers_AddsFollowToDatabase()
+        {
+            string expectedUserEmail = EXISTING_USER_EMAIL_1;
+            string expectedUserUsername = EXISTING_USER_USERNAME_1;
+            string expectedFollowerEmail = EXISTING_USER_EMAIL_2;
+
+            Follow newFollow = await _followService.FollowUser(expectedUserUsername, expectedFollowerEmail);
+            Follow actualFollow = GetDbContext().Follows.Find(expectedUserEmail, expectedFollowerEmail);
+
+            Assert.IsNotNull(actualFollow);
         }
 
         [Test]

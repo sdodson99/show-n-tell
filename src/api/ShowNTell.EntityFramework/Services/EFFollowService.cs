@@ -41,8 +41,17 @@ namespace ShowNTell.EntityFramework.Services
                     FollowerEmail = followerEmail
                 };
 
-                context.Follows.Add(newFollow);
-                await context.SaveChangesAsync();
+                try
+                {
+                    context.Follows.Add(newFollow);
+                    await context.SaveChangesAsync();
+                }
+                catch (Exception)
+                {
+                    throw new InvalidOperationException();
+                }
+                
+                newFollow.User = user;
 
                 return newFollow;
             }
