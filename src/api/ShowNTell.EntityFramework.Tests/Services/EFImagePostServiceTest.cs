@@ -119,7 +119,6 @@ namespace ShowNTell.EntityFramework.Tests.Services
             string expectedDescription = "New description";
 
             ImagePost updatedImagePost = await _imagePostService.Update(_existingId, expectedDescription);
-            ShowNTellDbContext context = GetDbContext();
             string actualDescription = GetDbContext().ImagePosts.Find(_existingId).Description;
 
             Assert.AreEqual(expectedDescription, actualDescription);
@@ -175,6 +174,7 @@ namespace ShowNTell.EntityFramework.Tests.Services
                 new Tag() { Content = "wow" },
                 new Tag() { Content = _existingTagContent }
             };
+            int expectedTagCount = 3;
 
             ImagePost updatedImagePost = await _imagePostService.Update(_existingId, string.Empty, expectedTags);
             IEnumerable<Tag> actualTags = GetDbContext().ImagePosts
@@ -182,8 +182,10 @@ namespace ShowNTell.EntityFramework.Tests.Services
                     .ThenInclude(t => t.Tag)
                 .FirstOrDefault(p => p.Id == _existingId)
                 .Tags.Select(t => t.Tag);
+            int actualTagCount = actualTags.Count();
 
             Assert.IsTrue(expectedTags.All(e => actualTags.Any(a => e.Content == a.Content)));
+            Assert.AreEqual(expectedTagCount, actualTagCount);
         }
 
         [Test]

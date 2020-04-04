@@ -65,32 +65,39 @@ namespace ShowNTell.EntityFramework.Services
         {
             using (ShowNTellDbContext context = _contextFactory.CreateDbContext())
             {
-                ImagePost storedImagePost = new ImagePost()
-                {
-                    Id = id
-                };
+                ImagePost storedImagePost = await context.ImagePosts
+                    .Include(p => p.Tags)
+                        .ThenInclude(t => t.Tag)
+                    .FirstOrDefaultAsync(p => p.Id == id);
 
-                context.Attach(storedImagePost);
-                storedImagePost.Description = description;
-
-                ICollection<ImagePostTag> mergedTags = null;
-                
-                if(tags != null && tags.Count() > 0)
-                {
-                    mergedTags = await GetMergedNewAndExistingTagsFromContext(tags, context);
-                    storedImagePost.Tags = ConvertImagePostTagsForSave(mergedTags);
-                }
-
-                try
-                {
-                    await context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
+                if(storedImagePost == null)
                 {
                     throw new EntityNotFoundException<int>(id);
                 }
 
-                storedImagePost.Tags = mergedTags;
+                // Update the description.
+                storedImagePost.Description = description;
+
+                // Update the tags.
+                ICollection<ImagePostTag> mergedTags = null;
+                if(tags != null && tags.Count() > 0)
+                {
+                    // Remove all old tags.
+                    context.Set<ImagePostTag>().RemoveRange(storedImagePost.Tags);
+                    
+                    // Set the new tags.
+                    mergedTags = await GetMergedNewAndExistingTagsFromContext(tags, context);
+                    storedImagePost.Tags = ConvertImagePostTagsForSave(mergedTags);
+                }
+
+                context.Update(storedImagePost);
+                await context.SaveChangesAsync();
+
+                // Set the tags to the fully populated tags.
+                if(mergedTags != null)
+                {
+                    storedImagePost.Tags = mergedTags;
+                }
 
                 return storedImagePost;
             }
