@@ -4,11 +4,15 @@
     <form id="edit-form" class="my-5 d-flex flex-column">
       <div class="my-3">
         <h3 class="mx-1 text-center">Image</h3>
-        <image-post-image max-height="25vh" :imageUri="currentImage.imageUri"/>
+        <image-post-image max-height="25vh" :imageUri="imageUri"/>
       </div>
       <div class="my-3">
         <h3 class="mx-1 text-center">Description</h3>
-        <textarea class="m-1 form-control" placeholder="Once upon a time..." v-model="currentImage.description"></textarea>
+        <textarea class="m-1 form-control" placeholder="Once upon a time..." v-model="description"></textarea>
+      </div>
+      <div class="my-3">
+        <h3 class="mx-1 text-center">Tags</h3>
+        <textarea class="m-1 form-control" rows="1" placeholder="Tags (separate with comma)" v-model="tags"></textarea>
       </div>
       <button class="m-1 p-3 align-self-center" type="button" @click="saveImagePost">Save</button>
     </form>
@@ -29,18 +33,30 @@ export default {
     },
     data: function() {
         return {
-            currentImage: {}
+            imagePostId: 0,
+            imageUri: null,
+            description: "",
+            tags: ""
         }
     },
-    created: function() {
-        const imagePostId = this.$route.params.imagePostId
-        this.imagePostService.getById(imagePostId).then(image => this.currentImage = image)
+    created: async function() {
+        this.imagePostId = this.$route.params.imagePostId
+        const currentImagePost = await this.imagePostService.getById(this.imagePostId)
+
+        this.imageUri = currentImagePost.imageUri
+        this.description = currentImagePost.description
+        this.tags = currentImagePost.tags.join(',')
     },
     methods: {
         saveImagePost: async function() {
             try {
-                const currentImageId = this.currentImage.id
-                const updatedImage = await this.imagePostService.update(currentImageId, this.currentImage)
+                const currentImageId = this.imagePostId
+                const updateImageRequest = {
+                    description: this.description,
+                    tags: this.tags.split(",").map(t => t.trim())
+                }
+
+                const updatedImage = await this.imagePostService.update(currentImageId, updateImageRequest)
 
                 if(updatedImage) {
                     this.$router.push({path: `/explore/${currentImageId}`})
