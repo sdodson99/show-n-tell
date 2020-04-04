@@ -39,50 +39,29 @@ namespace ShowNTell.EntityFramework.Services
         {
             using(ShowNTellDbContext context = _contextFactory.CreateDbContext())
             {
+                ICollection<ImagePostTag> mergedTags = null;
+
                 if(imagePost.Tags != null && imagePost.Tags.Count > 0)
                 {
-                    // Get all the tags on the image post.
-                    IEnumerable<Tag> newImagePostTags = imagePost.Tags.Select(t => t.Tag);
-
-                    // Find the new image post tags that are already in the database.
-                    IEnumerable<Tag> existingTags = await context.Tags
-                        .Where(t => newImagePostTags.Select(t => t.Content).Contains(t.Content))
-                        .ToListAsync();
-                    HashSet<string> existingTagContent = existingTags.Select(t => t.Content).ToHashSet();
-
-                    // Merge new image post tags in with the existing tags.
-                    List<Tag> mergedImagePostTags = new List<Tag>(existingTags);
-                    foreach(Tag newTag in newImagePostTags)
-                    {
-                        if(!existingTagContent.Contains(newTag.Content))
-                        {
-                            existingTagContent.Add(newTag.Content);
-                            mergedImagePostTags.Add(newTag);
-                        }
-                    }
-
-                    // Set the image post tags to the list of existing database tags and new tags.
-                    imagePost.Tags = new List<ImagePostTag>(mergedImagePostTags.Select(t => t.Id == 0 ? new ImagePostTag()
-                    {
-                        Tag = new Tag()
-                        {
-                            Id = t.Id,
-                            Content = t.Content
-                        }
-                    } : new ImagePostTag()
-                    {
-                        TagId = t.Id
-                    }));
+                    mergedTags = await GetMergedNewAndExistingTagsFromContext(imagePost.Tags, context);
+                    imagePost.Tags = ConvertImagePostTagsForSave(mergedTags);
                 }
 
                 context.ImagePosts.Add(imagePost);
                 await context.SaveChangesAsync();
+
+                imagePost.Tags = mergedTags;
 
                 return imagePost;
             }
         }
 
         public async Task<ImagePost> Update(int id, string description)
+        {
+            return await Update(id, description, null);
+        }
+
+        public async Task<ImagePost> Update(int id, string description, IEnumerable<Tag> tags)
         {
             using (ShowNTellDbContext context = _contextFactory.CreateDbContext())
             {
@@ -94,6 +73,14 @@ namespace ShowNTell.EntityFramework.Services
                 context.Attach(storedImagePost);
                 storedImagePost.Description = description;
 
+                ICollection<ImagePostTag> mergedTags = null;
+                
+                if(tags != null && tags.Count() > 0)
+                {
+                    mergedTags = await GetMergedNewAndExistingTagsFromContext(tags, context);
+                    storedImagePost.Tags = ConvertImagePostTagsForSave(mergedTags);
+                }
+
                 try
                 {
                     await context.SaveChangesAsync();
@@ -102,6 +89,8 @@ namespace ShowNTell.EntityFramework.Services
                 {
                     throw new EntityNotFoundException<int>(id);
                 }
+
+                storedImagePost.Tags = mergedTags;
 
                 return storedImagePost;
             }
@@ -137,16 +126,51 @@ namespace ShowNTell.EntityFramework.Services
             }
         }
 
-        private static async Task<ImagePost> GetByIdFromContext(int id, ShowNTellDbContext context)
+        private async Task<ICollection<ImagePostTag>> GetMergedNewAndExistingTagsFromContext(IEnumerable<ImagePostTag> newImagePostTags, ShowNTellDbContext context)
         {
-            ImagePost storedImagePost = await context.ImagePosts.FindAsync(id);
+            return await GetMergedNewAndExistingTagsFromContext(newImagePostTags.Select(t => t.Tag), context);
+        }
 
-            if (storedImagePost == null)
+        private async Task<ICollection<ImagePostTag>> GetMergedNewAndExistingTagsFromContext(IEnumerable<Tag> newTags, ShowNTellDbContext context)
+        {
+            // Find the new image post tags that are already in the database.
+            IEnumerable<Tag> existingTags = await context.Tags
+                .Where(t => newTags.Select(t => t.Content)
+                .Contains(t.Content))
+                .ToListAsync();
+            HashSet<string> existingTagContent = existingTags.Select(t => t.Content).ToHashSet();
+
+            // Merge new image post tags in with the existing tags.
+            List<Tag> mergedImagePostTags = new List<Tag>(existingTags);
+            foreach(Tag tag in newTags)
             {
-                throw new EntityNotFoundException<int>(id);
+                if(!existingTagContent.Contains(tag.Content))
+                {
+                    existingTagContent.Add(tag.Content);
+                    mergedImagePostTags.Add(tag);
+                }
             }
 
-            return storedImagePost;
+            // Select into a list of existing database tags and new tags.
+            return new List<ImagePostTag>(mergedImagePostTags.Select(t => new ImagePostTag()
+            {
+                TagId = t.Id,
+                Tag = new Tag()
+                {
+                    Content = t.Content
+                }
+            }));
+        }
+
+        private ICollection<ImagePostTag> ConvertImagePostTagsForSave(ICollection<ImagePostTag> tags)
+        {
+            return tags.Select(t => t.TagId == 0 ? new ImagePostTag()
+            {
+                Tag = t.Tag
+            } : new ImagePostTag()
+            {
+                TagId = t.TagId
+            }).ToList();
         }
     }
 }

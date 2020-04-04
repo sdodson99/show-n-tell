@@ -150,6 +150,60 @@ namespace ShowNTell.EntityFramework.Tests.Services
         }
 
         [Test]
+        public async Task Update_WithExistingImagePostIdAndNewAndExistingTags_ReturnsUpdatedImagePostWithTags()
+        {
+            int expectedId = _existingId;
+            List<Tag> expectedTags = new List<Tag>()
+            {
+                new Tag() { Content = "awesome" },
+                new Tag() { Content = "wow" },
+                new Tag() { Content = _existingTagContent }
+            };
+
+            ImagePost updatedImagePost = await _imagePostService.Update(expectedId, string.Empty, expectedTags);
+            IEnumerable<Tag> actualTags = updatedImagePost.Tags.Select(t => t.Tag);
+
+            Assert.IsTrue(expectedTags.All(e => actualTags.Any(a => e.Content == a.Content)));
+        }
+
+        [Test]
+        public async Task Update_WithExistingImagePostIdAndNewAndExistingTags_SavesImagePostWithUpdatedTags()
+        {
+            List<Tag> expectedTags = new List<Tag>()
+            {
+                new Tag() { Content = "awesome" },
+                new Tag() { Content = "wow" },
+                new Tag() { Content = _existingTagContent }
+            };
+
+            ImagePost updatedImagePost = await _imagePostService.Update(_existingId, string.Empty, expectedTags);
+            IEnumerable<Tag> actualTags = GetDbContext().ImagePosts
+                .Include(p => p.Tags)
+                    .ThenInclude(t => t.Tag)
+                .FirstOrDefault(p => p.Id == _existingId)
+                .Tags.Select(t => t.Tag);
+
+            Assert.IsTrue(expectedTags.All(e => actualTags.Any(a => e.Content == a.Content)));
+        }
+
+        [Test]
+        public async Task Update_WithExistingImagePostIdAndNewAndExistingTags_DoesNotDuplicateExistingTag()
+        {
+            int expectedExistingTagCount = 1;
+            List<Tag> expectedTags = new List<Tag>()
+            {
+                new Tag() { Content = "awesome" },
+                new Tag() { Content = "wow" },
+                new Tag() { Content = _existingTagContent }
+            };
+
+            ImagePost updatedImagePost = await _imagePostService.Update(_existingId, string.Empty, expectedTags);
+            int actualExistingTagCount = GetDbContext().Tags.Count(t => t.Content == _existingTagContent);
+
+            Assert.AreEqual(expectedExistingTagCount, actualExistingTagCount);
+        }
+
+        [Test]
         public async Task Delete_WithExistingImagePostId_ReturnsTrue()
         {
             bool success = await _imagePostService.Delete(_existingId);
@@ -215,7 +269,31 @@ namespace ShowNTell.EntityFramework.Tests.Services
             {
                 Id = _existingId,
                 UserEmail = _existingEmail,
-                ImageUri = _existingUri
+                ImageUri = _existingUri,
+                Tags = new List<ImagePostTag>
+                {
+                    new ImagePostTag()
+                    {
+                        Tag = new Tag()
+                        {
+                            Content = "cat",
+                        }
+                    },
+                    new ImagePostTag()
+                    {
+                        Tag = new Tag()
+                        {
+                            Content = "dog",
+                        }
+                    },
+                    new ImagePostTag()
+                    {
+                        Tag = new Tag()
+                        {
+                            Content = "rabbit",
+                        }
+                    }
+                }
             });
 
             // Add some invalid user image posts.
