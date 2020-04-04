@@ -82,30 +82,26 @@ namespace ShowNTell.EntityFramework.Services
             }
         }
 
-        public async Task<ImagePost> Update(int id, ImagePost imagePost)
-        {
-            using (ShowNTellDbContext context = _contextFactory.CreateDbContext())
-            {
-                ImagePost storedImagePost = await GetByIdFromContext(id, context);
-
-                // Do not update Id or DateCreated on stored post.
-                imagePost.Id = storedImagePost.Id;
-                imagePost.DateCreated = storedImagePost.DateCreated;
-
-                context.Entry(storedImagePost).CurrentValues.SetValues(imagePost);
-                await context.SaveChangesAsync();
-
-                return storedImagePost;
-            }
-        }
         public async Task<ImagePost> Update(int id, string description)
         {
             using (ShowNTellDbContext context = _contextFactory.CreateDbContext())
             {
-                ImagePost storedImagePost = await GetByIdFromContext(id, context);
+                ImagePost storedImagePost = new ImagePost()
+                {
+                    Id = id
+                };
 
+                context.Attach(storedImagePost);
                 storedImagePost.Description = description;
-                await context.SaveChangesAsync();
+
+                try
+                {
+                    await context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    throw new EntityNotFoundException<int>(id);
+                }
 
                 return storedImagePost;
             }

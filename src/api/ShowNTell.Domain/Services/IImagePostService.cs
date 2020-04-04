@@ -10,7 +10,6 @@ namespace ShowNTell.Domain.Services
     {
         Task<ImagePost> GetById(int id);
         Task<ImagePost> Create(ImagePost imagePost);
-        Task<ImagePost> Update(int id, ImagePost imagePost);
         Task<ImagePost> Update(int id, string description);
         Task<bool> Delete(int id);
         Task<bool> IsAuthor(int id, string email);
