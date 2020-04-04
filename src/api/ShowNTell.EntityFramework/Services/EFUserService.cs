@@ -33,7 +33,7 @@ namespace ShowNTell.EntityFramework.Services
                     context.Users.Add(user);
                     await context.SaveChangesAsync();
                 }
-                catch (InvalidOperationException ex)
+                catch (Exception ex)
                 {
                     throw new ArgumentException(ex.Message, "email", ex);
                 }

@@ -9,16 +9,19 @@ namespace ShowNTell.EntityFramework.Tests.BaseFixtures
     [TestFixture]
     public abstract class EFTest
     {
-        private string _databaseName;
-        private bool _isSeeded;
+        private DbContextOptions _dbContextOptions;
         
         protected IShowNTellDbContextFactory _contextFactory;
 
         [SetUp]
         public void BaseSetup()
         {
-            _databaseName = Guid.NewGuid().ToString();
-            _isSeeded = false;
+            _dbContextOptions = new DbContextOptionsBuilder()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking)
+                .Options;
+
+            SeedDbContext();    
 
             Mock<IShowNTellDbContextFactory> contextFactory = new Mock<IShowNTellDbContextFactory>();
             contextFactory.Setup(c => c.CreateDbContext()).Returns(() => GetDbContext());
@@ -28,19 +31,16 @@ namespace ShowNTell.EntityFramework.Tests.BaseFixtures
 
         protected ShowNTellDbContext GetDbContext()
         {
-            DbContextOptions options = new DbContextOptionsBuilder().UseInMemoryDatabase(_databaseName).Options;
+            return new ShowNTellDbContext(_dbContextOptions);
+        }
 
-            ShowNTellDbContext context = new ShowNTellDbContext(options);
-
-            if(!_isSeeded)
+        private void SeedDbContext()
+        {
+            using(ShowNTellDbContext context = GetDbContext())
             {
                 Seed(context);
                 context.SaveChanges();
-
-                _isSeeded = true;
             }
-
-            return context;
         }
 
         protected abstract void Seed(ShowNTellDbContext context);
