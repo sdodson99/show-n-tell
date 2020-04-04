@@ -136,6 +136,24 @@ namespace ShowNTell.EntityFramework.Tests.Services
         }
 
         [Test]
+        public async Task Update_WithExistingImagePostIdAndDescription_DoesNotChangeStoredImagePostTags()
+        {
+            List<ImagePostTag> expectedTags = GetDbContext().ImagePosts
+                .Where(p => p.Id == _existingId)
+                .SelectMany(p => p.Tags).Include(t => t.Tag).ToList();
+            int expectedTagCount = expectedTags.Count;
+
+            ImagePost updatedImagePost = await _imagePostService.Update(_existingId, "New description");
+            List<ImagePostTag> actualTags = GetDbContext().ImagePosts
+                .Where(p => p.Id == _existingId)
+                .SelectMany(p => p.Tags).Include(t => t.Tag).ToList();
+            int actualTagCount = actualTags.Count;
+
+            Assert.IsTrue(expectedTags.All(e => actualTags.Any(a => a.TagId == e.TagId)));
+            Assert.AreEqual(expectedTagCount, actualTagCount);
+        }
+
+        [Test]
         public void Update_WithNonExistingImagePostIdAndDescription_ThrowsEntityNotFoundExceptionWithId()
         {
             int expectedId = _nonExistingId;
@@ -203,6 +221,20 @@ namespace ShowNTell.EntityFramework.Tests.Services
             int actualExistingTagCount = GetDbContext().Tags.Count(t => t.Content == _existingTagContent);
 
             Assert.AreEqual(expectedExistingTagCount, actualExistingTagCount);
+        }
+
+        [Test]
+        public async Task Update_WithExistingImagePostIdAndEmptyTagList_SaveImagePostWithNoTags()
+        {
+            int expectedTagCount = 0;
+
+            ImagePost updatedImagePost = await _imagePostService.Update(_existingId, string.Empty, new List<Tag>());
+            int actualTagCount = GetDbContext().ImagePosts
+                .Include(p => p.Tags)
+                .FirstOrDefault(p => p.Id == _existingId)
+                .Tags.Count;
+
+            Assert.AreEqual(expectedTagCount, actualTagCount);
         }
 
         [Test]

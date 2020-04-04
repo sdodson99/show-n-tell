@@ -80,7 +80,7 @@ namespace ShowNTell.EntityFramework.Services
 
                 // Update the tags.
                 ICollection<ImagePostTag> mergedTags = null;
-                if(tags != null && tags.Count() > 0)
+                if(tags != null)
                 {
                     // Remove all old tags.
                     context.Set<ImagePostTag>().RemoveRange(storedImagePost.Tags);
