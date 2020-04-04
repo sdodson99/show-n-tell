@@ -11,8 +11,7 @@ import APIFeedService from "./api-feed-service"
 import APISearchService from "./api-search-service"
 import APIClient from "./authentication-api-client"
 
-const baseUrl = "https://localhost:5001";
-// const baseUrl = "http://show-n-tell.northcentralus.azurecontainer.io"
+const baseUrl = process.env.VUE_APP_API_BASE_URL
 const tokenService = new LocalStorageTokenService();
 const userService = new LocalStorageUserService();
 const apiClient = new APIClient(tokenService, userService);
