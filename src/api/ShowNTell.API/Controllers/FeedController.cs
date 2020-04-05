@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
@@ -38,9 +39,14 @@ namespace ShowNTell.API.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ImagePostResponse>>> GetFeed()
         {
+            _logger.LogInformation("Received feed request.");
+            
             User currentUser = HttpContext.GetUser();
+            _logger.LogInformation("Requesting user email: {0}", currentUser.Email);
 
             IEnumerable<ImagePost> feed = await _feedService.GetFeed(currentUser.Email);
+            
+            _logger.LogInformation("Successfully retrieved feed of {0} image posts.", feed.Count());
 
             return Ok(_mapper.Map<IEnumerable<ImagePostResponse>>(feed));
         }

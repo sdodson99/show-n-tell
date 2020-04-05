@@ -41,16 +41,23 @@ namespace ShowNTell.API.Controllers
         [HttpPost("google")]
         public async Task<ActionResult<UserResponse>> GoogleLogin()
         {
+            _logger.LogInformation("Received Google login request.");
+
             User currentUser = HttpContext.GetUser();
+            _logger.LogInformation("Requesting user email: {0}", currentUser.Email);
 
             User existingUser = await _userService.GetByEmail(currentUser.Email);
             
             // User does not exist.
             if(existingUser == null)
             {
+                _logger.LogWarning("User '{0}' does not exist.", currentUser.Email);
+                _logger.LogInformation("Creating account for '{0}'.", currentUser.Email);
                 currentUser.DateJoined = DateTime.Now;
                 existingUser = await _userService.Create(currentUser);
             }
+
+            _logger.LogInformation("Successfully logged in user '{0}'.", existingUser.Email);
 
             return Ok(_mapper.Map<UserResponse>(existingUser));
         }

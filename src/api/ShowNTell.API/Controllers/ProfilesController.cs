@@ -42,12 +42,18 @@ namespace ShowNTell.API.Controllers
         [HttpGet]
         public async Task<ActionResult<ProfileResponse>> GetProfile(string username)
         {
+            _logger.LogInformation("Received get profile request.");
+            _logger.LogInformation("Profile username: {0}", username);
+            
             User profile = await _profileService.GetProfile(username);
 
             if(profile == null) 
             {
+                _logger.LogError("Profile with username '{0}' does not exist.", username);
                 return NotFound();
             }
+
+            _logger.LogInformation("Successfully retrieved profile for username {0}.", profile.Username);
 
             return Ok(_mapper.Map<ProfileResponse>(profile));
         }
@@ -62,7 +68,12 @@ namespace ShowNTell.API.Controllers
         [HttpGet("imageposts")]
         public async Task<ActionResult<IEnumerable<ImagePostResponse>>> GetImagePosts(string username)
         {
+            _logger.LogInformation("Received get profile image posts request.");
+            _logger.LogInformation("Profile username: {0}", username);
+            
             IEnumerable<ImagePost> imagePosts = await _profileService.GetImagePosts(username);
+
+            _logger.LogInformation("Successfully retrieved profile image posts for username {0}.", username);
 
             return Ok(_mapper.Map<IEnumerable<ImagePostResponse>>(imagePosts));
         }
@@ -81,20 +92,27 @@ namespace ShowNTell.API.Controllers
         [HttpPost("follow")]
         public async Task<ActionResult<FollowResponse>> Follow(string username)
         {
+            _logger.LogInformation("Received profile follow request.");
+            _logger.LogInformation("Profile username: {0}", username);
+            
             User currentUser = HttpContext.GetUser();
+            _logger.LogInformation("Requesting user email: {0}", currentUser.Email);
 
             try
             {
                 Follow newFollow = await _followService.FollowUser(username, currentUser.Email);
+                _logger.LogInformation("Successfully followed '{0}' for '{1}'.", username, currentUser.Email);
 
                 return Ok(_mapper.Map<FollowResponse>(newFollow));
             }
             catch (EntityNotFoundException<string>)
             {
+                _logger.LogError("Profile with username '{0}' does not exist.", username);
                 return NotFound();
             }
             catch (OwnProfileFollowException)
             {
+                _logger.LogError("User '{0}' cannot follow their own profile '{1}'.", currentUser.Email, username);
                 return BadRequest();
             }
         }
@@ -111,14 +129,21 @@ namespace ShowNTell.API.Controllers
         [HttpDelete("follow")]
         public async Task<IActionResult> Unfollow(string username)
         {
+            _logger.LogInformation("Received profile unfollow request.");
+            _logger.LogInformation("Profile username: {0}", username);
+            
             User currentUser = HttpContext.GetUser();
+            _logger.LogInformation("Requesting user email: {0}", currentUser.Email);
 
             bool success = await _followService.UnfollowUser(username, currentUser.Email);
 
             if(!success)
             {
+                _logger.LogError("Failed to unfollow '{0}' for '{1}'.", username, currentUser.Email);
                 return BadRequest();
             }
+
+            _logger.LogInformation("Successfully unfollowed '{0}' for '{1}'.", username, currentUser.Email);
 
             return NoContent();
         }
