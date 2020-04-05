@@ -3,8 +3,15 @@ using ShowNTell.AzureStorage.Services.BlobClients;
 
 namespace ShowNTell.AzureStorage.Services.BlobClientFactories
 {
+    /// <summary>
+    /// A factory for creating blob clients.
+    /// </summary>
     public interface IBlobClientFactory
     {
-         Task<IBlobClient> CreateBlobClient();
+        /// <summary>
+        /// Create a new blob client.
+        /// </summary>
+        /// <returns>The created blob client.</returns>
+        Task<IBlobClient> CreateBlobClient();
     }
 }
