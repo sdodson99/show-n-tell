@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Reflection;
 using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -52,12 +53,15 @@ namespace ShowNTell.API
 
             services.AddSwaggerGen(c =>
             {
+                // Add API background information.
                 c.SwaggerDoc("v1", new OpenApiInfo 
                 { 
                     Title = "Show 'N Tell API", 
-                    Version = "v1" 
+                    Version = "v1",
+                    Description = "The API for the Show 'N Tell social media platform."
                 });
 
+                // Add bearer token definition.
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme 
                 { 
                     In = ParameterLocation.Header,
@@ -65,7 +69,6 @@ namespace ShowNTell.API
                     Name = "Authorization",
                     Type = SecuritySchemeType.ApiKey
                 });
-
                 c.AddSecurityRequirement(new OpenApiSecurityRequirement 
                 {
                     { 
@@ -80,6 +83,11 @@ namespace ShowNTell.API
                         new string[] { } 
                     } 
                 });
+
+                // Add documentation from C# XML.
+                string xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                string xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                c.IncludeXmlComments(xmlPath);
             });
 
             services.AddSingleton<IUserService, EFUserService>();
@@ -112,6 +120,7 @@ namespace ShowNTell.API
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Show 'N Tell API v1");
+                c.RoutePrefix = string.Empty;
             });
 
             app.UseStaticFiles("/" + STATIC_FILE_BASE_URI);

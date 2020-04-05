@@ -8,8 +8,16 @@ using System.Threading.Tasks;
 
 namespace ShowNTell.API.Extensions
 {
+    /// <summary>
+    /// Extension methods for the HttpContext class.
+    /// </summary>
     public static class HttpContextExtensions
     {
+        /// <summary>
+        /// Get a user from the HttpContext.
+        /// </summary>
+        /// <param name="context">The HttpContext to use.</param>
+        /// <returns>The user from the HttpContext claims.</returns>
         public static User GetUser(this HttpContext context)
         {
             string email = context.User.FindFirst(ClaimTypes.Email).Value;

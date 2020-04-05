@@ -5,6 +5,9 @@ using System.Threading.Tasks;
 
 namespace ShowNTell.API.Models.Responses
 {
+    /// <summary>
+    /// A model for an image post response from the API.
+    /// </summary>
     public class ImagePostResponse
     {
         public int Id { get; set; }

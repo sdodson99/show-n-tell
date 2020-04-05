@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using ShowNTell.API.Extensions;
 using ShowNTell.API.Models.Requests;
 using ShowNTell.API.Models.Responses;
+using ShowNTell.Domain.Exceptions;
 using ShowNTell.Domain.Models;
 using ShowNTell.Domain.Services;
 using ShowNTell.Domain.Services.ImageStorages;
@@ -19,7 +20,7 @@ using ShowNTell.Domain.Services.ImageStorages;
 namespace ShowNTell.API.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("imageposts")]
     public class ImagePostsController : ControllerBase
     {
         private readonly IImagePostService _imagePostService;
@@ -44,22 +45,35 @@ namespace ShowNTell.API.Controllers
             _logger = logger;
         }
 
+        /// <summary>
+        /// Get all image posts or search for image posts with a search query.
+        /// </summary>
+        /// <param name="search">The query to search for.</param>
+        /// <returns>All image posts or the list of image posts matching the search query.</returns>
+        /// <response code="200">Returns all image posts or the list of image posts matching the search query.</response>
+        [Produces("application/json")]
         [HttpGet]
-        public async Task<IActionResult> Search([FromQuery(Name = "search")] string searchQuery)
+        public async Task<ActionResult<IEnumerable<ImagePostResponse>>> Search([FromQuery(Name = "search")] string search)
         {
-            if(searchQuery == null)
+            if(search == null)
             {
-                searchQuery = string.Empty;
+                search = string.Empty;
             }
             
-            IEnumerable<ImagePost> searchResult = await _searchService.SearchImagePosts(searchQuery);
+            IEnumerable<ImagePost> searchResult = await _searchService.SearchImagePosts(search);
 
             return Ok(_mapper.Map<IEnumerable<ImagePostResponse>>(searchResult));
         }
 
-        [HttpGet]
-        [Route("random")]
-        public async Task<IActionResult> GetRandom()
+        /// <summary>
+        /// Get a random image post.
+        /// </summary>
+        /// <returns>A random image post.</returns>
+        /// <response code="200">Returns a random image post.</response>
+        /// <response code="404">No image posts are available.</response>
+        [Produces("application/json")]
+        [HttpGet("random")]
+        public async Task<ActionResult<ImagePostResponse>> GetRandom()
         {
             ImagePost randomPost = await _randomImagePostService.GetRandom();
 
@@ -71,18 +85,40 @@ namespace ShowNTell.API.Controllers
             return Ok(_mapper.Map<ImagePostResponse>(randomPost));
         }
 
-        [HttpGet]
-        [Route("{id:int}")]
-        public async Task<IActionResult> GetById(int id)
+        /// <summary>
+        /// Get an image post by id.
+        /// </summary>
+        /// <param name="id">The id of the image post.</param>
+        /// <returns>The image post with the id.</returns>
+        /// <response code="200">Returns the image post with the id.</response>
+        /// <response code="404">Image post does not exist.</response>
+        [Produces("application/json")]
+        [HttpGet("{id:int}")]
+        public async Task<ActionResult<ImagePostResponse>> GetById(int id)
         {
             ImagePost post = await _imagePostService.GetById(id);
+
+            if(post == null)
+            {
+                return NotFound();
+            }
 
             return Ok(_mapper.Map<ImagePostResponse>(post));
         }
 
-        [HttpPost]
+        /// <summary>
+        /// Create a new image post.
+        /// </summary>
+        /// <param name="imagePostRequest">The image post to create.</param>
+        /// <returns>The created image post.</returns>
+        /// <response code="201">Returns the created image post.</response>
+        /// <response code="400">Failed to create image post.</response>
+        /// <response code="401">Unauthorized.</response>
+        [ProducesResponseType(typeof(ImagePostResponse), StatusCodes.Status201Created)]
+        [Produces("application/json")]
         [Authorize]
-        public async Task<IActionResult> Create([FromForm] CreateImagePostRequest imagePostRequest)
+        [HttpPost]
+        public async Task<ActionResult<ImagePostResponse>> Create([FromForm] CreateImagePostRequest imagePostRequest)
         {
             if(!ModelState.IsValid)
             {
@@ -115,13 +151,24 @@ namespace ShowNTell.API.Controllers
 
             newImagePost = await _imagePostService.Create(newImagePost);
 
-            return Ok(_mapper.Map<ImagePostResponse>(newImagePost));
+            return Created($"/imageposts/{newImagePost.Id}", _mapper.Map<ImagePostResponse>(newImagePost));
         }
 
-        [HttpPut]
-        [Route("{id:int}")]
+        /// <summary>
+        /// Update an image post.
+        /// </summary>
+        /// <param name="id">The id of the image post to update.</param>
+        /// <param name="imagePostRequest">The updated image post values.</param>
+        /// <returns>The updated image post.</returns>
+        /// <response code="200">Returns the updated image post.</response>
+        /// <response code="400">Failed to update image post.</response>
+        /// <response code="401">Unauthorized.</response>
+        /// <response code="403">User does not own image post.</response>
+        /// <response code="404">Image post does not exist.</response>
+        [Produces("application/json")]
         [Authorize]
-        public async Task<IActionResult> Update(int id, [FromBody] UpdateImagePostRequest imagePostRequest)
+        [HttpPut("{id:int}")]
+        public async Task<ActionResult<ImagePostResponse>> Update(int id, [FromBody] UpdateImagePostRequest imagePostRequest)
         {
             if(!ModelState.IsValid)
             {
@@ -139,17 +186,33 @@ namespace ShowNTell.API.Controllers
                 return Forbid();
             }
 
-            // Update image database record.
-            ImagePost updatedImagePost = await _imagePostService.Update(id, 
-                imagePostRequest.Description, 
-                imagePostRequest.Tags.Select(t => new Tag() { Content = t }));
+            try
+            {
+                // Update database image post.
+                ImagePost updatedImagePost = await _imagePostService.Update(id, 
+                    imagePostRequest.Description, 
+                    imagePostRequest.Tags.Select(t => new Tag() { Content = t }));
 
-            return Ok(_mapper.Map<ImagePostResponse>(updatedImagePost));
+                return Ok(_mapper.Map<ImagePostResponse>(updatedImagePost));
+            }
+            catch (EntityNotFoundException<int>)
+            {
+                return NotFound();
+            }
         }
 
-        [HttpDelete]
-        [Route("{id:int}")]
+        /// <summary>
+        /// Delete an image post by id.
+        /// </summary>
+        /// <param name="id">The id of the image post.</param>
+        /// <response code="204">Successfully deleted image post.</response>
+        /// <response code="400">Failed to delete stored image post.</response>
+        /// <response code="401">Unauthorized.</response>
+        /// <response code="403">User does not own image post.</response>
+        /// <response code="404">Image post does not exist.</response>
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         [Authorize]
+        [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete(int id)
         {
             // Get the user making the request.

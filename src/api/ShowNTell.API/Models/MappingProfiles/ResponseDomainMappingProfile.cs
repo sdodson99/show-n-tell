@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace ShowNTell.API.Models.MappingProfiles
 {
+    /// <summary>
+    /// A profile for mapping domain objects to response objects.
+    /// </summary>
     public class ResponseDomainMappingProfile : Profile
     {
         public ResponseDomainMappingProfile()

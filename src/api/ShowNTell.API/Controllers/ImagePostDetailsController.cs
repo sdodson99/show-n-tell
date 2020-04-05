@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using AutoMapper;
 using ShowNTell.API.Models.Responses;
 using ShowNTell.API.Models.Requests;
+using Microsoft.AspNetCore.Http;
 
 namespace ShowNTell.API.Controllers
 {
@@ -22,7 +23,8 @@ namespace ShowNTell.API.Controllers
         private readonly IMapper _mapper;
         private readonly ILogger<ImagePostDetailsController> _logger;
 
-        public ImagePostDetailsController(ILikeService likeService, ICommentService commentService, IMapper mapper, ILogger<ImagePostDetailsController> logger)
+        public ImagePostDetailsController(ILikeService likeService, ICommentService commentService, 
+            IMapper mapper, ILogger<ImagePostDetailsController> logger)
         {
             _likeService = likeService;
             _commentService = commentService;
@@ -30,10 +32,18 @@ namespace ShowNTell.API.Controllers
             _logger = logger;
         }
 
-        [HttpPost]
-        [Route("comments")]
+        /// <summary>
+        /// Create a comment on an image post.
+        /// </summary>
+        /// <param name="id">The id of the image post.</param>
+        /// <param name="commentRequest">The new comment to create.</param>
+        /// <returns>The created comment.</returns>
+        /// <response code="200">Returns the created comment.</response>
+        /// <response code="401">Unauthorized.</response>
+        /// <response code="404">Failed to create comment.</response>
         [Authorize]
-        public async Task<IActionResult> CreateComment(int id, [FromBody] CreateCommentRequest commentRequest)
+        [HttpPost("comments")]
+        public async Task<ActionResult<CommentResponse>> CreateComment(int id, [FromBody] CreateCommentRequest commentRequest)
         {
             if(!ModelState.IsValid)
             {
@@ -41,31 +51,31 @@ namespace ShowNTell.API.Controllers
             }
 
             User currentUser = HttpContext.GetUser();
-
-            try
+            
+            Comment createdComment = new Comment()
             {
-                Comment createdComment = new Comment()
-                {
-                    ImagePostId = id,
-                    UserEmail = currentUser.Email,
-                    DateCreated = DateTime.Now,
-                    Content = commentRequest.Content   
-                };
+                ImagePostId = id,
+                UserEmail = currentUser.Email,
+                DateCreated = DateTime.Now,
+                Content = commentRequest.Content   
+            };
 
-                createdComment = await _commentService.Create(createdComment);
+            createdComment = await _commentService.Create(createdComment);
 
-                return Ok(_mapper.Map<CommentResponse>(createdComment));
-            }
-            catch (Exception)
-            {
-                return BadRequest();
-            }
+            return Ok(_mapper.Map<CommentResponse>(createdComment));
         }
 
-        [HttpPost]
-        [Route("like")]
+        /// <summary>
+        /// Like an image post.
+        /// </summary>
+        /// <param name="id">The id of the image post.</param>
+        /// <returns>The created like.</returns>
+        /// <response code="200">Returns the created like.</response>
+        /// <response code="401">Unauthorized.</response>
+        /// <response code="404">Failed to create like.</response>
         [Authorize]
-        public async Task<IActionResult> LikeImagePost(int id)
+        [HttpPost("like")]
+        public async Task<ActionResult<LikeResponse>> LikeImagePost(int id)
         {
             User currentUser = HttpContext.GetUser();
             
@@ -75,20 +85,37 @@ namespace ShowNTell.API.Controllers
                 
                 return Ok(_mapper.Map<LikeResponse>(createdLike));
             }
-            catch (Exception)
+            catch (DuplicateLikeException)
+            {
+                return BadRequest();
+            }
+            catch (OwnImagePostLikeException)
+            {
+                return BadRequest();
+            }
+            catch (EntityNotFoundException)
             {
                 return BadRequest();
             }
         }
 
-        [HttpDelete]
-        [Route("like")]
+        /// <summary>
+        /// Unlike an image post.
+        /// </summary>
+        /// <param name="id">The id of the image post to unlike.</param>
+        /// <response code="204">Successfully unliked image post.</response>
+        /// <response code="400">Failed to unlike image post.</response>
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         [Authorize]
+        [HttpDelete("like")]
         public async Task<IActionResult> UnlikeImagePost(int id)
         {
             User currentUser = HttpContext.GetUser();
 
-            await _likeService.UnlikeImagePost(id, currentUser.Email);
+            if(!await _likeService.UnlikeImagePost(id, currentUser.Email))
+            {
+                return BadRequest();
+            }
 
             return NoContent();
         }
