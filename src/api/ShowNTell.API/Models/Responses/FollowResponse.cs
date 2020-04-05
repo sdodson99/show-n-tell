@@ -5,6 +5,9 @@ using System.Threading.Tasks;
 
 namespace ShowNTell.API.Models.Responses
 {
+    /// <summary>
+    /// A model for a follow response from the API.
+    /// </summary>
     public class FollowResponse
     {
         public string UserEmail { get; set; }

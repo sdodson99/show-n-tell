@@ -7,6 +7,9 @@ using Microsoft.AspNetCore.Http;
 
 namespace ShowNTell.API.Models.Requests
 {
+    /// <summary>
+    /// A model for creating an image post.
+    /// </summary>
     public class CreateImagePostRequest
     {
         [Required]

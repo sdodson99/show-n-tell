@@ -5,6 +5,9 @@ using System.Threading.Tasks;
 
 namespace ShowNTell.API.Models.Responses
 {
+    /// <summary>
+    /// A model for a profile response from the API.
+    /// </summary>
     public class ProfileResponse
     {
         public string Email { get; set; }
