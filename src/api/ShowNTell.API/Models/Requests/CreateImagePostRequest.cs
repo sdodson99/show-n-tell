@@ -22,7 +22,7 @@ namespace ShowNTell.API.Models.Requests
             get => _tags;
             set
             {
-                if(value.Count() > 0 && value.FirstOrDefault().Length > 0)
+                if(value != null && value.FirstOrDefault() != null && value.FirstOrDefault().Length > 0)
                 {
                     _tags = value.Aggregate((s1, s2) => $"{s1.Trim(',')},{s2.Trim(',')}").Trim(',').Split(',');
                 }

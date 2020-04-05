@@ -138,12 +138,6 @@ namespace ShowNTell.API.Controllers
         public async Task<ActionResult<ImagePostResponse>> Create([FromForm] CreateImagePostRequest imagePostRequest)
         {
             _logger.LogInformation("Received image post create request.");
-            
-            if(!ModelState.IsValid)
-            {
-                _logger.LogError("Invalid image post request model state.");
-                return BadRequest(ModelState);
-            }
 
             // Get the user making the request.
             User user = HttpContext.GetUser();
@@ -196,12 +190,6 @@ namespace ShowNTell.API.Controllers
         public async Task<ActionResult<ImagePostResponse>> Update(int id, [FromBody] UpdateImagePostRequest imagePostRequest)
         {
             _logger.LogInformation("Received image post update request.");
-            
-            if(!ModelState.IsValid)
-            {
-                _logger.LogError("Invalid image post request model state.");
-                return BadRequest(ModelState);
-            }
 
             // Get the user making the request.
             User user = HttpContext.GetUser();
@@ -220,7 +208,6 @@ namespace ShowNTell.API.Controllers
 
             try
             {
-                
                 // Update database image post.
                 _logger.LogInformation("Updating image post with id {0}.", id);
                 ImagePost updatedImagePost = await _imagePostService.Update(id, 
