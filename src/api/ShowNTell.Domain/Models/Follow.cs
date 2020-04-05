@@ -5,6 +5,9 @@ using System.Text;
 
 namespace ShowNTell.Domain.Models
 {
+    /// <summary>
+    /// A model for a user following another user.
+    /// </summary>
     public class Follow
     {
         public string UserEmail { get; set; }

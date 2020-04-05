@@ -5,6 +5,9 @@ using System.Text;
 
 namespace ShowNTell.Domain.Models
 {
+    /// <summary>
+    /// A model for a user of the application.
+    /// </summary>
     public class User
     {
         public string Email { get; set; }

@@ -4,6 +4,9 @@ using ShowNTell.Domain.Models;
 
 namespace ShowNTell.Domain.Exceptions
 {
+    /// <summary>
+    /// An exception for a user attempting to like content more than once.
+    /// </summary>
     public class DuplicateLikeException : Exception
     {
         public ImagePost LikedImagePost { get; set; }
