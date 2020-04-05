@@ -62,7 +62,7 @@ namespace ShowNTell.API.Controllers
                 search = string.Empty;
             }
 
-            _logger.LogInformation("Search: {0}", search);
+            _logger.LogInformation("Search: '{0}'", search);
             
             IEnumerable<ImagePost> searchResult = await _searchService.SearchImagePosts(search);
 

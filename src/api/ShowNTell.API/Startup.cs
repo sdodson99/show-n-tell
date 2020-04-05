@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using SeanDodson.GoogleJWTAuthentication.Extensions;
 using ShowNTell.API.Models.MappingProfiles;
@@ -107,6 +108,14 @@ namespace ShowNTell.API
             services.AddDbContext<ShowNTellDbContext>(dbContextOptionsBuilderAction);
 
             services.AddSingleton<IMapper>(CreateMapper());
+
+            services.AddLogging(options => {
+                if(Environment.IsProduction())
+                {
+                    string instrumentationKey = Configuration.GetValue<string>("ApplicationInsightsKey");
+                    options.AddApplicationInsights(instrumentationKey);
+                }
+            });
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
