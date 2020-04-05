@@ -4,6 +4,9 @@ using ShowNTell.Domain.Models;
 
 namespace ShowNTell.Domain.Exceptions
 {
+    /// <summary>
+    /// An exception for a user attempting to like their own content.
+    /// </summary>
     public class OwnImagePostLikeException : Exception
     {
         public ImagePost LikedImagePost { get; set; }

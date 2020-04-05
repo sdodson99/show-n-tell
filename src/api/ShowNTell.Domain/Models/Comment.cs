@@ -5,6 +5,9 @@ using System.Text;
 
 namespace ShowNTell.Domain.Models
 {
+    /// <summary>
+    /// A model for an image post comment.
+    /// </summary>
     public class Comment
     {
         public int Id { get; set; }

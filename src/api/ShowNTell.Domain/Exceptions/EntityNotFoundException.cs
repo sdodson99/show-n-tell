@@ -2,6 +2,10 @@
 
 namespace ShowNTell.Domain.Exceptions
 {
+    /// <summary>
+    /// An exception for an entity not found by an id of the specified type.
+    /// </summary>
+    /// <typeparam name="TKey">The type of the entity id.</typeparam>
     public class EntityNotFoundException<TKey> : Exception
     {
         public TKey EntityId { get; set; }

@@ -5,6 +5,9 @@ using System.Text;
 
 namespace ShowNTell.Domain.Models
 {
+    /// <summary>
+    /// A model representing a user liking an image post.
+    /// </summary>
     public class Like
     {
         public string UserEmail { get; set; }

@@ -4,6 +4,9 @@ using System.Text;
 
 namespace ShowNTell.Domain.Models
 {
+    /// <summary>
+    /// A model for an image post.
+    /// </summary>
     public class ImagePost
     {
         public int Id { get; set; }
