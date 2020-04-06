@@ -112,7 +112,7 @@ namespace ShowNTell.API
             services.AddLogging(options => {
                 if(Environment.IsProduction())
                 {
-                    string instrumentationKey = Configuration.GetValue<string>("ApplicationInsightsKey");
+                    string instrumentationKey = GetConfigurationValue("ApplicationInsightsKey");
                     options.AddApplicationInsights(instrumentationKey);
                 }
             });
@@ -157,7 +157,7 @@ namespace ShowNTell.API
 
         private Action<DbContextOptionsBuilder> GetDbContextOptionsBuilderAction()
         {
-            string connectionString = Configuration.GetConnectionString("database");
+            string connectionString = GetConfigurationValue("database");
             return o => o.UseSqlServer(connectionString);
         }
 
@@ -167,14 +167,14 @@ namespace ShowNTell.API
 
             if(Environment.IsProduction())
             {
-                string connectionString = Configuration.GetConnectionString("blob-storage");
+                string connectionString = GetConfigurationValue("blob-storage");
 
                 imageStorage = new AzureBlobImageStorage(new AzureBlobClientFactory(connectionString, "images"));
             }
             else
             {
                 string imageOutputPath = Path.Combine(Environment.WebRootPath, IMAGE_DIRECTORY_NAME);
-                string baseUrl = Configuration.GetValue<string>("BaseUrl");
+                string baseUrl = GetConfigurationValue("BaseUrl");
                 string imageBaseUri = Path.Combine(baseUrl, STATIC_FILE_BASE_URI, IMAGE_DIRECTORY_NAME);
 
                 imageStorage = new LocalImageStorage(imageOutputPath, imageBaseUri);
@@ -191,6 +191,18 @@ namespace ShowNTell.API
             });
 
             return config.CreateMapper();
+        }
+
+        private string GetConfigurationValue(string key)
+        {
+            string value = Configuration.GetValue<string>(key);
+
+            if(string.IsNullOrEmpty(value))
+            {
+                value = System.Environment.GetEnvironmentVariable(key);
+            }
+
+            return value;
         }
     }
 }
