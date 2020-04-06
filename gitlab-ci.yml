@@ -11,9 +11,9 @@ before_script:
 build-api:
   stage: build
   script:
-    - "dotnet build"
+    - "dotnet build --no-restore"
     
 test-api:
   stage: test
   script: 
-    - "dotnet test"
+    - "dotnet test --no-restore"
