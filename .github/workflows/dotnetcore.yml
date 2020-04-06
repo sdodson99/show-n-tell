@@ -10,18 +10,25 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    env: 
+      working-directory: ./src/api
 
     steps:
     - uses: actions/checkout@v2
+      
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 3.1.101
-    - name: Go to solution directory
-      run: cd src/api
+      
     - name: Install dependencies
       run: dotnet restore
+      working-directory: ${{env.working-directory}}
+      
     - name: Build
       run: dotnet build --configuration Release --no-restore
+      working-directory: ${{env.working-directory}}
+      
     - name: Test
       run: dotnet test --no-restore --verbosity normal
+      working-directory: ${{env.working-directory}}
