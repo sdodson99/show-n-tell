@@ -112,7 +112,7 @@ namespace ShowNTell.API
             services.AddLogging(options => {
                 if(Environment.IsProduction())
                 {
-                    string instrumentationKey = GetConfigurationValue("ApplicationInsightsKey");
+                    string instrumentationKey = GetConfigurationValue("APPLICATION_INSIGHTS_KEY");
                     options.AddApplicationInsights(instrumentationKey);
                 }
             });
@@ -157,7 +157,7 @@ namespace ShowNTell.API
 
         private Action<DbContextOptionsBuilder> GetDbContextOptionsBuilderAction()
         {
-            string connectionString = GetConfigurationValue("database");
+            string connectionString = GetConfigurationValue("DATABASE");
             return o => o.UseSqlServer(connectionString);
         }
 
@@ -167,7 +167,7 @@ namespace ShowNTell.API
 
             if(Environment.IsProduction())
             {
-                string connectionString = GetConfigurationValue("blob-storage");
+                string connectionString = GetConfigurationValue("BLOB_STORAGE");
 
                 imageStorage = new AzureBlobImageStorage(new AzureBlobClientFactory(connectionString, "images"));
             }

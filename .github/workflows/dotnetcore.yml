@@ -12,6 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     env: 
       working-directory: ./src/api
+      build-configuration: Release
 
     steps:
     - uses: actions/checkout@v2
@@ -20,15 +21,40 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 3.1.101
-      
+
+    - name: Login to Azure
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Login to Azure Container Registry
+      run: docker login showntellapi.azurecr.io -u showntellapi -p ${{ secrets.AZURE_REGISTRY_PASSWORD }}
+
+    - name: Build Docker Image
+      run: docker build --rm -f "src/api/Dockerfile" -t showntellapi.azurecr.io/api "src/api" --build-arg DATABASE="${{ secrets.DATABASE }}" --build-arg BLOB_STORAGE="${{ secrets.BLOB_STORAGE }}" --build-arg APPLICATION_INSIGHTS_KEY="${{ secrets.APPLICATION_INSIGHTS_KEY }}"
+
+    - name: Push Docker Image to Azure Container Registry
+      run: docker push showntellapi.azurecr.io/api
+
+    - name: Restart Azure Container  
+      uses: azure/CLI@v1
+      with:
+        inlineScript: az container restart --name showntellapi --resource-group show-n-tell
+        
     - name: Install dependencies
       run: dotnet restore
-      working-directory: ${{env.working-directory}}
-      
+      working-directory: ${{ env.working-directory }}
+        
     - name: Build
-      run: dotnet build --configuration Release --no-restore
-      working-directory: ${{env.working-directory}}
-      
+      run: dotnet build --no-restore --configuration ${{ env.build-configuration }}
+      working-directory: ${{ env.working-directory }}
+        
     - name: Test
-      run: dotnet test --no-restore --verbosity normal
-      working-directory: ${{env.working-directory}}
+      run: dotnet test --no-build --no-restore --configuration ${{ env.build-configuration }}
+      working-directory: ${{ env.working-directory }}
+
+
+
+
+
+
