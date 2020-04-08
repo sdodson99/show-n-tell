@@ -20,6 +20,7 @@ jobs:
       DATABASE: ${{ secrets.DATABASE }}
       BLOB_STORAGE: ${{ secrets.BLOB_STORAGE }}
       APPLICATION_INSIGHTS_KEY: ${{ secrets.APPLICATION_INSIGHTS_KEY }}
+      SURGE_TOKEN: ${{ secrets.SURGE_TOKEN }}
 
     steps:
     - uses: actions/checkout@v2
@@ -33,14 +34,6 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: 12.x
-
-    - name: Install Vue dependencies
-      run: npm ci
-      working-directory: ${{ env.VUE_WORKING_DIRECTORY }}
-
-    - name: Build Vue Client
-      run: npm run build --if-present
-      working-directory: ${{ env.VUE_WORKING_DIRECTORY }}
 
     - name: Login to Azure
       if: github.event_name != 'pull_request'
@@ -64,7 +57,13 @@ jobs:
       run: dotnet test --no-build --no-restore --configuration ${{ env.BUILD_CONFIGURATION }}
       working-directory: ${{ env.API_WORKING_DIRECTORY }}
 
+    - name: Install Vue dependencies
+      run: npm ci
+      working-directory: ${{ env.VUE_WORKING_DIRECTORY }}
 
+    - name: Build Vue
+      run: npm run build --if-present
+      working-directory: ${{ env.VUE_WORKING_DIRECTORY }}
 
     - name: Build API Docker Image
       if: github.event_name != 'pull_request'
@@ -79,3 +78,8 @@ jobs:
       uses: azure/CLI@v1
       with:
         inlineScript: az container restart --name showntellapi --resource-group show-n-tell
+
+    - name: Deploy Vue to Surge
+      if: github.event_name != 'pull_request'
+      run: npm run deploy --if-present --token ${{ env.SURGE_TOKEN }}
+      working-directory: ${{ env.VUE_WORKING_DIRECTORY }}
