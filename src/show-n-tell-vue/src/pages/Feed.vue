@@ -63,7 +63,7 @@ export default {
         ImagePostDetails
     },
     props: {
-        currentUser: Object,
+        userService: Object,
         feedService: Object,
         commentVueService: Object,
         likeVueService: Object
@@ -83,6 +83,9 @@ export default {
         },
         isLiked: function() {
             return post => this.isLoggedIn && post.likes.some(l => l.userEmail === this.currentUser.email)
+        },
+        currentUser: function() {            
+            return this.userService.getUser()
         }
     },
     created: async function() {

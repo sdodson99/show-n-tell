@@ -1,10 +1,16 @@
 import User from '../models/user'
 
+export const AuthenticationEvents = {
+    LOGIN: "login",
+    LOGOUT: "logout",
+}
+
 class APIGoogleAuthenticationService{
     constructor(baseUrl, tokenService, userService) {
         this.baseUrl = baseUrl
         this.tokenService = tokenService
         this.userService = userService
+        this.subscribers = {}
     }
 
     async login(token) {
@@ -23,11 +29,19 @@ class APIGoogleAuthenticationService{
         this.tokenService.setToken(token)
         this.userService.setUser(user)
 
+        this.publish(AuthenticationEvents.LOGIN, true)
+
         return user;
     }
 
     logout() {
-        return this.userService.clearUser() && this.tokenService.clearToken() 
+        const success = this.userService.clearUser() && this.tokenService.clearToken() 
+
+        if(success) {
+            this.publish(AuthenticationEvents.LOGOUT, false)
+        }
+
+        return success
     }
 
     getUser() {
@@ -36,6 +50,27 @@ class APIGoogleAuthenticationService{
 
     isLoggedIn() {
         return this.userService.getUser() !== null && this.tokenService.getToken() !== null
+    }
+
+    subscribe(event, callback) {
+        if(!this.subscribers[event]) {
+            this.subscribers[event] = []
+        }
+
+        this.subscribers[event].push(callback)
+
+        const callbackIndex = this.subscribers[event].length - 1
+        return () => {
+            return this.subscribers[event].splice(callbackIndex, 1)
+        }
+    }
+
+    publish(event, data) {
+        if(this.subscribers[event]) {
+            this.subscribers[event].forEach(callback => {
+                callback(data)
+            })
+        }
     }
 }
 

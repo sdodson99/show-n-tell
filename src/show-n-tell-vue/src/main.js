@@ -17,7 +17,7 @@ new Vue({
   render: h =>
     h(App, {
       props: {
-        isLoggedIn: ServiceContainer.AuthenticationService.isLoggedIn()
+        authenticationService: ServiceContainer.AuthenticationService
       }
     })
 }).$mount("#app");

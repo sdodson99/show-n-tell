@@ -9,9 +9,6 @@ const TITLE_SUFFIX = " - Show 'N Tell";
 
 Vue.use(VueRouter);
 
-const currentUser = ServiceContainer.UserService.getUser()
-const currentUsername = currentUser ? currentUser.username : ""
-
 const router = new VueRouter({
   mode: "history"
 })
@@ -34,7 +31,7 @@ router.addRoutes([
     },
     component: () => import("./pages/Feed"),
     props: {
-      currentUser: currentUser,
+      userService: ServiceContainer.UserService,
       likeVueService: likeVueService,
       commentVueService: commentVueService,
       feedService: ServiceContainer.FeedService
@@ -52,8 +49,8 @@ router.addRoutes([
         searchService: ServiceContainer.SearchService,
         imagePostService: ServiceContainer.ImagePostService,
         likeVueService: likeVueService,
-        currentUser: currentUser
-      }
+        userService: ServiceContainer.UserService
+    }
     }
   },
   {
@@ -63,11 +60,11 @@ router.addRoutes([
     },
     component: () => import("./pages/Explore"),
     props: {
-      currentUser: currentUser,
       imagePostService: ServiceContainer.ImagePostService,
       randomImagePostService: ServiceContainer.RandomImagePostService,
       likeVueService: likeVueService,
-      commentVueService: commentVueService
+      commentVueService: commentVueService,
+      userService: ServiceContainer.UserService
     }
   },
   {
@@ -98,8 +95,10 @@ router.addRoutes([
       title: "Profile"
     },
     beforeEnter: (to, from, next) => {
-      if(currentUsername) {
-        next({path: `/profile/${currentUsername}`})
+      const currentUser = ServiceContainer.AuthenticationService.getUser()
+
+      if(currentUser) {
+        next({path: `/profile/${currentUser.username}`})
       } else {
         next({name: "Login"})
       }
@@ -116,7 +115,7 @@ router.addRoutes([
       profileService: ServiceContainer.ProfileService,
       followService: ServiceContainer.FollowService,
       likeVueService: likeVueService,
-      currentUser: currentUser
+      userService: ServiceContainer.UserService
     }
   },
   {

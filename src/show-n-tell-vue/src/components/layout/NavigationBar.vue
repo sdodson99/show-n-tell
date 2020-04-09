@@ -33,7 +33,7 @@
           </router-link>
 
           <router-link
-            v-if="isLoggedIn"
+            v-if="loggedIn"
             class="row justify-content-center text-center link hover-link"
             active-class="active-link"
             to="/feed">
@@ -41,7 +41,7 @@
           </router-link>
 
           <router-link
-            v-if="isLoggedIn"
+            v-if="loggedIn"
             class="row justify-content-center text-center link hover-link"
             active-class="active-link"
             to="/create">
@@ -49,7 +49,7 @@
           </router-link>
 
           <router-link
-            v-if="isLoggedIn"
+            v-if="loggedIn"
             class="row justify-content-center text-center link hover-link"
             active-class="active-link"
             to="/profile">
@@ -57,7 +57,7 @@
           </router-link>
 
           <router-link
-            v-if="!isLoggedIn"
+            v-if="!loggedIn"
             class="row justify-content-center text-center link hover-link"
             active-class="active-link"
             to="/login">
@@ -65,7 +65,7 @@
           </router-link>
 
           <router-link
-            v-if="isLoggedIn"
+            v-if="loggedIn"
             class="row justify-content-center text-center link hover-link"
             active-class="active-link"
             to="/logout">
@@ -91,7 +91,13 @@ export default {
   data: function(){
     return {
       open: false,
-      searchContent: ""
+      searchContent: "",
+      loggedIn: this.isLoggedIn
+    }
+  },
+  watch: {
+    isLoggedIn: function() {
+      this.loggedIn = this.isLoggedIn
     }
   },
   methods: {

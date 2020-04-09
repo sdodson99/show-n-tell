@@ -53,12 +53,12 @@ import UnauthorizedError from '../errors/unauthorized-error'
 export default {
   name: "Explore",
   props: {
-    currentUser: Object,
     imagePostService: Object,
     randomImagePostService: Object,
     likeVueService: Object,
     commentVueService: Object,
-    commentService: Object
+    commentService: Object,
+    userService: Object
   },
   components: {
     ImagePostImage,
@@ -92,6 +92,9 @@ export default {
     },
     isLoggedIn: function() {
       return this.currentUser !== null
+    },
+    currentUser: function() {
+      return this.userService.getUser()
     }
   },
   created: async function() {    

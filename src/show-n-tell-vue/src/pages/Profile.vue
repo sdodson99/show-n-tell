@@ -47,7 +47,7 @@ export default {
         likeVueService: Object,
         profileService: Object,
         followService: Object,
-        currentUser: Object
+        userService: Object
     },
     data: function() {
         return {
@@ -71,6 +71,9 @@ export default {
         },
         isFollowing: function() {
             return this.currentUser !== null && this.profile.followers && this.profile.followers.some(f => f.followerEmail === this.currentUser.email)
+        },
+        currentUser: function() {
+            return this.userService.getUser()
         }
     },
     created: function() {

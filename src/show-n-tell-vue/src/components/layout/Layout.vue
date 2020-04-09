@@ -1,11 +1,11 @@
 <template>
   <div>
-    <NavigationBar :is-logged-in="isLoggedIn" />
+    <NavigationBar :is-logged-in="loggedIn" />
     <div v-if="statusMessage" :class="alertClass" class="alert text-center">
       {{ statusMessage }}
     </div>
     <div class="container">
-      <router-view class="my-5 mx-3"></router-view>
+      <router-view class="my-5 mx-3"/>
     </div>
   </div>
 </template>
@@ -25,13 +25,19 @@ export default {
     return {
       statusMessage: "",
       alertClass: "" || "alert-primary",
-      timeoutHandle: 0
+      timeoutHandle: 0,
+      loggedIn: this.isLoggedIn
     }
   },
   mounted: function(){
     this.$el.addEventListener('alert-success', this.alertSuccess)
     this.$el.addEventListener('alert-status', this.alertStatus)
     this.$el.addEventListener('alert-error', this.alertError)
+  },
+  watch: {
+    isLoggedIn: function() {
+      this.loggedIn = this.isLoggedIn
+    }
   },
   methods: {
     alertSuccess: function(e) {

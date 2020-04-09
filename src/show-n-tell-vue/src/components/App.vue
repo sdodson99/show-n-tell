@@ -6,6 +6,7 @@
 
 <script>
 import Layout from "./layout/Layout";
+import { AuthenticationEvents } from "../services/api-google-authentication-service"
 
 export default {
   name: "App",
@@ -14,7 +15,27 @@ export default {
   },
   props: {
     imagePostService: Object,
-    isLoggedIn: Boolean
+    authenticationService: Object
+  },
+  data: function() {
+    return {
+      isLoggedIn: this.authenticationService.isLoggedIn(),
+      loginUnsubscribe: null,
+      logoutUnsubscribe: null
+    }
+  },
+  created: function() {
+    this.loginUnsubscribe = this.authenticationService.subscribe(AuthenticationEvents.LOGIN, () => {
+      this.isLoggedIn = true
+    })
+
+    this.logoutUnsubscribe = this.authenticationService.subscribe(AuthenticationEvents.LOGOUT, () => {
+      this.isLoggedIn = false
+    })
+  },
+  destroyed: function() {
+    this.loginUnsubscribe()
+    this.logoutUnsubscribe()
   }
 };
 </script>

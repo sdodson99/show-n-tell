@@ -43,7 +43,7 @@ export default {
       const accessToken = result.getAuthResponse().id_token;
 
       if (await this.authenticationService.login(accessToken)) {
-        window.location.href = "/";
+        this.$router.push({path: "/"})
       }
     },
     onLoginFailure: function(e) {

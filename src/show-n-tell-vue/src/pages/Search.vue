@@ -31,7 +31,7 @@ export default {
         searchService: Object,
         imagePostService: Object,
         likeVueService: Object,
-        currentUser: Object
+        userService: Object
     },
     data: function() {
         return {
@@ -42,6 +42,9 @@ export default {
     computed: {
         hasImagePosts: function(){
             return this.imagePosts.length > 0
+        },
+        currentUser: function() {
+            return this.userService.getUser()
         }
     },
     created: async function() {
