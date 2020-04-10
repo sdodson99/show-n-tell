@@ -115,6 +115,7 @@ export default {
 
       if(image) {
         this.images.push(image)
+        this.$route.params.initialId = image.id
       } else {
         this.noImageMessage = "No images have been posted."
         this.canViewNext = false;

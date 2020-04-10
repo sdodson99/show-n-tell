@@ -93,7 +93,7 @@ export default {
             this.imagePosts = await this.feedService.getFeed()
         } catch (error) {
             if(error instanceof UnauthorizedError) {
-                this.$router.push({path: "/login"})
+                this.$router.push({path: "/login", query: { back: true }})
             }
         }
 

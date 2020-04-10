@@ -105,7 +105,7 @@ export default {
                 this.profile.followers.push(follow)
             } catch (error) {
                 if(error instanceof UnauthorizedError) {
-                    this.$router.push({path: "/login"})
+                  this.$router.push({path: "/login", query: { back: true }})
                 }
             }
         },
@@ -118,7 +118,7 @@ export default {
                 }
             } catch (error) {
                 if(error instanceof UnauthorizedError) {
-                    this.$router.push({path: "/login"})
+                    this.$router.push({path: "/login", query: { back: true }})
                 }
             }
         },

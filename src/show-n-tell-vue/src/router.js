@@ -125,8 +125,12 @@ router.addRoutes([
       title: "Login"
     },
     component: () => import("./pages/Login"),
-    props: {
-      authenticationService: ServiceContainer.AuthenticationService
+    props: (route) => {
+      return {
+        authenticationService: ServiceContainer.AuthenticationService,
+        redirect: route.query.redirect,
+        back: route.query.back
+      }
     }
   },
   {

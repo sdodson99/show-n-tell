@@ -63,7 +63,7 @@ class LikeVueService{
     }
 
     redirectToLogin() {
-        this.router.push({path: "/login"})
+        this.router.push({path: "/login", query: { back: true }})
     }
 }
 

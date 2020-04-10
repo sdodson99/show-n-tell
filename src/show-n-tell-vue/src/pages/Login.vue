@@ -21,7 +21,9 @@ import GoogleLogin from "vue-google-login";
 export default {
   name: "Login",
   props: {
-    authenticationService: Object
+    authenticationService: Object,
+    redirect: String,
+    back: Boolean
   },
   data() {
     return {
@@ -43,7 +45,13 @@ export default {
       const accessToken = result.getAuthResponse().id_token;
 
       if (await this.authenticationService.login(accessToken)) {
-        this.$router.push({path: "/"})
+        if(this.redirect) {
+          this.$router.push({path: this.redirect})
+        } else if (this.back) {
+          this.$router.go(-1)
+        } else {
+          this.$router.push({path: "/"})
+        }
       }
     },
     onLoginFailure: function(e) {
