@@ -11,9 +11,9 @@ class LikeVueService{
      * Like an image post and redirect to login if unauthorized.
      * @param {ImagePost} imagePost 
      */
-    async likeImagePost(imagePost) {
+    async likeImagePost(imagePost, authRedirect) {
         if(!this.authenticationService.isLoggedIn()) {
-            this.redirectToLogin()
+            this.redirectToLogin(authRedirect)
         } else {
             const currentUser = this.authenticationService.getUser()
 
@@ -23,7 +23,7 @@ class LikeVueService{
                     imagePost.likes.push(like)
                 } catch (error) {
                     if(error instanceof UnauthorizedError){
-                        this.redirectToLogin()
+                        this.redirectToLogin(authRedirect)
                     }          
                 } 
             }
@@ -36,9 +36,9 @@ class LikeVueService{
      * Unike an image post and redirect to login if unauthorized.
      * @param {ImagePost} imagePost 
      */
-    async unlikeImagePost(imagePost) {
+    async unlikeImagePost(imagePost, authRedirect) {
         if(!this.authenticationService.isLoggedIn()) {
-            this.redirectToLogin()
+            this.redirectToLogin(authRedirect)
         } else {
             const currentUser = this.authenticationService.getUser()
 
@@ -49,7 +49,7 @@ class LikeVueService{
                     }
                 } catch (error) {
                     if(error instanceof UnauthorizedError){
-                        this.redirectToLogin()
+                        this.redirectToLogin(authRedirect)
                     }
                 }
             }
@@ -62,8 +62,12 @@ class LikeVueService{
         return imagePost.email === currentUser.email
     }
 
-    redirectToLogin() {
-        this.router.push({path: "/login", query: { back: true }})
+    redirectToLogin(authRedirect) {
+        if(authRedirect) {
+            this.router.push({path: "/login", query: { redirect: authRedirect }})
+        } else {
+            this.router.push({path: "/login", query: { back: true }})
+        }
     }
 }
 

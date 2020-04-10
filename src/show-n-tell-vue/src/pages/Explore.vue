@@ -95,6 +95,9 @@ export default {
     },
     currentUser: function() {
       return this.userService.getUser()
+    },
+    currentImagePostRoute: function() {
+      return `/explore/${this.currentImage.id}`
     }
   },
   created: async function() {    
@@ -148,13 +151,13 @@ export default {
       this.$router.push({path: `/profile/${username}`})
     },
     likeImage: async function() {
-      this.currentImage.likes = await this.likeVueService.likeImagePost(this.currentImage)
+      this.currentImage.likes = await this.likeVueService.likeImagePost(this.currentImage, this.currentImagePostRoute)
     },
     unlikeImage: async function() {
-      this.currentImage.likes = await this.likeVueService.unlikeImagePost(this.currentImage)
+      this.currentImage.likes = await this.likeVueService.unlikeImagePost(this.currentImage, this.currentImagePostRoute)
     },
     createComment: async function(comment) {
-      this.currentImage.comments = await this.commentVueService.createComment(this.currentImage, comment)
+      this.currentImage.comments = await this.commentVueService.createComment(this.currentImage, comment, this.currentImagePostRoute)
     }
   }
 };

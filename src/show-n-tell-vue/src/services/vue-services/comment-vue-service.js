@@ -12,10 +12,10 @@ class CommentVueService{
      * @param {ImagePost} imagePost The image post to comment on.
      * @param {Comment} comment The comment to add to the image post.
      */
-    async createComment(imagePost, comment) {
+    async createComment(imagePost, comment, authRedirect) {
         if(comment) {
             if(!this.authenticationService.isLoggedIn()) {
-                this.redirectToLogin()
+                this.redirectToLogin(authRedirect)
             } else {
                 try {
                     const createdComment = await this.commentService.createComment(imagePost.id, comment)
@@ -24,7 +24,7 @@ class CommentVueService{
                     imagePost.comments.push(createdComment)
                 } catch (error) {
                     if(error instanceof UnauthorizedError){
-                        this.redirectToLogin()
+                        this.redirectToLogin(authRedirect)
                     }
                 }
             }
@@ -33,8 +33,12 @@ class CommentVueService{
         return imagePost.comments
     }
 
-    redirectToLogin() {
-        this.router.push({path: "/login", query: { back: true }})
+    redirectToLogin(authRedirect) {
+        if(authRedirect) {
+            this.router.push({path: "/login", query: { redirect: authRedirect }})
+        } else {
+            this.router.push({path: "/login", query: { back: true }})
+        }
     }
 }
 
