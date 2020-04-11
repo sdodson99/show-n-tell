@@ -112,6 +112,11 @@ export default {
       }
     // If no initial id is provided, show a random image.
     } else {
+      await this.getInitialRandomImage()
+    }
+  },
+  methods: {
+    getInitialRandomImage: async function() {
       const image = await this.randomImagePostService.getRandom();     
 
       if(image) {
@@ -120,9 +125,7 @@ export default {
       } else {
         this.disableViewNextImage()
       }
-    }
-  },
-  methods: {
+    },
     nextImage: async function() {
       // If the last image is being shown, we need to ask for another image.
       if(this.isShowingLastImage) {
@@ -167,8 +170,16 @@ export default {
     },
     imagePostDeleted: async function(id) {
       this.images = this.images.filter(p => p.id !== id)
-      this.currentImageIndex--
-      await this.nextImage()
+
+      // Get an initial image if length is 0.
+      if(this.images.length === 0) {
+        await this.getInitialRandomImage()
+      }
+
+      // Coerce current image index to the last image available if index larger than images length.
+      if(this.currentImageIndex >= this.images.length) {
+        this.currentImageIndex = this.images.length - 1
+      }
     },
     disableViewNextImage: function () {
       this.noImageMessage = "No images have been posted."
