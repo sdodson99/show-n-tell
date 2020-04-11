@@ -10,7 +10,7 @@ export default {
   },
   created: function() {
     this.authenticationService.logout();
-    window.location.href = "/";
+    this.$router.push({path: "/"})
   }
 };
 </script>
