@@ -14,7 +14,8 @@
             :image-posts="imagePosts"
             :image-post-service="imagePostService"
             :like-vue-service="likeVueService"
-            :current-user="currentUser"/>
+            :current-user="currentUser"
+            @imagePostDeleted="imagePostDeleted"/>
     </div>
 </template>
 
@@ -60,6 +61,9 @@ export default {
             this.isLoading = true
             this.imagePosts = await this.searchService.searchImagePosts(this.query)
             this.isLoading = false
+        },
+        imagePostDeleted: function(imagePostId) {
+            this.imagePosts = this.imagePosts.filter(p => p.id !== imagePostId)
         }
     }
 }
