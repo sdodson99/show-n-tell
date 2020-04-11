@@ -16,6 +16,7 @@
           :imagePostService="imagePostService"
           :likeVueService="likeVueService"
           :currentUser="currentUser"
+          :canView="false"
           @imagePostDeleted="imagePostDeleted"/>
       <div class="my-4">
         <image-post-comment class="text-center text-sm-left"
