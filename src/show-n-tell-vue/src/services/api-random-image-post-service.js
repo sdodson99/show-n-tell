@@ -1,10 +1,9 @@
 import ImagePost from "../models/image-post";
 
+/**
+ * Service to retrieve a random image post.
+ */
 class APIRandomImagePostService {
-  /**
-   * Initialize with a base url.
-   * @param {string} baseUrl The base url of the API (not including ending /)
-   */
   constructor(baseUrl, apiClient) {
     this.baseUrl = baseUrl;
     this.apiClient = apiClient;
@@ -12,6 +11,7 @@ class APIRandomImagePostService {
 
   /**
    * Get a random image post from the API.
+   * @returns {ImagePost} The random image post. Null if no image post found.
    */
   async getRandom() {
     const url = `${this.baseUrl}/imageposts/random`;

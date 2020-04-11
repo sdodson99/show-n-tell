@@ -11,6 +11,8 @@ class CommentVueService{
      * Post a comment on an image post.
      * @param {ImagePost} imagePost The image post to comment on.
      * @param {Comment} comment The comment to add to the image post.
+     * @param {string} [authRedirect] A router login redirect url if authentication fails. 
+     * @returns {Array} The image post's new array of comments.
      */
     async createComment(imagePost, comment, authRedirect) {
         if(comment) {
@@ -33,6 +35,10 @@ class CommentVueService{
         return imagePost.comments
     }
 
+    /**
+     * Redirect to the login screen.
+     * @param {string} [authRedirect] A router login redirect url. 
+     */
     redirectToLogin(authRedirect) {
         if(authRedirect) {
             this.router.push({path: "/login", query: { redirect: authRedirect }})

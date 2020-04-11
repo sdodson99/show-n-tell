@@ -149,6 +149,7 @@ router.addRoutes([
   }
 ])
 
+// Restrict authenticated routes.
 router.beforeEach((to, from, next) => {
   if(to.meta.authenticate && !ServiceContainer.AuthenticationService.isLoggedIn()) {
     next({name: "Login"})
@@ -159,6 +160,7 @@ router.beforeEach((to, from, next) => {
   }
 });
 
+// Set document title.
 router.beforeEach((to, from, next) => {
   document.title = to.meta.title + TITLE_SUFFIX;
   next();

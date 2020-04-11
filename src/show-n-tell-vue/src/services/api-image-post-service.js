@@ -1,22 +1,22 @@
 import ImagePost from '../models/image-post'
 
+/**
+ * Service to perform CRUD on image posts.
+ */
 class APIImagePostService {
-    /**
-     * Initialize with a base url.
-     * @param {string} baseUrl The base url of the API (not including ending /)
-     */
     constructor(baseUrl, apiClient) {
       this.baseUrl = baseUrl;
       this.apiClient = apiClient;
     }
 
     /**
-     * Get an image post from the API by id.
+     * Get an image post by id.
+     * @param {number} id The image post id.
+     * @returns {ImagePost} The image post matching the id. Null if image post does not exist.
      */
     async getById(id) {
         const url = `${this.baseUrl}/imageposts/${id}`;
   
-        // Make the API request.
         const apiResponse = await this.apiClient.fetch(url)
 
         if(apiResponse.status === 404) {
@@ -29,7 +29,9 @@ class APIImagePostService {
     }
   
     /**
-     * Post an image post to the API.
+     * Create a new image post.
+     * @param {Object} imagePost The image post to create.
+     * @returns {ImagePost} The created image post.
      */
     async create(imagePost) {
         const url = `${this.baseUrl}/imageposts/`;
@@ -40,7 +42,6 @@ class APIImagePostService {
         formData.append('description', imagePost.description)
         formData.append('tags', imagePost.tags.join(','))
 
-        // Make the post request.
         const apiResponse = await this.apiClient.authFetch(url, {
             method: 'POST',
             body: formData
@@ -53,8 +54,9 @@ class APIImagePostService {
 
     /**
      * Update an image post by id.
-     * @param {Number} imagePostId 
-     * @param {Object} imagePost 
+     * @param {number} imagePostId The id of the image post.
+     * @param {Object} imagePost The updated image post data.
+     * @returns {ImagePost} The updated image post.
      */
     async update(imagePostId, imagePost) {
         const url = `${this.baseUrl}/imageposts/${imagePostId}`
@@ -74,12 +76,12 @@ class APIImagePostService {
 
     /**
      * Delete an image post.
-     * @param {Number} imagePostId 
+     * @param {number} imagePostId 
+     * @returns {boolean} True/false for success.
      */
     async delete(imagePostId) {
         const url = `${this.baseUrl}/imageposts/${imagePostId}`
 
-        // Make the delete request.
         const result = await this.apiClient.authFetch(url, {
             method: 'DELETE'
         })

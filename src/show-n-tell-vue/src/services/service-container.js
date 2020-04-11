@@ -16,6 +16,9 @@ const tokenService = new LocalStorageTokenService();
 const userService = new LocalStorageUserService();
 const apiClient = new APIClient(tokenService, userService);
 
+/**
+ * Singleton container of services for the application.
+ */
 const ServiceContainer = {
   AuthenticationService: new APIGoogleAuthenticationService(baseUrl, tokenService, userService),
   TokenService: tokenService,

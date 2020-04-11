@@ -1,11 +1,19 @@
 import Follow from '../models/follow'
 
+/**
+ * Service to follow and unfollow users.
+ */
 class APIFollowService{
     constructor(baseUrl, apiClient) {
         this.baseUrl = baseUrl
         this.apiClient = apiClient
     }
 
+    /**
+     * Follow a user.
+     * @param {string} username The username of the user to follow.
+     * @returns {Follow} The follow response.
+     */
     async follow(username) {
         const url = `${this.baseUrl}/profiles/${username}/follow`
 
@@ -18,6 +26,11 @@ class APIFollowService{
         return Follow.fromJSON(followResponse)
     }
 
+    /**
+     * Unfollow a user.
+     * @param {string} username The username of the user to unfollow.
+     * @returns {boolean} True/false for success.
+     */
     async unfollow(username) {
         const url = `${this.baseUrl}/profiles/${username}/follow`
 

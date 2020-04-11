@@ -1,5 +1,8 @@
 import Comment from '../models/comment'
 
+/**
+ * Service to add comments to image posts.
+ */
 class APICommentService{
     constructor(baseUrl, apiClient) {
         this.baseUrl = baseUrl
@@ -8,8 +11,9 @@ class APICommentService{
 
     /**
      * Post a comment on an image post.
-     * @param {Number} id The id of the image post to comment on.
-     * @param {String} content The content of the new comment.
+     * @param {number} id The id of the image post to comment on.
+     * @param {string} content The content of the new comment.
+     * @returns {Comment} The created comment.
      */
     async createComment(id, content) {
         const url = `${this.baseUrl}/imageposts/${id}/comments`
