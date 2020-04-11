@@ -1,25 +1,21 @@
 <template>
-    <div>
+    <div class="text-center text-sm-left">
         <h1 class="text-center">Feed</h1>
         <ul v-if="isLoaded && imagePosts.length > 0">
             <li class="image-post py-5" v-for="post in imagePosts" :key="post.id">
-                <image-post-image
-                    :imageUri="post.imageUri"
-                    maxHeight="50vh"/>
-                <div class="mt-3 d-flex flex-column flex-sm-row justify-content-between align-items-center">
-                    <image-post-feedback
-                        :canLike="!isUsersPost(post)"
-                        :liked="isLiked(post)"
-                        :likeCount="post.likes.length"
-                        :commentCount="post.comments.length"
-                        @liked="() => likeImagePost(post)"
-                        @unliked="() => unlikeImagePost(post)"/>
-                    <image-post-details class="text-center text-sm-right mt-3 mt-sm-0"
+                <image-post-detailed-image class="mt-3"
+                    maxImagePostHeight="50vh"
+                    :imagePost="post"
+                    :imagePostService="imagePostService"
+                    :likeVueService="likeVueService"
+                    :currentUser="currentUser"/>
+                <div class="my-4">
+                    <image-post-comment
+                        :content="post.description"
+                        fallbackContent="No description available."
                         :username="post.username"
-                        :dateCreated="post.dateCreated"/>
-                </div>
-                <div class="mt-3 text-center">
-                    <p>{{ post.description }}</p>
+                        :dateCreated="post.dateCreated"
+                        @usernameClicked="(username) => viewProfile(username)"/>
                 </div>
                 <button class="mt-3 w-100" v-b-toggle="'comments-accordion' + post.id">
                     <div>Comments</div>
@@ -48,22 +44,21 @@
 </template>
 
 <script>
-import ImagePostImage from '../components/image-posts/ImagePostImage'
-import ImagePostFeedback from '../components/image-posts/ImagePostFeedback'
+import ImagePostComment from '../components/image-posts/ImagePostComment'
 import ImagePostCommentList from '../components/image-posts/ImagePostCommentList'
-import ImagePostDetails from '../components/image-posts/ImagePostDetails'
+import ImagePostDetailedImage from '../components/image-posts/ImagePostDetailedImage'
 import UnauthorizedError from '../errors/unauthorized-error'
 
 export default {
     name: "Feed",
     components: {
-        ImagePostImage,
-        ImagePostFeedback,
+        ImagePostComment,
         ImagePostCommentList,
-        ImagePostDetails
+        ImagePostDetailedImage
     },
     props: {
         userService: Object,
+        imagePostService: Object,
         feedService: Object,
         commentVueService: Object,
         likeVueService: Object

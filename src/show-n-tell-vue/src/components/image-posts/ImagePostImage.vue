@@ -29,7 +29,7 @@ export default {
     methods: {
         loadImage: function() {
             this.clearImage()
-
+            
             LoadImage(this.imageUri, (loadedImage) => {
                 
                 if(this.isJPEG(loadedImage.src)) {

@@ -10,24 +10,21 @@
     </div>
     <div id="image-post" class="p-1" 
       v-if="currentImage.imageUri">
-      <image-post-image class="mt-3" max-height="50vh" 
-        :imageUri="currentImage.imageUri"/>
-      <div id="image-details" class="d-flex flex-column flex-md-row justify-content-between">
-        <image-post-details class="my-3 order-md-2 text-center text-md-right"
-          :username="this.currentImage.username"
-          :dateCreated="this.currentImage.dateCreated"/>
-        <image-post-feedback class="my-3 justify-content-center text-center text-md-left order-md-1"
-          :canLike="!isUsersPost"
-          :liked="isLiked"
-          :likeCount="currentImage.likes.length"
-          :commentCount="currentImage.comments.length"
-          @liked="likeImage"
-          @unliked="unlikeImage"/>
+      <image-post-detailed-image class="mt-3"
+          maxImagePostHeight="50vh"
+          :imagePost="currentImage"
+          :imagePostService="imagePostService"
+          :likeVueService="likeVueService"
+          :currentUser="currentUser"/>
+      <div class="my-4">
+        <image-post-comment class="text-center text-sm-left"
+          :content="currentImage.description"
+          fallbackContent="No description available."
+          :username="currentImage.username"
+          :dateCreated="currentImage.dateCreated"
+          @usernameClicked="(username) => viewProfile(username)"/>
       </div>
-      <div class="text-center">
-        <p>{{ currentImage.description }}</p>
-      </div>
-      <div class="my-4 text-center text-sm-left">
+      <div class="my-5 text-center text-sm-left">
         <h3>Comments</h3>
         <image-post-comment-list class="mt-3" 
           :comments="currentImage.comments"
@@ -44,11 +41,11 @@
 </template>
 
 <script>
-import ImagePostImage from '../components/image-posts/ImagePostImage'
-import ImagePostFeedback from '../components/image-posts/ImagePostFeedback'
-import ImagePostCommentList from '../components/image-posts/ImagePostCommentList'
-import ImagePostDetails from '../components/image-posts/ImagePostDetails'
 import UnauthorizedError from '../errors/unauthorized-error'
+
+import ImagePostComment from '../components/image-posts/ImagePostComment'
+import ImagePostCommentList from '../components/image-posts/ImagePostCommentList'
+import ImagePostDetailedImage from '../components/image-posts/ImagePostDetailedImage'
 
 export default {
   name: "Explore",
@@ -61,10 +58,9 @@ export default {
     userService: Object
   },
   components: {
-    ImagePostImage,
-    ImagePostFeedback,
+    ImagePostComment,
     ImagePostCommentList,
-    ImagePostDetails
+    ImagePostDetailedImage
   },
   data: function(){
     return {

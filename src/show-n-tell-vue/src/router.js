@@ -32,6 +32,7 @@ router.addRoutes([
     component: () => import("./pages/Feed"),
     props: {
       userService: ServiceContainer.UserService,
+      imagePostService: ServiceContainer.ImagePostService,
       likeVueService: likeVueService,
       commentVueService: commentVueService,
       feedService: ServiceContainer.FeedService

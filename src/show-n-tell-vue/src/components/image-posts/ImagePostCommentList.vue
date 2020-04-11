@@ -16,19 +16,11 @@
              <li class="comment-item py-3"
                 v-for="comment in comments"
                 :key="comment.id">
-                <div class="d-flex flex-column flex-sm-row">
-                    <div class="username font-weight-bold"
-                        @click="() => usernameClicked(comment.username)">
-                        {{ comment.username }}
-                    </div>
-                    <div class="mx-3 d-none d-sm-block">|</div>
-                    <div>
-                        {{ getFormattedDateCreated(comment.dateCreated) }}
-                    </div>
-                </div>
-                <div class="mt-2">
-                    {{ comment.content }}
-                </div>
+                <image-post-comment
+                    :content="comment.content"
+                    :username="comment.username"
+                    :dateCreated="comment.dateCreated"
+                    @usernameClicked="(username) => $emit('usernameClicked', username)"/>
              </li>
          </ul>
          <div class="mt-2 text-center" 
@@ -39,8 +31,13 @@
 </template>
 
 <script>
+import ImagePostComment from './ImagePostComment'
+
 export default {
     name: "ImagePostCommentList",
+    components: {
+        ImagePostComment
+    },
     props: {
         comments: {
             type: Array,
@@ -72,12 +69,6 @@ export default {
                 this.$emit('commented', this.newCommentContent)
                 this.newCommentContent = ""
             }
-        },
-        getFormattedDateCreated: function(date) {
-            return new Date(date).toLocaleDateString()
-        },
-        usernameClicked: function(username) {
-            this.$emit('usernameClicked', username)
         }
     }
 }
@@ -94,13 +85,5 @@ ul {
 
 .comment-item {
     border-top: 1px solid var(--color-grayscale-light);
-}
-
-.username {
-    cursor: pointer;
-}
-
-.username:hover {
-    text-decoration: underline;
 }
 </style>
