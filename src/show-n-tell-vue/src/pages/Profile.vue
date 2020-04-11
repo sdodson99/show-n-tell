@@ -28,7 +28,8 @@
                 :image-posts="profile.imagePosts" 
                 :like-vue-service="likeVueService"
                 :image-post-service="imagePostService"
-                :current-user="currentUser"/>
+                :current-user="currentUser"
+                @imagePostDeleted="imagePostDeleted"/>
         </div>
     </div>
 </template>
@@ -121,6 +122,9 @@ export default {
                     this.$router.push({path: "/login", query: { back: true }})
                 }
             }
+        },
+        imagePostDeleted: function(imagePostId) {
+            this.profile.imagePosts = this.profile.imagePosts.filter(p => p.id !== imagePostId)
         },
         viewExplore: function() {
             this.$router.push({path: "/explore"})

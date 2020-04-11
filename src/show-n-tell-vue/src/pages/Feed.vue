@@ -8,7 +8,8 @@
                     :imagePost="post"
                     :imagePostService="imagePostService"
                     :likeVueService="likeVueService"
-                    :currentUser="currentUser"/>
+                    :currentUser="currentUser"
+                    @imagePostDeleted="imagePostDeleted"/>
                 <div class="my-4">
                     <image-post-comment
                         :content="post.description"
@@ -106,6 +107,9 @@ export default {
         },
         viewProfile: function(username) {
             this.$router.push({path: `/profile/${username}`})
+        },
+        imagePostDeleted: function(imagePostId) {
+            this.imagePosts = this.images.filter(p => p.id !== imagePostId)
         }
     }
 }

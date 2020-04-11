@@ -77,7 +77,7 @@ export default {
                 const success = await this.imagePostService.delete(imagePostId)
 
                 if(success) {
-                    this.imagePosts = this.imagePosts.filter(p => p.id !== imagePostId)
+                    this.$emit("imagePostDeleted", imagePostId)
                 }
             } catch (error) {
                 if(error instanceof UnauthorizedError) {

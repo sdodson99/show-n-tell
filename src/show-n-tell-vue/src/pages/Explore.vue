@@ -15,7 +15,8 @@
           :imagePost="currentImage"
           :imagePostService="imagePostService"
           :likeVueService="likeVueService"
-          :currentUser="currentUser"/>
+          :currentUser="currentUser"
+          @imagePostDeleted="imagePostDeleted"/>
       <div class="my-4">
         <image-post-comment class="text-center text-sm-left"
           :content="currentImage.description"
@@ -107,6 +108,7 @@ export default {
         this.images.push(image)
       } else {
         this.noImageMessage = "The selected image does not exist."
+        this.currentImageIndex = -1
       }
     // If no initial id is provided, show a random image.
     } else {
@@ -116,8 +118,7 @@ export default {
         this.images.push(image)
         this.$route.params.initialId = image.id
       } else {
-        this.noImageMessage = "No images have been posted."
-        this.canViewNext = false;
+        this.disableViewNextImage()
       }
     }
   },
@@ -127,21 +128,30 @@ export default {
       if(this.isShowingLastImage) {
         let newImage = await this.randomImagePostService.getRandom();
 
-        // If the new image already exists in the history, add the already existing image.
-        let existingImage = this.images.find(p => p.id === newImage.id)
-        if(existingImage) {
-          this.images.push(existingImage)
+        if(newImage) {
+          // If the new image already exists in the history, add the already existing image.
+          let existingImage = this.images.find(p => p.id === newImage.id)
+          if(existingImage) {
+            this.images.push(existingImage)
+          } else {
+            this.images.push(newImage)
+          }
         } else {
-          this.images.push(newImage)
+          this.disableViewNextImage()
         }
       }
       
       this.currentImageIndex++;
     },
     previousImage: function() {
+      let success = false
+
       if(this.hasPreviousImage) {
         this.currentImageIndex--;
+        success = true
       }
+
+      return success
     },
     viewProfile: function(username) {
       this.$router.push({path: `/profile/${username}`})
@@ -154,6 +164,15 @@ export default {
     },
     createComment: async function(comment) {
       this.currentImage.comments = await this.commentVueService.createComment(this.currentImage, comment, this.currentImagePostRoute)
+    },
+    imagePostDeleted: async function(id) {
+      this.images = this.images.filter(p => p.id !== id)
+      this.currentImageIndex--
+      await this.nextImage()
+    },
+    disableViewNextImage: function () {
+      this.noImageMessage = "No images have been posted."
+      this.canViewNext = false;
     }
   }
 };

@@ -6,7 +6,8 @@
                 :imagePost="post"
                 :imagePostService="imagePostService"
                 :likeVueService="likeVueService"
-                :currentUser="currentUser"/>
+                :currentUser="currentUser"
+                @imagePostDeleted="imagePostDeleted"/>
         </li>
     </ul>
 </template>
@@ -26,6 +27,11 @@ export default {
         imagePostService: Object,
         likeVueService: Object,
         currentUser: Object
+    }, 
+    methods: {
+        imagePostDeleted: function(id) {
+            this.$emit('imagePostDeleted', id);
+        }
     }
 }
 </script>

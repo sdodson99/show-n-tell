@@ -114,7 +114,7 @@ namespace ShowNTell.API.Controllers
 
             if(post == null)
             {
-                _logger.LogError("Image post with id {0} does not exist.", post.Id);
+                _logger.LogError("Image post with id {0} does not exist.", id);
                 return NotFound();
             }
 
