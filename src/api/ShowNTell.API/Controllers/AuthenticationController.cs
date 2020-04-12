@@ -1,8 +1,5 @@
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using ShowNTell.API.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using ShowNTell.Domain.Models;
 using ShowNTell.Domain.Services;
@@ -10,6 +7,7 @@ using System;
 using ShowNTell.API.Models.Responses;
 using AutoMapper;
 using Microsoft.Extensions.Logging;
+using ShowNTell.API.Services.CurrentUsers;
 
 namespace ShowNTell.API.Controllers
 {
@@ -18,15 +16,17 @@ namespace ShowNTell.API.Controllers
     public class AuthenticationController : ControllerBase
     {
         private readonly IUserService _userService;
+        private readonly ICurrentUserService _currentUserService;
         private readonly IMapper _mapper;
         private readonly ILogger<AuthenticationController> _logger;
 
-        public AuthenticationController(IUserService userService, 
-            IMapper mapper, ILogger<AuthenticationController> logger)
+        public AuthenticationController(IUserService userService,
+            IMapper mapper, ILogger<AuthenticationController> logger, ICurrentUserService currentUserService)
         {
             _userService = userService;
             _mapper = mapper;
             _logger = logger;
+            _currentUserService = currentUserService;
         }
 
 
@@ -34,8 +34,8 @@ namespace ShowNTell.API.Controllers
         /// Login to Show 'N Tell with a Google account. Authenticate with a Google token to make this request.
         /// </summary>
         /// <returns>The logged in user.</returns>
-       /// <response code="200">Returns the logged in user.</response>
-       /// <response code="401">Unauthorized.</response>
+        /// <response code="200">Returns the logged in user.</response>
+        /// <response code="401">Unauthorized.</response>
         [Produces("application/json")]
         [Authorize]
         [HttpPost("google")]
@@ -43,7 +43,7 @@ namespace ShowNTell.API.Controllers
         {
             _logger.LogInformation("Received Google login request.");
 
-            User currentUser = HttpContext.GetUser();
+            User currentUser = _currentUserService.GetCurrentUser(HttpContext);
             _logger.LogInformation("Requesting user email: {0}", currentUser.Email);
 
             User existingUser = await _userService.GetByEmail(currentUser.Email);

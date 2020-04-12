@@ -2,7 +2,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ShowNTell.Domain.Models;
-using ShowNTell.API.Extensions;
 using ShowNTell.Domain.Services;
 using ShowNTell.Domain.Exceptions;
 using System;
@@ -11,6 +10,7 @@ using AutoMapper;
 using ShowNTell.API.Models.Responses;
 using ShowNTell.API.Models.Requests;
 using Microsoft.AspNetCore.Http;
+using ShowNTell.API.Services.CurrentUsers;
 
 namespace ShowNTell.API.Controllers
 {
@@ -22,14 +22,16 @@ namespace ShowNTell.API.Controllers
         private readonly ICommentService _commentService;
         private readonly IMapper _mapper;
         private readonly ILogger<ImagePostDetailsController> _logger;
+        private readonly ICurrentUserService _currentUserService;
 
-        public ImagePostDetailsController(ILikeService likeService, ICommentService commentService, 
-            IMapper mapper, ILogger<ImagePostDetailsController> logger)
+        public ImagePostDetailsController(ILikeService likeService, ICommentService commentService,
+            IMapper mapper, ILogger<ImagePostDetailsController> logger, ICurrentUserService currentUserService)
         {
             _likeService = likeService;
             _commentService = commentService;
             _mapper = mapper;
             _logger = logger;
+            _currentUserService = currentUserService;
         }
 
         /// <summary>
@@ -54,7 +56,7 @@ namespace ShowNTell.API.Controllers
                 return BadRequest();
             }
 
-            User currentUser = HttpContext.GetUser();
+            User currentUser = _currentUserService.GetCurrentUser(HttpContext);
             _logger.LogInformation("Requesting user email: {0}", currentUser.Email);
             
             Comment createdComment = new Comment()
@@ -87,7 +89,7 @@ namespace ShowNTell.API.Controllers
             _logger.LogInformation("Received image post like request.");
             _logger.LogInformation("Image post id: {0}", id);
 
-            User currentUser = HttpContext.GetUser();
+            User currentUser = _currentUserService.GetCurrentUser(HttpContext);
             _logger.LogInformation("Requesting user email: {0}", currentUser.Email);
             
             try
@@ -134,7 +136,7 @@ namespace ShowNTell.API.Controllers
             _logger.LogInformation("Received image post unlike request.");
             _logger.LogInformation("Image post id: {0}", id);
             
-            User currentUser = HttpContext.GetUser();
+            User currentUser = _currentUserService.GetCurrentUser(HttpContext);
             _logger.LogInformation("Requesting user email: {0}", currentUser.Email);
 
             if(!await _likeService.UnlikeImagePost(id, currentUser.Email))

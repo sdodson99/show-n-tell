@@ -5,8 +5,8 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using ShowNTell.API.Extensions;
 using ShowNTell.API.Models.Responses;
+using ShowNTell.API.Services.CurrentUsers;
 using ShowNTell.Domain.Models;
 using ShowNTell.Domain.Services;
 
@@ -19,13 +19,15 @@ namespace ShowNTell.API.Controllers
         private readonly IFeedService _feedService;
         private readonly IMapper _mapper;
         private readonly ILogger<FeedController> _logger;
+        private readonly ICurrentUserService _currentUserService;
 
-        public FeedController(IFeedService feedService, 
-            IMapper mapper, ILogger<FeedController> logger)
+        public FeedController(IFeedService feedService,
+            IMapper mapper, ILogger<FeedController> logger, ICurrentUserService currentUserService)
         {
             _feedService = feedService;
             _mapper = mapper;
             _logger = logger;
+            _currentUserService = currentUserService;
         }
 
         /// <summary>
@@ -41,7 +43,7 @@ namespace ShowNTell.API.Controllers
         {
             _logger.LogInformation("Received feed request.");
             
-            User currentUser = HttpContext.GetUser();
+            User currentUser = _currentUserService.GetCurrentUser(HttpContext);
             _logger.LogInformation("Requesting user email: {0}", currentUser.Email);
 
             IEnumerable<ImagePost> feed = await _feedService.GetFeed(currentUser.Email);

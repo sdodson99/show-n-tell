@@ -3,8 +3,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using ShowNTell.API.Extensions;
 using ShowNTell.API.Models.Responses;
+using ShowNTell.API.Services.CurrentUsers;
 using ShowNTell.Domain.Exceptions;
 using ShowNTell.Domain.Models;
 using ShowNTell.Domain.Services;
@@ -21,14 +21,16 @@ namespace ShowNTell.API.Controllers
         private readonly IFollowService _followService;
         private readonly IMapper _mapper;
         private readonly ILogger<ProfilesController> _logger;
+        private readonly ICurrentUserService _currentUserService;
 
         public ProfilesController(IProfileService profileService, IFollowService followService,
-            IMapper mapper, ILogger<ProfilesController> logger)
+            IMapper mapper, ILogger<ProfilesController> logger, ICurrentUserService currentUserService)
         {
             _profileService = profileService;
             _followService = followService;
             _mapper = mapper;
             _logger = logger;
+            _currentUserService = currentUserService;
         }
 
         /// <summary>
@@ -95,7 +97,7 @@ namespace ShowNTell.API.Controllers
             _logger.LogInformation("Received profile follow request.");
             _logger.LogInformation("Profile username: {0}", username);
             
-            User currentUser = HttpContext.GetUser();
+            User currentUser = _currentUserService.GetCurrentUser(HttpContext);
             _logger.LogInformation("Requesting user email: {0}", currentUser.Email);
 
             try
@@ -132,7 +134,7 @@ namespace ShowNTell.API.Controllers
             _logger.LogInformation("Received profile unfollow request.");
             _logger.LogInformation("Profile username: {0}", username);
             
-            User currentUser = HttpContext.GetUser();
+            User currentUser = _currentUserService.GetCurrentUser(HttpContext);
             _logger.LogInformation("Requesting user email: {0}", currentUser.Email);
 
             bool success = await _followService.UnfollowUser(username, currentUser.Email);

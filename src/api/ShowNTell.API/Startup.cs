@@ -15,6 +15,7 @@ using Microsoft.OpenApi.Models;
 using SeanDodson.GoogleJWTAuthentication.Extensions;
 using ShowNTell.API.Models.MappingProfiles;
 using ShowNTell.API.Models.Requests;
+using ShowNTell.API.Services.CurrentUsers;
 using ShowNTell.AzureStorage.Services;
 using ShowNTell.AzureStorage.Services.BlobClientFactories;
 using ShowNTell.Domain.Services;
@@ -92,6 +93,7 @@ namespace ShowNTell.API
             });
 
             services.AddSingleton<IUserService, EFUserService>();
+            services.AddSingleton<ICurrentUserService, CurrentUserService>();
             services.AddSingleton<IProfileService, EFProfileService>();
             services.AddSingleton<IFeedService, EFFeedService>();
             services.AddSingleton<IFollowService, EFFollowService>();
@@ -107,7 +109,8 @@ namespace ShowNTell.API
             services.AddSingleton<IShowNTellDbContextFactory>(new ShowNTellDbContextFactory(dbContextOptionsBuilderAction));
             services.AddDbContext<ShowNTellDbContext>(dbContextOptionsBuilderAction);
 
-            services.AddSingleton<IMapper>(CreateMapper());
+            IMapper mapper = new MapperFactory().CreateMapper();
+            services.AddSingleton<IMapper>(mapper);
 
             services.AddLogging(options => {
                 if(Environment.IsProduction())
@@ -181,16 +184,6 @@ namespace ShowNTell.API
             }
 
             return imageStorage;
-        }
-
-        private IMapper CreateMapper()
-        {
-            MapperConfiguration config = new MapperConfiguration((o) =>
-            {
-                o.AddProfile<ResponseDomainMappingProfile>();
-            });
-
-            return config.CreateMapper();
         }
 
         private string GetConfigurationValue(string key)

@@ -4,14 +4,13 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using ShowNTell.API.Extensions;
 using ShowNTell.API.Models.Requests;
 using ShowNTell.API.Models.Responses;
+using ShowNTell.API.Services.CurrentUsers;
 using ShowNTell.Domain.Exceptions;
 using ShowNTell.Domain.Models;
 using ShowNTell.Domain.Services;
@@ -29,13 +28,13 @@ namespace ShowNTell.API.Controllers
         private readonly IImageStorage _imageStorage;
         private readonly IMapper _mapper;
         private readonly ILogger<ImagePostsController> _logger;
+        private readonly ICurrentUserService _currentUserService;
 
-        public ImagePostsController(IImagePostService imagePostService, 
-            IRandomImagePostService randomImagePostService, 
+        public ImagePostsController(IImagePostService imagePostService,
+            IRandomImagePostService randomImagePostService,
             ISearchService searchService,
-            IImageStorage imageStorage, 
-            IMapper mapper,
-            ILogger<ImagePostsController> logger)
+            IImageStorage imageStorage,
+            IMapper mapper, ILogger<ImagePostsController> logger, ICurrentUserService currentUserService)
         {
             _imagePostService = imagePostService;
             _randomImagePostService = randomImagePostService;
@@ -43,6 +42,7 @@ namespace ShowNTell.API.Controllers
             _imageStorage = imageStorage;
             _mapper = mapper;
             _logger = logger;
+            _currentUserService = currentUserService;
         }
 
         /// <summary>
@@ -140,7 +140,7 @@ namespace ShowNTell.API.Controllers
             _logger.LogInformation("Received image post create request.");
 
             // Get the user making the request.
-            User user = HttpContext.GetUser();
+            User user = _currentUserService.GetCurrentUser(HttpContext);
             _logger.LogInformation("Requesting user email: {0}", user.Email);
 
             // Store image file.
@@ -192,7 +192,7 @@ namespace ShowNTell.API.Controllers
             _logger.LogInformation("Received image post update request.");
 
             // Get the user making the request.
-            User user = HttpContext.GetUser();
+            User user = _currentUserService.GetCurrentUser(HttpContext);
 
             _logger.LogInformation("Requesting user email: {0}", user.Email);
             _logger.LogInformation("Image post id: {0}", id);
@@ -241,7 +241,7 @@ namespace ShowNTell.API.Controllers
             _logger.LogInformation("Received image post delete request.");
            
             // Get the user making the request.
-            User user = HttpContext.GetUser();
+            User user = _currentUserService.GetCurrentUser(HttpContext);
 
             _logger.LogInformation("Requesting user email: {0}", user.Email);
             _logger.LogInformation("Image post id: {0}", id);
