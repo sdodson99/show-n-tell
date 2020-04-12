@@ -12,9 +12,10 @@
                 :commentCount="imagePost.comments.length"
                 @liked="likeImage"
                 @unliked="unlikeImage"/>
-            <more-dropdown>
+            <more-dropdown v-if="canView || isUsersImagePost">
                 <ul class="my-dropdown">
-                    <li class="px-3 py-2 my-dropdown-item"
+                    <li class="px-3 py-2 my-dropdown-item" 
+                        v-if="canView"
                         @click="viewImagePost">View</li>
                     <li class="px-3 py-2 my-dropdown-item"
                         v-if="isUsersImagePost" 
@@ -47,7 +48,8 @@ export default {
         imagePostService: Object,
         likeVueService: Object,
         currentUser: Object,
-        maxImagePostHeight: String
+        maxImagePostHeight: String,
+        canView: Boolean
     },
     computed: {
         isUsersImagePost: function() {

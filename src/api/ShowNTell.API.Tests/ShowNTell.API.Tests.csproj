@@ -14,8 +14,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Showntell.api\ShowNTell.API.csproj" />
-    <ProjectReference Include="..\Showntell.domain\ShowNTell.Domain.csproj" />
+    <ProjectReference Include="..\ShowNTell.API\ShowNTell.API.csproj" />
+    <ProjectReference Include="..\ShowNTell.Domain\ShowNTell.Domain.csproj" />
   </ItemGroup>
 
 </Project>
