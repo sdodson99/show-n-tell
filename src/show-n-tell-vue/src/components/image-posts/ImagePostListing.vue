@@ -7,6 +7,7 @@
                 :imagePostService="imagePostService"
                 :likeVueService="likeVueService"
                 :currentUser="currentUser"
+                :canView="true"
                 @imagePostDeleted="imagePostDeleted"/>
         </li>
     </ul>

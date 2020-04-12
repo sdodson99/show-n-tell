@@ -1,6 +1,6 @@
 <template>
     <div>
-        <image-post-image class="img-post-img" 
+        <image-post-image :class="{ pointer: canView }" 
             :max-height="maxImagePostHeight" 
             :imageUri="imagePost.imageUri"
             @click="viewImagePost"/>
@@ -96,7 +96,7 @@ ul{
     list-style: none;
 }
 
-.img-post-img {
+.pointer {
     cursor: pointer;
 }
 
