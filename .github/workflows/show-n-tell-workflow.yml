@@ -15,9 +15,10 @@ jobs:
       VUE_WORKING_DIRECTORY: ./src/show-n-tell-vue
       BUILD_CONFIGURATION: Release
       AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
-      AZURE_REGISTRY_USERNAME: showntellapi
-      AZURE_REGISTRY_PASSWORD: ${{ secrets.AZURE_REGISTRY_PASSWORD }}
-      DATABASE: ${{ secrets.DATABASE }}
+      DOCKER_REPOSITORY_USERNAME: ${{ secrets.DOCKER_REPOSITORY_USERNAME }}
+      DOCKER_REPOSITORY_PASSWORD: ${{ secrets.DOCKER_REPOSITORY_PASSWORD }}
+      DOCKER_REPOSITORY_TAG: ${{ secrets.DOCKER_REPOSITORY_USERNAME }}/show-n-tell-api
+      DATABASE_CONNECTION_STRING: ${{ secrets.DATABASE_CONNECTION_STRING }}
       BLOB_STORAGE: ${{ secrets.BLOB_STORAGE }}
       APPLICATION_INSIGHTS_KEY: ${{ secrets.APPLICATION_INSIGHTS_KEY }}
       SURGE_TOKEN: ${{ secrets.SURGE_TOKEN }}
@@ -41,9 +42,9 @@ jobs:
       with:
         creds: ${{ env.AZURE_CREDENTIALS }}
 
-    - name: Login to Azure Container Registry
+    - name: Login to Docker
       if: github.event_name != 'pull_request'
-      run: docker login showntellapi.azurecr.io -u ${{ env.AZURE_REGISTRY_USERNAME }} -p ${{ env.AZURE_REGISTRY_PASSWORD }}
+      run: docker login -u ${{ env.DOCKER_REPOSITORY_USERNAME }} -p ${{ env.DOCKER_REPOSITORY_PASSWORD }}
         
     - name: Install API dependencies
       run: dotnet restore
@@ -67,17 +68,17 @@ jobs:
 
     - name: Build API Docker Image
       if: github.event_name != 'pull_request'
-      run: docker build --rm -f "src/api/Dockerfile" -t showntellapi.azurecr.io/api "src/api" --build-arg DATABASE="${{ env.DATABASE }}" --build-arg BLOB_STORAGE="${{ env.BLOB_STORAGE }}" --build-arg APPLICATION_INSIGHTS_KEY="${{ env.APPLICATION_INSIGHTS_KEY }}"
+      run: docker build --rm -f "src/api/Dockerfile" -t ${{ env.DOCKER_REPOSITORY_TAG }} "src/api" --build-arg DATABASE="${{ env.DATABASE_CONNECTION_STRING }}" --build-arg BLOB_STORAGE="${{ env.BLOB_STORAGE }}" --build-arg APPLICATION_INSIGHTS_KEY="${{ env.APPLICATION_INSIGHTS_KEY }}"
 
-    - name: Deploy API to Azure Container Registry
+    - name: Deploy API to Docker Repository
       if: github.event_name != 'pull_request'
-      run: docker push showntellapi.azurecr.io/api
+      run: docker push ${{ env.DOCKER_REPOSITORY_TAG }}
 
     - name: Deploy API to Azure Container Instance
       if: github.event_name != 'pull_request'
       uses: azure/CLI@v1
       with:
-        inlineScript: az container restart --name showntellapi --resource-group show-n-tell
+        inlineScript: az container restart --name show-n-tell-api --resource-group show-n-tell
 
     - name: Deploy Vue to Surge
       if: github.event_name != 'pull_request'
