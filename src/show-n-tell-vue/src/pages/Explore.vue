@@ -48,6 +48,7 @@
 
 <script>
 import UnauthorizedError from '../errors/unauthorized-error'
+import NotFoundError from '../errors/not-found-error'
 
 import ImagePostComment from '../components/image-posts/ImagePostComment'
 import ImagePostCommentList from '../components/image-posts/ImagePostCommentList'
@@ -110,14 +111,7 @@ export default {
     
     // If initial id is provided, show the image with the id.
     if(initialImageId) {
-      const image = await this.imagePostService.getById(initialImageId);
-  
-      if(image) {
-        this.images.push(image)
-      } else {
-        this.noImageMessage = "The selected image does not exist."
-        this.currentImageIndex = -1
-      }
+      await this.getImage(initialImageId)
     // If no initial id is provided, show a random image.
     } else {
       await this.getRandomImage()
@@ -126,21 +120,35 @@ export default {
     this.isLoading = false
   },
   methods: {
+    getImage: async function(id) {
+      this.isLoading = true
+
+      try {
+        const image = await this.imagePostService.getById(initialImageId);
+        
+        this.images.push(image)
+      } catch (error) {
+        this.noImageMessage = "The selected image does not exist."
+        this.currentImageIndex = -1
+      }
+
+      this.isLoading = false
+    },
     getRandomImage: async function() {
       this.isLoading = true
 
-      let newImage = await this.randomImagePostService.getRandom();
-
-      if(newImage) {
-        // If the new image already exists in the history, add the already existing image.
+      try {
+        let newImage = await this.randomImagePostService.getRandom();
+        
         let existingImage = this.images.find(p => p.id === newImage.id)
 
+        // If the new image already exists in the history, add the already existing image.
         if(existingImage) {
           this.images.push(existingImage)
         } else {
           this.images.push(newImage)
         }
-      } else {
+      } catch (error) {
         this.disableViewNextImage()
       }
 

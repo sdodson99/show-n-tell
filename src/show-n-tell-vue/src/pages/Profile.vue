@@ -41,6 +41,7 @@
 
 <script>
 import UnauthorizedError from '../errors/unauthorized-error'
+import NotFoundError from '../errors/not-found-error'
 import ImagePostListing from '../components/image-posts/ImagePostListing'
 
 export default {
@@ -104,7 +105,10 @@ export default {
 
                 this.profile = profile
             } catch (error) {
-                this.profileFound = false
+                if(error instanceof NotFoundError)
+                {
+                    this.profileFound = false
+                }
             }
             
             this.isLoading = false;
