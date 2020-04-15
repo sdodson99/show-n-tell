@@ -50,7 +50,9 @@ class APIGoogleAuthenticationService{
      * @returns {boolean} True/false for success.
      */
     logout() {
-        this.userService.clearUser() && this.tokenService.clearToken() 
+        this.userService.clearUser()
+        this.tokenService.clearToken() 
+        
         this.publish(AuthenticationEvents.LOGOUT, false)
 
         return true

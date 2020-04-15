@@ -72,7 +72,9 @@ export default {
             this.imagePost.likes = await this.likeVueService.unlikeImagePost(this.imagePost)
         },
         viewImagePost: function() {
-            this.$router.push({path: `/explore/${this.imagePost.id}`})
+            if(this.canView) {
+                this.$router.push({path: `/explore/${this.imagePost.id}`})
+            }
         },
         editImagePost: function() {
             this.$router.push({path: `/imagePosts/${this.imagePost.id}/edit`})

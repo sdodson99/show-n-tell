@@ -14,13 +14,14 @@ import APIClient from "./authentication-api-client"
 const baseUrl = process.env.VUE_APP_API_BASE_URL
 const tokenService = new LocalStorageTokenService();
 const userService = new LocalStorageUserService();
-const apiClient = new APIClient(tokenService, userService);
+const authenticationService = new APIGoogleAuthenticationService(baseUrl, tokenService, userService);
+const apiClient = new APIClient(tokenService, authenticationService);
 
 /**
  * Singleton container of services for the application.
  */
 const ServiceContainer = {
-  AuthenticationService: new APIGoogleAuthenticationService(baseUrl, tokenService, userService),
+  AuthenticationService: authenticationService,
   TokenService: tokenService,
   UserService: userService,
   RandomImagePostService: new APIRandomImagePostService(baseUrl, apiClient),

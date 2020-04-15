@@ -105,8 +105,6 @@ export default {
     }
   },
   created: async function() {   
-    this.isLoading = true
-    
     const initialImageId = this.$route.params.initialId;
     
     // If initial id is provided, show the image with the id.
@@ -116,15 +114,13 @@ export default {
     } else {
       await this.getRandomImage()
     }
-
-    this.isLoading = false
   },
   methods: {
     getImage: async function(id) {
       this.isLoading = true
 
       try {
-        const image = await this.imagePostService.getById(initialImageId);
+        const image = await this.imagePostService.getById(id);
         
         this.images.push(image)
       } catch (error) {

@@ -5,9 +5,9 @@ import NotFoundError from '../errors/not-found-error'
  * Make API requests with authentication.
  */
 class AuthenticationAPIClient{
-    constructor(tokenService, userService){
+    constructor(tokenService, authenticationService){
         this.tokenService = tokenService;
-        this.userService = userService;
+        this.authenticationService = authenticationService;
     }
 
     /**
@@ -21,8 +21,7 @@ class AuthenticationAPIClient{
         const response = await fetch(url, options)
 
         if(response.status === 401) {
-            this.tokenService.clearToken()
-            this.userService.clearUser()
+            this.authenticationService.logout()
 
             throw new UnauthorizedError();
         }
