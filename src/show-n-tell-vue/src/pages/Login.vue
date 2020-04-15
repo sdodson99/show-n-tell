@@ -1,17 +1,19 @@
 <template>
   <div class="d-flex flex-column align-items-center">
     <h1>Login</h1>
-    <p class="my-3 font-weight-light text-center">
-      Click below to login to your Show 'N Tell account with Google.
-    </p>
-    <GoogleLogin
-      class="my-3"
-      :params="googleParams"
-      :renderParams="googleRenderParams"
-      :onSuccess="onLoginSuccess"
-      :onFailure="onLoginFailure"
-      >Login</GoogleLogin
-    >
+    <div v-if="!isLoading" class="d-flex flex-column align-items-center">
+      <p class="my-3 font-weight-light">
+        Click below to login to your Show 'N Tell account with Google.
+      </p>
+      <GoogleLogin class="my-3"
+        :params="googleParams"
+        :renderParams="googleRenderParams"
+        :onSuccess="onLoginSuccess"
+        :onFailure="onLoginFailure">Login</GoogleLogin>
+    </div>
+    <div v-else class="text-center">
+      <b-spinner class="mt-4" label="Logging in..."></b-spinner>
+    </div>
   </div>
 </template>
 
@@ -34,7 +36,8 @@ export default {
       googleRenderParams: {
         width: 150,
         height: 50
-      }
+      },
+      isLoading: false
     };
   },
   components: {
@@ -42,6 +45,8 @@ export default {
   },
   methods: {
     onLoginSuccess: async function(result) {
+      this.isLoading = true
+
       const accessToken = result.getAuthResponse().id_token;
 
       if (await this.authenticationService.login(accessToken)) {
@@ -53,6 +58,8 @@ export default {
           this.$router.push({path: "/"})
         }
       }
+
+      this.isLoading = false
     },
     onLoginFailure: function(e) {
       console.log(e);

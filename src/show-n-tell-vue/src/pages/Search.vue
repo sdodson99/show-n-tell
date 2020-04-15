@@ -1,9 +1,9 @@
 <template>
     <div>
         <h1 class="text-center">Search results: {{ query }}</h1>
-        <div class="mt-4 text-center" 
+        <div class="text-center" 
             v-if="isLoading">
-            Searching for <b>{{ query }}</b>...
+            <b-spinner class="mt-4 text-center" label="Searching..."></b-spinner>
         </div>
         <div class="mt-4 text-center" 
             v-else-if="!hasImagePosts">

@@ -1,5 +1,10 @@
 <template>
-  <div class="text-center">Logging out...</div>
+  <div>
+    <div class="text-center">Logging out...</div>
+    <div class="text-center">
+      <b-spinner class="mt-4" label="Logging out..."></b-spinner>
+    </div>
+  </div>
 </template>
 
 <script>

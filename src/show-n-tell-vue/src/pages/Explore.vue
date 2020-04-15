@@ -9,7 +9,7 @@
         @click="previousImage">Previous</button>
     </div>
     <div id="image-post" class="p-1" 
-      v-if="currentImage.imageUri">
+      v-if="!isLoading && currentImage.imageUri">
       <image-post-detailed-image class="mt-3"
           maxImagePostHeight="50vh"
           :imagePost="currentImage"
@@ -36,8 +36,12 @@
       </div>
     </div>
     <div class="mt-3"
-      v-else>
+      v-else-if="!isLoading">
       <h3 class="text-center">{{ noImageMessage }}</h3>
+    </div>
+    <div class="text-center"
+        v-else>
+        <b-spinner class="mt-4 text-center" label="Loading..."></b-spinner>
     </div>
   </div>
 </template>
@@ -69,7 +73,8 @@ export default {
       images: [],
       currentImageIndex: 0,
       noImageMessage: "",
-      canViewNext: true
+      canViewNext: true,
+      isLoading: true
     }
   },
   computed: {
@@ -98,7 +103,9 @@ export default {
       return `/explore/${this.currentImage.id}`
     }
   },
-  created: async function() {    
+  created: async function() {   
+    this.isLoading = true
+    
     const initialImageId = this.$route.params.initialId;
     
     // If initial id is provided, show the image with the id.
@@ -113,36 +120,36 @@ export default {
       }
     // If no initial id is provided, show a random image.
     } else {
-      await this.getInitialRandomImage()
+      await this.getRandomImage()
     }
+
+    this.isLoading = false
   },
   methods: {
-    getInitialRandomImage: async function() {
-      const image = await this.randomImagePostService.getRandom();     
+    getRandomImage: async function() {
+      this.isLoading = true
 
-      if(image) {
-        this.images.push(image)
-        this.$route.params.initialId = image.id
+      let newImage = await this.randomImagePostService.getRandom();
+
+      if(newImage) {
+        // If the new image already exists in the history, add the already existing image.
+        let existingImage = this.images.find(p => p.id === newImage.id)
+
+        if(existingImage) {
+          this.images.push(existingImage)
+        } else {
+          this.images.push(newImage)
+        }
       } else {
         this.disableViewNextImage()
       }
+
+      this.isLoading = false
     },
     nextImage: async function() {
       // If the last image is being shown, we need to ask for another image.
       if(this.isShowingLastImage) {
-        let newImage = await this.randomImagePostService.getRandom();
-
-        if(newImage) {
-          // If the new image already exists in the history, add the already existing image.
-          let existingImage = this.images.find(p => p.id === newImage.id)
-          if(existingImage) {
-            this.images.push(existingImage)
-          } else {
-            this.images.push(newImage)
-          }
-        } else {
-          this.disableViewNextImage()
-        }
+        await this.getRandomImage()
       }
       
       this.currentImageIndex++;
@@ -174,7 +181,7 @@ export default {
 
       // Get an initial image if length is 0.
       if(this.images.length === 0) {
-        await this.getInitialRandomImage()
+        await this.getRandomImage()
       }
 
       // Coerce current image index to the last image available if index larger than images length.

@@ -22,7 +22,7 @@
                         @click="editImagePost">Edit</li>
                     <li class="px-3 py-2 my-dropdown-item" 
                         v-if="isUsersImagePost" 
-                        @click="deleteImagePost">Delete</li>
+                        @click="deleteImagePost">{{ isDeleting ? "Deleting..." : "Delete"}}</li>
                 </ul>
             </more-dropdown>
         </div>
@@ -51,6 +51,11 @@ export default {
         maxImagePostHeight: String,
         canView: Boolean
     },
+    data: function() {
+        return {
+            isDeleting: false
+        }
+    },
     computed: {
         isUsersImagePost: function() {
             return this.currentUser !== null && this.currentUser.username === this.imagePost.username
@@ -73,6 +78,8 @@ export default {
             this.$router.push({path: `/imagePosts/${this.imagePost.id}/edit`})
         },
         deleteImagePost: async function() {
+            this.isDeleting = true
+
             const imagePostId = this.imagePost.id
 
             try {
@@ -86,6 +93,8 @@ export default {
                     this.$router.push({path: "/login", query: { back: true }})
                 }
             }
+
+            this.isDeleting = false
         }
     }
 }
@@ -104,6 +113,7 @@ ul{
     border: 1px solid var(--color-primary-dark);
     border-radius: 3px;
     background: white;
+    min-width: 125px;
 }
 
 .my-dropdown-item{

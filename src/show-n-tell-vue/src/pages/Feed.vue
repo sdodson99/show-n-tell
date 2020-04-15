@@ -39,7 +39,7 @@
         </div>
         <div class="text-center"
             v-else-if="!isLoaded">
-            <div class="mt-4">Loading your feed...</div>
+            <b-spinner class="mt-4 text-center" label="Loading feed..."></b-spinner>
         </div>
     </div>
 </template>

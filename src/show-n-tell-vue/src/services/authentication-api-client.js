@@ -1,4 +1,5 @@
 import UnauthorizedError from '../errors/unauthorized-error'
+import NotFoundError from '../errors/not-found-error'
 
 /**
  * Make API requests with authentication.
@@ -24,6 +25,10 @@ class AuthenticationAPIClient{
             this.userService.clearUser()
 
             throw new UnauthorizedError();
+        }
+
+        if(response.status === 404) {
+            throw new NotFoundError();
         }
 
         return response;

@@ -1,35 +1,40 @@
 <template>
     <div>
-        <div v-if="profileNotFound">
-            <h1 class="text-center">The profile does not exist.</h1>
-            <div class="mt-5 text-center pointer" @click="viewExplore"><u>Go explore instead.</u></div>
+        <div v-if="profileFound">
+            <h1 class="text-center">{{ username }}</h1>
+            <div v-if="!isLoading">
+                <div class="d-flex flex-column align-items-center">
+                    <div v-if="!isUsersProfile" class="mt-4">
+                        <button v-if="!isFollowing" type="submit" @click="followProfile">Follow</button>
+                        <button v-else type="submit" @click="unfollowProfile">Unfollow</button>
+                    </div>
+                    <div class="mt-4 d-flex flex-column flex-sm-row">
+                        <div> {{ followerCount }} followers</div>
+                        <div class="mx-3 d-none d-sm-block">|</div>
+                        <div class="mt-2 mt-sm-0"> {{ followingCount }} following</div>
+                    </div>
+                </div>
+                <h3 class="mt-4 text-center text-lg-left">Image Posts</h3>
+                <div v-if="hasNoImagePosts && isUsersProfile" class="mt-4 text-center">
+                    You have not posted any images yet.
+                </div>
+                <div v-else-if="hasNoImagePosts" class="mt-4 text-center">
+                    This user has not posted any images yet.
+                </div>
+                <image-post-listing 
+                    :image-posts="profile.imagePosts" 
+                    :like-vue-service="likeVueService"
+                    :image-post-service="imagePostService"
+                    :current-user="currentUser"
+                    @imagePostDeleted="imagePostDeleted"/>
+            </div>
+            <div v-else class="text-center">
+                <b-spinner class="mt-4" label="Loading profile..."></b-spinner>
+            </div>
         </div>
         <div v-else>
-            <h1 class="text-center">{{ profile.username }}</h1>
-            <div class="d-flex flex-column align-items-center">
-                <div v-if="isLoaded && !isUsersProfile" class="mt-4">
-                    <button v-if="!isFollowing" type="submit" @click="followProfile">Follow</button>
-                    <button v-else type="submit" @click="unfollowProfile">Unfollow</button>
-                </div>
-                <div class="mt-4 d-flex flex-column flex-sm-row">
-                    <div> {{ followerCount }} followers</div>
-                    <div class="mx-3 d-none d-sm-block">|</div>
-                    <div class="mt-2 mt-sm-0"> {{ followingCount }} following</div>
-                </div>
-            </div>
-            <h3 class="mt-4 text-center text-lg-left">Image Posts</h3>
-            <div v-if="hasNoImagePosts && isUsersProfile" class="mt-4 text-center">
-                You have not posted any images yet.
-            </div>
-            <div v-else-if="hasNoImagePosts" class="mt-4 text-center">
-                This user has not posted any images yet.
-            </div>
-            <image-post-listing 
-                :image-posts="profile.imagePosts" 
-                :like-vue-service="likeVueService"
-                :image-post-service="imagePostService"
-                :current-user="currentUser"
-                @imagePostDeleted="imagePostDeleted"/>
+            <h1 class="text-center">The profile '{{ username }}' does not exist.</h1>
+            <div class="mt-3 text-center pointer" @click="viewExplore"><u>Go explore instead.</u></div>
         </div>
     </div>
 </template>
@@ -52,14 +57,15 @@ export default {
     },
     data: function() {
         return {
+            username: "",
             profile: {},
-            isLoaded: false,
-            profileNotFound: false
+            isLoading: true,
+            profileFound: true
         }
     },
     computed: {
         hasNoImagePosts: function() {
-            return this.isLoaded && this.profile.imagePosts && this.profile.imagePosts.length === 0
+            return this.profile.imagePosts && this.profile.imagePosts.length === 0
         },
         isUsersProfile: function() {
             return this.currentUser !== null && this.currentUser.username === this.profile.username
@@ -78,27 +84,30 @@ export default {
         }
     },
     created: function() {
-        this.loadImagePosts()
+        this.loadProfile()
     },
     watch: {
         '$route.params.username': async function() {
-            await this.loadImagePosts()
+            await this.loadProfile()
         }
     },
     methods: {
-        loadImagePosts: async function() {
-            const username = this.$route.params.username
+        loadProfile: async function() {
+            this.isLoading = true
+            this.profileFound = true
+
+            this.username = this.$route.params.username
 
             try {
-                const profile = await this.profileService.getProfile(username)
+                const profile = await this.profileService.getProfile(this.username)
                 profile.imagePosts = profile.imagePosts.sort((a, b) => new Date(b.dateCreated) - new Date(a.dateCreated))
 
                 this.profile = profile
             } catch (error) {
-                this.profileNotFound = true
+                this.profileFound = false
             }
             
-            this.isLoaded = true;
+            this.isLoading = false;
         },
         followProfile: async function() {
             try {
