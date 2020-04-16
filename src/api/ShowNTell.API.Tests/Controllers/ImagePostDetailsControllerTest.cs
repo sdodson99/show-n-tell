@@ -55,6 +55,79 @@ namespace ShowNTell.API.Tests.Controllers
         }
 
         [Test]
+        public async Task UpdateComment_WithValidUpdateRequest_ReturnsOk()
+        {
+            _mockCommentService.Setup(s => s.IsCommentOwner(It.IsAny<int>(), It.IsAny<string>())).ReturnsAsync(true);
+            _mockCommentService.Setup(s => s.Update(It.IsAny<int>(), It.IsAny<string>())).ReturnsAsync(new Comment());
+            Type expectedType = typeof(OkObjectResult);
+
+            ActionResult<CommentResponse> actual = await _controller.UpdateComment(It.IsAny<int>(), new UpdateCommentRequest());
+            ActionResult actualResult = actual.Result;
+            
+            Assert.IsAssignableFrom(expectedType, actualResult); 
+        }
+
+        [Test]
+        public async Task UpdateComment_WithCommentNotOwnedByUser_ReturnsForbid()
+        {
+            _mockCommentService.Setup(s => s.IsCommentOwner(It.IsAny<int>(), It.IsAny<string>())).ReturnsAsync(false);
+            Type expectedType = typeof(ForbidResult);
+
+            ActionResult<CommentResponse> actual = await _controller.UpdateComment(It.IsAny<int>(), new UpdateCommentRequest());
+            ActionResult actualResult = actual.Result;
+            
+            Assert.IsAssignableFrom(expectedType, actualResult); 
+        }
+
+        [Test]
+        public async Task UpdateComment_WithNonExistingComment_ReturnsNotFound()
+        {
+            _mockCommentService.Setup(s => s.IsCommentOwner(It.IsAny<int>(), It.IsAny<string>())).ReturnsAsync(true);
+            _mockCommentService.Setup(s => s.Update(It.IsAny<int>(), It.IsAny<string>())).ThrowsAsync(new EntityNotFoundException());
+            Type expectedType = typeof(NotFoundResult);
+
+            ActionResult<CommentResponse> actual = await _controller.UpdateComment(It.IsAny<int>(), new UpdateCommentRequest());
+            ActionResult actualResult = actual.Result;
+            
+            Assert.IsAssignableFrom(expectedType, actualResult); 
+        }
+
+        [Test]
+        public async Task DeleteComment_WithValidCommentDelete_ReturnsNoContent()
+        {
+            _mockCommentService.Setup(s => s.CanDelete(It.IsAny<int>(), It.IsAny<string>())).ReturnsAsync(true);
+            _mockCommentService.Setup(s => s.Delete(It.IsAny<int>())).ReturnsAsync(true);
+            Type expectedType = typeof(NoContentResult);
+
+            IActionResult actual = await _controller.DeleteComment(It.IsAny<int>());
+
+            Assert.IsAssignableFrom(expectedType, actual); 
+        }
+
+        [Test]
+        public async Task DeleteComment_WithUnsuccessfulCommentDelete_ReturnsNotFound()
+        {
+            _mockCommentService.Setup(s => s.CanDelete(It.IsAny<int>(), It.IsAny<string>())).ReturnsAsync(true);
+            _mockCommentService.Setup(s => s.Delete(It.IsAny<int>())).ReturnsAsync(false);
+            Type expectedType = typeof(NotFoundResult);
+
+            IActionResult actual = await _controller.DeleteComment(It.IsAny<int>());
+
+            Assert.IsAssignableFrom(expectedType, actual); 
+        }
+
+        [Test]
+        public async Task DeleteComment_WithCommentOrImagePostNotOwnedByUser_ReturnsForbid()
+        {
+            _mockCommentService.Setup(s => s.CanDelete(It.IsAny<int>(), It.IsAny<string>())).ReturnsAsync(false);
+            Type expectedType = typeof(ForbidResult);
+
+            IActionResult actual = await _controller.DeleteComment(It.IsAny<int>());
+
+            Assert.IsAssignableFrom(expectedType, actual); 
+        }
+
+        [Test]
         public async Task LikeImagePost_WithValidLike_ReturnsOk()
         {
             _mockLikeService.Setup(s => s.LikeImagePost(It.IsAny<int>(), It.IsAny<string>())).ReturnsAsync(new Like());
