@@ -13,14 +13,18 @@
             You must be logged in to comment.
          </div>
          <ul v-if="hasComments">
-             <li class="comment-item py-3"
+             <li class="comment-item pt-2 pb-4"
                 v-for="comment in comments"
                 :key="comment.id">
                 <image-post-comment
                     :content="comment.content"
                     :username="comment.username"
+                    :canEdit="canEdit(comment)"
+                    :canDelete="canDelete(comment)"
                     :dateCreated="comment.dateCreated"
-                    @usernameClicked="(username) => $emit('usernameClicked', username)"/>
+                    @usernameClicked="(username) => $emit('usernameClicked', username)"
+                    @deleted="() => $emit('deleted', comment.id)"
+                    @edited="(content) => $emit('edited', {id: comment.id, content: content})"/>
              </li>
          </ul>
          <div class="mt-2 text-center" 
@@ -48,7 +52,9 @@ export default {
         canComment: {
             type: Boolean,
             default: false
-        }
+        },
+        currentUser: Object,
+        imagePostUserEmail: String
     },
     data: function() {
         return {
@@ -64,6 +70,12 @@ export default {
         }
     },
     methods: {
+        canEdit: function(comment) {
+            return comment.userEmail === this.currentUser.email
+        },
+        canDelete: function(comment) {
+            return this.canEdit(comment) || this.imagePostUserEmail === this.currentUser.email
+        },
         submit: function() {
             if(this.validComment) {
                 this.$emit('commented', this.newCommentContent)

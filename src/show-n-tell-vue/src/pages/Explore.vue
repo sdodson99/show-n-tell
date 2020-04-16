@@ -21,15 +21,19 @@
       <div class="my-4">
         <image-post-comment class="text-center text-sm-left"
           :content="currentImage.description"
+          :canEdit="false"
+          :canDelete="false"
           fallbackContent="No description available."
           :username="currentImage.username"
           :dateCreated="currentImage.dateCreated"
           @usernameClicked="(username) => viewProfile(username)"/>
       </div>
-      <div class="my-5 text-center text-sm-left">
+      <div class="my-4 text-center text-sm-left">
         <h3>Comments</h3>
         <image-post-comment-list class="mt-3" 
           :comments="currentImage.comments"
+          :currentUser="currentUser"
+          :imagePostUserEmail="currentImage.userEmail"
           :can-comment="isLoggedIn"
           @commented="createComment"
           @usernameClicked="viewProfile"/>

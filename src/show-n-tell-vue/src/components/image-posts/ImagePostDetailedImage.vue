@@ -13,17 +13,15 @@
                 @liked="likeImage"
                 @unliked="unlikeImage"/>
             <more-dropdown v-if="canView || isUsersImagePost">
-                <ul class="my-dropdown">
-                    <li class="px-3 py-2 my-dropdown-item" 
-                        v-if="canView"
-                        @click="viewImagePost">View</li>
-                    <li class="px-3 py-2 my-dropdown-item"
-                        v-if="isUsersImagePost" 
-                        @click="editImagePost">Edit</li>
-                    <li class="px-3 py-2 my-dropdown-item" 
-                        v-if="isUsersImagePost" 
-                        @click="deleteImagePost">{{ isDeleting ? "Deleting..." : "Delete"}}</li>
-                </ul>
+                <more-dropdown-item
+                    v-if="canView"
+                    @click="viewImagePost">View</more-dropdown-item>
+                <more-dropdown-item
+                    v-if="isUsersImagePost" 
+                    @click="editImagePost">Edit</more-dropdown-item>
+                <more-dropdown-item
+                    v-if="isUsersImagePost" 
+                    @click="deleteImagePost">{{ isDeleting ? "Deleting..." : "Delete"}}</more-dropdown-item>
             </more-dropdown>
         </div>
     </div>
@@ -35,13 +33,15 @@ import UnauthorizedError from '../../errors/unauthorized-error'
 import ImagePostImage from './ImagePostImage'
 import ImagePostFeedback from './ImagePostFeedback'
 import MoreDropdown from '../utilities/MoreDropdown'
+import MoreDropdownItem from '../utilities/MoreDropdownItem'
 
 export default {
     name: "ImagePostDetailedImage",
     components: {
         ImagePostImage,
         ImagePostFeedback,
-        MoreDropdown
+        MoreDropdown,
+        MoreDropdownItem
     },
     props: {
         imagePost: Object,
@@ -103,27 +103,9 @@ export default {
 </script>
 
 <style scoped>
-ul{
-    list-style: none;
-}
 
 .pointer {
     cursor: pointer;
 }
 
-.my-dropdown{
-    border: 1px solid var(--color-primary-dark);
-    border-radius: 3px;
-    background: white;
-    min-width: 125px;
-}
-
-.my-dropdown-item{
-    white-space: nowrap;
-    cursor: pointer;
-}
-
-.my-dropdown-item:hover {
-    background: var(--color-grayscale-light);
-}
 </style>

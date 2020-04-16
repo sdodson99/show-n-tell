@@ -13,6 +13,8 @@
                 <div class="my-4">
                     <image-post-comment
                         :content="post.description"
+                        canEdit="false"
+                        canDelete="false"
                         fallbackContent="No description available."
                         :username="post.username"
                         :dateCreated="post.dateCreated"

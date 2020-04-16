@@ -1,17 +1,36 @@
 <template>
     <div>
-        <div class="d-flex flex-column flex-sm-row">
-            <div class="username font-weight-bold"
-                @click="() => $emit('usernameClicked', username)">
-                {{ username }}
+        <div class="d-flex flex-column flex-sm-row align-items-center justify-content-between">
+            <div class="d-flex flex-column flex-sm-row">
+                <div class="username font-weight-bold"
+                    @click="() => $emit('usernameClicked', username)">
+                    {{ username }}
+                </div>
+                <div class="mx-3 d-none d-sm-block">|</div>
+                <div>
+                    {{ dateCreated.toLocaleDateString() }}
+                </div>
             </div>
-            <div class="mx-3 d-none d-sm-block">|</div>
-            <div>
-                {{ dateCreated.toLocaleDateString() }}
-            </div>
+            <more-dropdown ref="dropdown">
+                <more-dropdown-item
+                    v-if="canEdit"
+                    @click="editComment">Edit</more-dropdown-item>
+                <more-dropdown-item
+                    v-if="canDelete"
+                    @click="deleteComment">{{ isDeleting ? "Deleting..." : "Delete" }}</more-dropdown-item>
+            </more-dropdown>
         </div>
         <div class="mt-2">
-            {{ content }}
+            <div v-if="!isEditing">
+                {{ contentData }}
+            </div>
+            <div class="text-right" v-else>
+                <textarea class="form-control" placeholder="New comment..." 
+                    v-model="editContent"></textarea>
+                <button type="button" class="my-3" 
+                    :disabled="!validComment"
+                    @click="submitEditComment">Submit</button>
+            </div>
         </div>
         <div v-if="!content" class="mt-2 font-weight-light">
             <i>{{ fallbackContent }}</i>
@@ -20,13 +39,50 @@
 </template>
 
 <script>
+import MoreDropdown from '../utilities/MoreDropdown'
+import MoreDropdownItem from '../utilities/MoreDropdownItem'
+
 export default {
     name: "ImagePostComment",
+    components: {
+        MoreDropdown,
+        MoreDropdownItem
+    },
     props: {
         username: String,
+        canDelete: Boolean,
+        canEdit: Boolean,
         content: String,
         fallbackContent: String,
         dateCreated: Date
+    },
+    data: function() {
+        return {
+            isDeleting: false,
+            isEditing: false,
+            contentData: this.content,
+            editContent: this.content
+        }
+    },
+    computed: {
+        validComment: function() {
+            return this.editContent
+        }
+    },
+    methods: {
+        editComment: function() {
+            this.isEditing = true;
+            this.$refs.dropdown.close()
+        },
+        deleteComment: function() {
+            this.isDeleting = true;
+            this.$emit('deleted')
+        },
+        submitEditComment: function() {
+            this.$emit('edited', this.editContent)
+            this.contentData = this.editContent
+            this.isEditing = false;
+        }
     }
 }
 </script>

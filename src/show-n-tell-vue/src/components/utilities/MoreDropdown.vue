@@ -1,9 +1,11 @@
 <template>
-    <div>
+    <div v-if="$slots.default">
         <img id="more" @click="toggleOpen" src="../../assets/icons/more.png"/>
-        <div id="dropdown" v-if="isOpen">
-            <div id="dropdown-content">
-                <slot id="content" class="d-flex"></slot>
+        <div id="my-dropdown" v-if="isOpenData">
+            <div id="my-dropdown-content">
+                <ul id="my-dropdown-list">
+                    <slot id="content" class="d-flex"></slot>
+                </ul>
             </div>
         </div>
     </div>
@@ -12,29 +14,43 @@
 <script>
 export default {
     name: "MoreDropdown",
+    props: {
+        isOpen: Boolean
+    },
     data: function() {
         return {
-            isOpen: false
+            isOpenData: this.isOpen
         }
     },
     methods: {
         toggleOpen: function() {
-            this.isOpen = !this.isOpen
+            this.isOpenData = !this.isOpenData
+        },
+        close: function() {
+            this.isOpenData = false
         }
     }
 }
 </script>
 
 <style scoped>
+#my-dropdown-list{
+    border: 1px solid var(--color-primary-dark);
+    list-style: none;
+    border-radius: 3px;
+    background: white;
+    min-width: 125px;
+}
+
 #more {
     cursor: pointer;
 }
 
-#dropdown {
+#my-dropdown {
     position: absolute;
 }
 
-#dropdown-content {
+#my-dropdown-content {
     position: relative;
     z-index: 1000;
     top: 0;
