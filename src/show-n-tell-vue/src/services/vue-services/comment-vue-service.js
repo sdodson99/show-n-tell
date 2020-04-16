@@ -36,6 +36,58 @@ class CommentVueService{
     }
 
     /**
+     * Update a comment on an image post.
+     * @param {ImagePost} imagePost The image post to update comments on.
+     * @param {number} commentId The id of the comment to update.
+     * @param {string} content The new comment content.
+     * @param {string} [authRedirect] A router login redirect url if authentication fails. 
+     * @returns {Array} The image post's new array of comments.
+     */
+    async updateComment(imagePost, commentId, content, authRedirect) {
+        if(!this.authenticationService.isLoggedIn()) {
+            this.redirectToLogin(authRedirect)
+        } else {
+            try {
+                const updatedComment = await this.commentService.updateComment(imagePost.id, commentId, content)
+
+                const currentCommentId = imagePost.comments.findIndex(c => c.id === commentId)
+                imagePost.comments[currentCommentId] = updatedComment
+            } catch (error) {
+                if(error instanceof UnauthorizedError){
+                    this.redirectToLogin(authRedirect)
+                }
+            }
+        }
+
+        return imagePost.comments
+    }
+
+    /**
+     * Delete a comment on an image post.
+     * @param {ImagePost} imagePost The image post to delete the comment from.
+     * @param {number} commentId The id of the comment to delete.
+     * @param {string} [authRedirect] A router login redirect url if authentication fails. 
+     * @returns {Array} The image post's new array of comments.
+     */
+    async deleteComment(imagePost, commentId, authRedirect) {
+        if(!this.authenticationService.isLoggedIn()) {
+            this.redirectToLogin(authRedirect)
+        } else {
+            try {
+                if(await this.commentService.deleteComment(imagePost.id, commentId)) {
+                    imagePost.comments = imagePost.comments.filter(c => c.id !== commentId)
+                }
+            } catch (error) {
+                if(error instanceof UnauthorizedError){
+                    this.redirectToLogin(authRedirect)
+                }
+            }
+        }
+
+        return imagePost.comments
+    }
+
+    /**
      * Redirect to the login screen.
      * @param {string} [authRedirect] A router login redirect url. 
      */

@@ -36,7 +36,9 @@
           :imagePostUserEmail="currentImage.userEmail"
           :can-comment="isLoggedIn"
           @commented="createComment"
-          @usernameClicked="viewProfile"/>
+          @usernameClicked="viewProfile"
+          @edited="editComment"
+          @deleted="deleteComment"/>
       </div>
     </div>
     <div class="mt-3"
@@ -183,6 +185,12 @@ export default {
     },
     createComment: async function(comment) {
       this.currentImage.comments = await this.commentVueService.createComment(this.currentImage, comment, this.currentImagePostRoute)
+    },
+    editComment: async function(comment) {
+      this.currentImage.comments = await this.commentVueService.updateComment(this.currentImage, comment.id, comment.content, this.currentImagePostRoute)
+    },
+    deleteComment: async function(commentId) {
+      this.currentImage.comments = await this.commentVueService.deleteComment(this.currentImage, commentId, this.currentImagePostRoute)
     },
     imagePostDeleted: async function(id) {
       this.images = this.images.filter(p => p.id !== id)

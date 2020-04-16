@@ -13,8 +13,8 @@
                 <div class="my-4">
                     <image-post-comment
                         :content="post.description"
-                        canEdit="false"
-                        canDelete="false"
+                        :canEdit="false"
+                        :canDelete="false"
                         fallbackContent="No description available."
                         :username="post.username"
                         :dateCreated="post.dateCreated"
@@ -27,7 +27,10 @@
                     <image-post-comment-list class="mt-3"
                         :comments="post.comments"
                         :canComment="isLoggedIn"
+                        :currentUser="currentUser"
                         @commented="(comment) => createComment(post, comment)"
+                        @edited="(comment) => editComment(post, comment)"
+                        @deleted="(commentId) => deleteComment(post, commentId)"
                         @usernameClicked="viewProfile"/>
                 </b-collapse>
             </li>
@@ -106,6 +109,14 @@ export default {
         },
         createComment: async function(imagePost, comment) {
             imagePost.comments = await this.commentVueService.createComment(imagePost, comment)
+        },
+        editComment: async function(imagePost, comment) {
+            console.log('edit');
+            
+            imagePost.comments = await this.commentVueService.updateComment(imagePost, comment.id, comment.content)
+        },
+        deleteComment: async function(imagePost, commentId) {
+            imagePost.comments = await this.commentVueService.deleteComment(imagePost, commentId)
         },
         viewProfile: function(username) {
             this.$router.push({path: `/profile/${username}`})
