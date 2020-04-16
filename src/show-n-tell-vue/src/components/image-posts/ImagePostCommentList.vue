@@ -71,10 +71,10 @@ export default {
     },
     methods: {
         canEdit: function(comment) {
-            return comment.userEmail === this.currentUser.email
+            return this.currentUser && comment.userEmail === this.currentUser.email
         },
         canDelete: function(comment) {
-            return this.canEdit(comment) || this.imagePostUserEmail === this.currentUser.email
+            return this.currentUser && (this.canEdit(comment) || this.imagePostUserEmail === this.currentUser.email)
         },
         submit: function() {
             if(this.validComment) {
