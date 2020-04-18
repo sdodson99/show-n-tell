@@ -122,11 +122,16 @@ namespace ShowNTell.API
                 }
             });
 
-            services.Configure<KestrelServerOptions>(c => {
-                c.ConfigureHttpsDefaults(h => {
-                    h.ServerCertificate = new System.Security.Cryptography.X509Certificates.X509Certificate2($"Certificates/{Environment.EnvironmentName}.pfx", GetConfigurationValue("HTTPS_PASSWORD"));
-                });
-            });
+            if(Environment.IsProduction())
+            {
+                services.AddLetsEncrypt();
+            }
+
+            // services.Configure<KestrelServerOptions>(c => {
+            //     c.ConfigureHttpsDefaults(h => {
+            //         h.ServerCertificate = new System.Security.Cryptography.X509Certificates.X509Certificate2($"Certificates/{Environment.EnvironmentName}.pfx", GetConfigurationValue("HTTPS_PASSWORD"));
+            //     });
+            // });
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -168,7 +173,7 @@ namespace ShowNTell.API
 
         private Action<DbContextOptionsBuilder> GetDbContextOptionsBuilderAction()
         {
-            string connectionString = GetConfigurationValue("local-database");
+            string connectionString = GetConfigurationValue("database");
             return o => o.UseSqlServer(connectionString);
         }
 

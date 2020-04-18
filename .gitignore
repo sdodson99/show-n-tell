@@ -12,6 +12,5 @@ node_modules/
 *.db
 *.DS_Store
 appsettings.Production.json
-appsettings.json
 *.csproj.user
 Demo.mp4
