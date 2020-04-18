@@ -126,12 +126,6 @@ namespace ShowNTell.API
             {
                 services.AddLetsEncrypt();
             }
-
-            // services.Configure<KestrelServerOptions>(c => {
-            //     c.ConfigureHttpsDefaults(h => {
-            //         h.ServerCertificate = new System.Security.Cryptography.X509Certificates.X509Certificate2($"Certificates/{Environment.EnvironmentName}.pfx", GetConfigurationValue("HTTPS_PASSWORD"));
-            //     });
-            // });
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
