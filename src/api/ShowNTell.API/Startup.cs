@@ -15,6 +15,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using SeanDodson.GoogleJWTAuthentication.Extensions;
+using ShowNTell.API.Models;
 using ShowNTell.API.Models.MappingProfiles;
 using ShowNTell.API.Models.Requests;
 using ShowNTell.API.Services.CurrentUsers;
@@ -106,6 +107,10 @@ namespace ShowNTell.API
             services.AddSingleton<IRandomImagePostService, EFRandomImagePostService>();
             services.AddSingleton<IImageStorage>(GetImageStorage());
             services.AddSingleton<AdminDataSeeder>();
+            services.AddSingleton<WebHookTokenConfiguration>(new WebHookTokenConfiguration()
+            {
+                ImageBlobDeleteToken = GetConfigurationValue("IMAGE_BLOB_DELETE_TOKEN")
+            });
 
             Action<DbContextOptionsBuilder> dbContextOptionsBuilderAction = GetDbContextOptionsBuilderAction();
             services.AddSingleton<IShowNTellDbContextFactory>(new ShowNTellDbContextFactory(dbContextOptionsBuilderAction));
