@@ -1,11 +1,13 @@
 using System;
 using System.IO;
+using System.Net;
 using System.Reflection;
 using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -119,6 +121,12 @@ namespace ShowNTell.API
                     options.AddApplicationInsights(instrumentationKey);
                 }
             });
+
+            services.Configure<KestrelServerOptions>(c => {
+                c.ConfigureHttpsDefaults(h => {
+                    h.ServerCertificate = new System.Security.Cryptography.X509Certificates.X509Certificate2($"Certificates/{Environment.EnvironmentName}.pfx", GetConfigurationValue("HTTPS_PASSWORD"));
+                });
+            });
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -160,7 +168,7 @@ namespace ShowNTell.API
 
         private Action<DbContextOptionsBuilder> GetDbContextOptionsBuilderAction()
         {
-            string connectionString = GetConfigurationValue("DATABASE");
+            string connectionString = GetConfigurationValue("local-database");
             return o => o.UseSqlServer(connectionString);
         }
 
