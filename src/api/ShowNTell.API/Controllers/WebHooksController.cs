@@ -87,7 +87,7 @@ namespace ShowNTell.API.Controllers
                 else
                 {
                     _logger.LogError("Failed to delete image post record.");
-                    return BadRequest();
+                    return NotFound();
                 }
             }
 

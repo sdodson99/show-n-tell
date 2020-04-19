@@ -131,7 +131,9 @@ namespace ShowNTell.API
 
             if(Environment.IsProduction())
             {
-                services.AddLetsEncrypt();
+                services.AddLetsEncrypt().PersistCertificatesToAzureKeyVault(o => {
+                    o.AzureKeyVaultEndpoint = "https://snt-https.vault.azure.net/";
+                });
             }
         }
 
