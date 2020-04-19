@@ -23,6 +23,7 @@ namespace ShowNTell.EntityFramework.Tests.Services
         private const int _existingId = 1000;
         private const string _existingEmail = "existing@gmail.com";
         private const string _existingUri = "C:/images/test.jpg";
+        private const string _nonExistingUri = "C:/fake.png";
         private const int _nonExistingId = 1001;
         private const string _existingTagContent = "Funny";
 
@@ -249,6 +250,22 @@ namespace ShowNTell.EntityFramework.Tests.Services
         public async Task Delete_WithNonExistingImagePostId_ReturnsFalse()
         {
             bool success = await _imagePostService.Delete(_nonExistingId);
+
+            Assert.IsFalse(success);
+        }
+
+        [Test]
+        public async Task DeleteByUri_WithExistingImagePostId_ReturnsTrue()
+        {
+            bool success = await _imagePostService.DeleteByUri(_existingUri);
+            
+            Assert.IsTrue(success);
+        }
+
+        [Test]
+        public async Task DeleteByUri_WithNonExistingImagePostId_ReturnsFalse()
+        {
+            bool success = await _imagePostService.DeleteByUri(_nonExistingUri);
 
             Assert.IsFalse(success);
         }

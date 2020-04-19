@@ -123,6 +123,27 @@ namespace ShowNTell.EntityFramework.Services
             }
         }
 
+        public async Task<bool> DeleteByUri(string uri)
+        {
+            using (ShowNTellDbContext context = _contextFactory.CreateDbContext())
+            {
+                bool success = false;
+
+                ImagePost storedImagePost = await context.ImagePosts
+                    .FirstOrDefaultAsync(p => p.ImageUri == uri);
+
+                if (storedImagePost != null)
+                {
+                    context.ImagePosts.Remove(storedImagePost);
+                    await context.SaveChangesAsync();
+
+                    success = true;
+                }
+
+                return success;
+            }
+        }
+
         public async Task<bool> IsAuthor(int id, string email)
         {
             using (ShowNTellDbContext context = _contextFactory.CreateDbContext())

@@ -55,6 +55,13 @@ namespace ShowNTell.Domain.Services
         Task<bool> Delete(int id);
 
         /// <summary>
+        /// Delete an image post by URI.
+        /// </summary>
+        /// <param name="uri">The URI of the image post to delete.</param>
+        /// <returns>True/false for success.</returns>
+        Task<bool> DeleteByUri(string uri);
+
+        /// <summary>
         /// Check if a user is the author an image post.
         /// </summary>
         /// <param name="id">The id of the image post.</param>
