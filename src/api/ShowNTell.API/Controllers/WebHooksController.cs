@@ -7,7 +7,9 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using ShowNTell.API.Models;
+using ShowNTell.API.Services.EventGridImageBlobDeletes;
 using ShowNTell.API.Services.EventGridValidations;
+using ShowNTell.Domain.Exceptions;
 using ShowNTell.Domain.Services;
 
 namespace ShowNTell.API.Controllers
@@ -16,19 +18,17 @@ namespace ShowNTell.API.Controllers
     [Route("hooks")]
     public class WebHooksController : ControllerBase
     {
-        private readonly IImagePostService _imagePostService;
-        private readonly EventGridValidationService _eventGridValidationService;
-        private readonly WebHookTokenConfiguration _tokens;
+        private readonly IEventGridImageBlobDeleteService _eventGridImageBlobDeleteService;
+        private readonly IEventGridValidationService _eventGridValidationService;
         private readonly ILogger<WebHooksController> _logger;
 
-        public WebHooksController(IImagePostService imagePostService, EventGridValidationService eventGridValidationService, 
-            WebHookTokenConfiguration tokens, ILogger<WebHooksController> logger)
+        public WebHooksController(IEventGridImageBlobDeleteService eventGridImageBlobDeleteService, IEventGridValidationService eventGridValidationService, ILogger<WebHooksController> logger)
         {
-            _imagePostService = imagePostService;
+            _eventGridImageBlobDeleteService = eventGridImageBlobDeleteService;
             _eventGridValidationService = eventGridValidationService;
-            _tokens = tokens;
             _logger = logger;
         }
+
 
         /// <summary>
         /// Handle an image blob delete event from Azure Storage.
@@ -36,7 +36,7 @@ namespace ShowNTell.API.Controllers
         /// <param name="events">The events to handle.</param>
         /// <param name="token">The authentication token for the delete event.</param>
         [HttpPost("handle-image-blob-delete")]
-        public async Task<IActionResult> ImageBlobDelete([FromBody] EventGridEvent[] events, [FromQuery] string token)
+        public async Task<IActionResult> HandleImageBlobDelete([FromBody] EventGridEvent[] events, [FromQuery] string token)
         {
             _logger.LogInformation("Received image blob delete event.");
 
@@ -68,26 +68,21 @@ namespace ShowNTell.API.Controllers
             {
                 _logger.LogInformation("Handling image blob delete.");
 
-                if(token != _tokens.ImageBlobDeleteToken)
+                try
+                {
+                    if(await _eventGridImageBlobDeleteService.DeleteImagePost(gridEvent, token))
+                    {
+                        _logger.LogInformation("Successfully deleted image post record.");
+                        return NoContent();
+                    }
+                    
+                    _logger.LogError("Failed to delete image post record.");
+                    return NotFound();
+                }
+                catch (InvalidTokenException)
                 {
                     _logger.LogError("Invalid image blob delete event token.");
                     return Unauthorized();
-                }
-
-                StorageBlobDeletedEventData eventData = JsonConvert.DeserializeObject<StorageBlobDeletedEventData>(gridEvent.Data.ToString());
-                _logger.LogInformation("URL of deleted image blob: {0}.", eventData.Url);
-
-                bool success = await _imagePostService.DeleteByUri(eventData.Url);
-
-                if(success)
-                {
-                    _logger.LogInformation("Successfully deleted image post record.");
-                    return NoContent();
-                }
-                else
-                {
-                    _logger.LogError("Failed to delete image post record.");
-                    return NotFound();
                 }
             }
 

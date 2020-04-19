@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace ShowNTell.API.Services.EventGridValidations
 {
-    public class EventGridValidationService
+    public class EventGridValidationService : IEventGridValidationService
     {
         /// <summary>
         /// Validate an event grid subscription event.
@@ -17,7 +17,7 @@ namespace ShowNTell.API.Services.EventGridValidations
             string data = gridEvent.Data.ToString();
             SubscriptionValidationEventData eventData = JsonConvert.DeserializeObject<SubscriptionValidationEventData>(data);
 
-            if(eventData == null || string.IsNullOrEmpty(eventData.ValidationCode))
+            if (eventData == null || string.IsNullOrEmpty(eventData.ValidationCode))
             {
                 throw new Exception();
             }
