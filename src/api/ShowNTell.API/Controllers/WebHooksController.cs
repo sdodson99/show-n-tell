@@ -70,7 +70,7 @@ namespace ShowNTell.API.Controllers
 
                 if(token != _tokens.ImageBlobDeleteToken)
                 {
-                    _logger.LogError("Invalid image blob delete event token {0} {1}.", token, _tokens.ImageBlobDeleteToken);
+                    _logger.LogError("Invalid image blob delete event token.");
                     return Unauthorized();
                 }
 
