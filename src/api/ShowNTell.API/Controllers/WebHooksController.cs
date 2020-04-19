@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using ShowNTell.API.Models;
+using ShowNTell.API.Services.EventGridValidations;
 using ShowNTell.Domain.Services;
 
 namespace ShowNTell.API.Controllers
@@ -16,13 +17,15 @@ namespace ShowNTell.API.Controllers
     public class WebHooksController : ControllerBase
     {
         private readonly IImagePostService _imagePostService;
+        private readonly EventGridValidationService _eventGridValidationService;
         private readonly WebHookTokenConfiguration _tokens;
         private readonly ILogger<WebHooksController> _logger;
 
-        public WebHooksController(IImagePostService imagePostService, WebHookTokenConfiguration tokens,
-            ILogger<WebHooksController> logger)
+        public WebHooksController(IImagePostService imagePostService, EventGridValidationService eventGridValidationService, 
+            WebHookTokenConfiguration tokens, ILogger<WebHooksController> logger)
         {
             _imagePostService = imagePostService;
+            _eventGridValidationService = eventGridValidationService;
             _tokens = tokens;
             _logger = logger;
         }
@@ -48,17 +51,44 @@ namespace ShowNTell.API.Controllers
             if(gridEvent.EventType == EventTypes.EventGridSubscriptionValidationEvent)
             {
                 _logger.LogInformation("Handling web hook validation.");
-
-                string data = gridEvent.Data.ToString();
-                SubscriptionValidationEventData eventData = JsonConvert.DeserializeObject<SubscriptionValidationEventData>(data);
-
-                if(string.IsNullOrEmpty(eventData.ValidationCode))
+                
+                try
                 {
-                    _logger.LogWarning("Failed to retrieve validation code.");
+                    _logger.LogInformation("Successfully validated web hook.");
+                    return Ok(_eventGridValidationService.Validate(gridEvent));
+                }
+                catch (System.Exception)
+                {
+                    _logger.LogError("Failed to validate subscription.");
                     return BadRequest();
                 }
+            }
 
-                return Ok(new SubscriptionValidationResponse(eventData.ValidationCode));
+            if(gridEvent.EventType == EventTypes.StorageBlobDeletedEvent)
+            {
+                _logger.LogInformation("Handling image blob delete.");
+
+                // if(token != _tokens.ImageBlobDeleteToken)
+                // {
+                //     _logger.LogError("Invalid image blob delete event token.");
+                //     return Unauthorized();
+                // }
+
+                StorageBlobDeletedEventData eventData = JsonConvert.DeserializeObject<StorageBlobDeletedEventData>(gridEvent.Data.ToString());
+                _logger.LogInformation("Image blob deleted at URL '{0}'.", eventData.Url);
+
+                bool success = true;
+
+                if(success)
+                {
+                    _logger.LogInformation("Successfully deleted image post record.");
+                    return NoContent();
+                }
+                else
+                {
+                    _logger.LogError("Failed to delete image post record.");
+                    return BadRequest();
+                }
             }
 
             _logger.LogWarning("Unable to handle event.");

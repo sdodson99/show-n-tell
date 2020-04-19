@@ -19,6 +19,7 @@ using ShowNTell.API.Models;
 using ShowNTell.API.Models.MappingProfiles;
 using ShowNTell.API.Models.Requests;
 using ShowNTell.API.Services.CurrentUsers;
+using ShowNTell.API.Services.EventGridValidations;
 using ShowNTell.AzureStorage.Services;
 using ShowNTell.AzureStorage.Services.BlobClientFactories;
 using ShowNTell.Domain.Services;
@@ -107,6 +108,7 @@ namespace ShowNTell.API
             services.AddSingleton<IRandomImagePostService, EFRandomImagePostService>();
             services.AddSingleton<IImageStorage>(GetImageStorage());
             services.AddSingleton<AdminDataSeeder>();
+            services.AddSingleton<EventGridValidationService>();
             services.AddSingleton<WebHookTokenConfiguration>(new WebHookTokenConfiguration()
             {
                 ImageBlobDeleteToken = GetConfigurationValue("IMAGE_BLOB_DELETE_TOKEN")
