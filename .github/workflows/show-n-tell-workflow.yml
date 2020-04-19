@@ -22,6 +22,7 @@ jobs:
       BLOB_STORAGE: ${{ secrets.BLOB_STORAGE }}
       APPLICATION_INSIGHTS_KEY: ${{ secrets.APPLICATION_INSIGHTS_KEY }}
       SURGE_TOKEN: ${{ secrets.SURGE_TOKEN }}
+      IMAGE_BLOB_DELETE_TOKEN: ${{ secrets.IMAGE_BLOB_DELETE_TOKEN }}
 
     steps:
     - uses: actions/checkout@v2
@@ -68,7 +69,7 @@ jobs:
 
     - name: Build API Docker Image
       if: github.event_name != 'pull_request'
-      run: docker build --rm -f "src/api/Dockerfile" -t ${{ env.DOCKER_REPOSITORY_TAG }} "src/api" --build-arg DATABASE="${{ env.DATABASE_CONNECTION_STRING }}" --build-arg BLOB_STORAGE="${{ env.BLOB_STORAGE }}" --build-arg APPLICATION_INSIGHTS_KEY="${{ env.APPLICATION_INSIGHTS_KEY }}"
+      run: docker build --rm -f "src/api/Dockerfile" -t ${{ env.DOCKER_REPOSITORY_TAG }} "src/api" --build-arg DATABASE="${{ env.DATABASE_CONNECTION_STRING }}" --build-arg BLOB_STORAGE="${{ env.BLOB_STORAGE }}" --build-arg APPLICATION_INSIGHTS_KEY="${{ env.APPLICATION_INSIGHTS_KEY }}" --build-arg IMAGE_BLOB_DELETE_TOKEN="${{ env.IMAGE_BLOB_DELETE_TOKEN }}"
 
     - name: Deploy API to Docker Repository
       if: github.event_name != 'pull_request'

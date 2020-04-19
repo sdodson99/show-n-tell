@@ -68,16 +68,16 @@ namespace ShowNTell.API.Controllers
             {
                 _logger.LogInformation("Handling image blob delete.");
 
-                // if(token != _tokens.ImageBlobDeleteToken)
-                // {
-                //     _logger.LogError("Invalid image blob delete event token.");
-                //     return Unauthorized();
-                // }
+                if(token != _tokens.ImageBlobDeleteToken)
+                {
+                    _logger.LogError("Invalid image blob delete event token {0} {1}.", token, _tokens.ImageBlobDeleteToken);
+                    return Unauthorized();
+                }
 
                 StorageBlobDeletedEventData eventData = JsonConvert.DeserializeObject<StorageBlobDeletedEventData>(gridEvent.Data.ToString());
-                _logger.LogInformation("Image blob deleted at URL '{0}'.", eventData.Url);
+                _logger.LogInformation("URL of deleted image blob: {0}.", eventData.Url);
 
-                bool success = true;
+                bool success = await _imagePostService.DeleteByUri(eventData.Url);
 
                 if(success)
                 {
