@@ -131,7 +131,7 @@ namespace ShowNTell.API
 
             if(Environment.IsProduction())
             {
-                services.AddLetsEncrypt();
+                // services.AddLetsEncrypt();
                 
                 // services.AddLetsEncrypt().PersistCertificatesToAzureKeyVault(o => {
                 //     o.AzureKeyVaultEndpoint = "https://snt-https.vault.azure.net/";
@@ -155,7 +155,7 @@ namespace ShowNTell.API
 
             app.UseStaticFiles("/" + STATIC_FILE_BASE_URI);
 
-            app.UseHttpsRedirection();
+            // app.UseHttpsRedirection();
 
             app.UseRouting();
 
