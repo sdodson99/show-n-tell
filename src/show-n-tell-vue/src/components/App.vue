@@ -84,8 +84,8 @@ button{
 }
 
 button:disabled, button:disabled:hover{
-  border: 1px solid var(--color-secondary-medium);
   background: var(--color-grayscale-light);
+  opacity: 0.5;
   cursor: default;
 }
 
