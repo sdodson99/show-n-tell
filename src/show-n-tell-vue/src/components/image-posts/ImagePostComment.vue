@@ -64,6 +64,11 @@ export default {
             editContent: this.content
         }
     },
+    watch: {
+        content: function() {
+            this.contentData = this.content
+        }
+    },
     computed: {
         validComment: function() {
             return this.editContent

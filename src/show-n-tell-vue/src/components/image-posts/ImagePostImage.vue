@@ -19,6 +19,8 @@ export default {
         }
     },
     mounted: function() {
+        console.log('test');
+        
         this.loadImage()
     },
     watch: {
@@ -28,22 +30,27 @@ export default {
     },
     methods: {
         loadImage: function() {
+            const currentImageUri = this.imageUri
             this.clearImage()
             
-            LoadImage(this.imageUri, (loadedImage) => {
+            LoadImage(currentImageUri, (loadedImage) => {
                 
                 if(this.isJPEG(loadedImage.src)) {
                     EXIF.getData(loadedImage, () => {
                         let orientation = EXIF.getTag(loadedImage, "Orientation");
                         
                         LoadImage(loadedImage.src, (orientedImage) => {
-                            this.setImage(orientedImage)
+                            if(currentImageUri === this.imageUri) {
+                                this.setImage(orientedImage)
+                            }
                         }, {
                             orientation: orientation
                         })
                     })
                 } else {
-                    this.setImage(loadedImage)
+                    if(currentImageUri === this.imageUri) {
+                        this.setImage(loadedImage)
+                    }
                 }
             })  
         },
