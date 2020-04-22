@@ -8,8 +8,7 @@
                     :imagePost="post"
                     :imagePostService="imagePostService"
                     :likeVueService="likeVueService"
-                    :currentUser="currentUser"
-                    @imagePostDeleted="imagePostDeleted"/>
+                    :currentUser="currentUser"/>
                 <div class="my-4">
                     <image-post-comment
                         :content="post.description"
@@ -101,18 +100,10 @@ export default {
         this.isLoaded = true;
     },
     methods: {
-        likeImagePost: async function(imagePost) {
-            imagePost.likes = await this.likeVueService.likeImagePost(imagePost)
-        },
-        unlikeImagePost: async function(imagePost) {
-            imagePost.likes = await this.likeVueService.unlikeImagePost(imagePost)
-        },
         createComment: async function(imagePost, comment) {
             imagePost.comments = await this.commentVueService.createComment(imagePost, comment)
         },
         editComment: async function(imagePost, comment) {
-            console.log('edit');
-            
             imagePost.comments = await this.commentVueService.updateComment(imagePost, comment.id, comment.content)
         },
         deleteComment: async function(imagePost, commentId) {
@@ -120,9 +111,6 @@ export default {
         },
         viewProfile: function(username) {
             this.$router.push({path: `/profile/${username}`})
-        },
-        imagePostDeleted: function(imagePostId) {
-            this.imagePosts = this.images.filter(p => p.id !== imagePostId)
         }
     }
 }

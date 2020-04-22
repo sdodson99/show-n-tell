@@ -5,13 +5,11 @@
         <div class="col-lg-auto d-flex flex-column align-items-center justify-content-center">
           <router-link
             class="row justify-content-center mx-1 link"
-            to="/"
-          >
+            to="/">
             <img id="logo" class="ml-3 ml-lg-0" src="../../assets/showntell.png"/>
           </router-link>
           <Hamburger id="ham" class="d-lg-none mt-3" 
             v-b-toggle.menu-items
-            @toggleOn="opened" @toggleOff="closed" :toggled="open"
             toggle-on-style="stroke: var(--color-secondary-medium)"
             toggle-off-style="stroke: var(--color-primary-dark)"></Hamburger>
         </div>
@@ -25,51 +23,11 @@
             <button id="search-button" type="button" @click="search">Search</button>
           </form>
 
-          <router-link
-            class="row justify-content-center text-center link hover-link"
-            active-class="active-link"
-            to="/explore">
-            <div class="content px-1 p-2">Explore</div>
-          </router-link>
-
-          <router-link
-            v-if="loggedIn"
-            class="row justify-content-center text-center link hover-link"
-            active-class="active-link"
-            to="/feed">
-            <div class="content px-1 p-2">Feed</div>
-          </router-link>
-
-          <router-link
-            v-if="loggedIn"
-            class="row justify-content-center text-center link hover-link"
-            active-class="active-link"
-            to="/create">
-            <div class="content px-1 p-2">Create</div>
-          </router-link>
-
-          <router-link
-            v-if="loggedIn"
-            class="row justify-content-center text-center link hover-link"
-            active-class="active-link"
-            to="/profile">
-            <div class="content px-1 p-2">Profile</div>
-          </router-link>
-
-          <router-link
-            v-if="!loggedIn"
-            class="row justify-content-center text-center link hover-link"
-            active-class="active-link"
-            to="/login">
-            <div class="content px-1 p-2">Login</div>
-          </router-link>
-
-          <router-link
-            v-if="loggedIn"
-            class="row justify-content-center text-center link hover-link"
-            active-class="active-link"
-            to="/logout">
-            <div class="content px-1 p-2">Logout</div>
+          <router-link class="row justify-content-center text-center link hover-link" active-class="active-link"
+            v-for="menuItem in menuItems"
+            :key="menuItem.id"
+            :to="menuItem.to">
+            <div class="content px-1 p-2">{{ menuItem.name }}</div>
           </router-link>
         </b-collapse>
       </nav>
@@ -81,7 +39,7 @@
 import Hamburger from './Hamburger'
 
 export default {
-  name: "NavigationBar",
+  name: "TheHeader",
   components: {
     Hamburger
   },
@@ -90,22 +48,54 @@ export default {
   },
   data: function(){
     return {
-      open: false,
       searchContent: "",
-      loggedIn: this.isLoggedIn
+      isLoggedInData: this.isLoggedIn,
+      menuItems: []
     }
+  },
+  created: function() {
+    this.loadMenuItems()
   },
   watch: {
     isLoggedIn: function() {
-      this.loggedIn = this.isLoggedIn
+      this.isLoggedInData = this.isLoggedIn
+      this.loadMenuItems()
     }
   },
   methods: {
-    opened: function() {
-      this.open = true;
-    },
-    closed: function() {
-      this.open = false;
+    loadMenuItems: function(){
+      this.menuItems = []
+
+      this.menuItems.push({
+        name: "Explore",
+        to: "/explore"
+      })
+
+      if(this.isLoggedInData) {
+        this.menuItems.push(
+        {
+          name: "Feed",
+          to: "/feed"
+        },
+        {
+          name: "Create",
+          to: "/create"
+        },
+        {
+          name: "Profile",
+          to: "/profile"
+        },
+        {
+          name: "Logout",
+          to: "/logout"
+        })
+      } else {
+        this.menuItems.push(
+        {
+          name: "Login",
+          to: "/login"
+        })
+      }
     },
     search: function() {
       if(this.$refs.searchForm.reportValidity()) {

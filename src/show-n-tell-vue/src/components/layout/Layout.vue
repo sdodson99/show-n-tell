@@ -1,6 +1,6 @@
 <template>
   <div>
-    <NavigationBar :is-logged-in="loggedIn" />
+    <the-header :is-logged-in="isLoggedInData" />
     <div v-if="statusMessage" :class="alertClass" class="alert text-center">
       {{ statusMessage }}
     </div>
@@ -11,12 +11,12 @@
 </template>
 
 <script>
-import NavigationBar from "./NavigationBar";
+import TheHeader from "./TheHeader";
 
 export default {
   name: "Layout",
   components: {
-    NavigationBar
+    TheHeader
   },
   props: {
     isLoggedIn: Boolean
@@ -26,7 +26,7 @@ export default {
       statusMessage: "",
       alertClass: "" || "alert-primary",
       timeoutHandle: 0,
-      loggedIn: this.isLoggedIn
+      isLoggedInData: this.isLoggedIn
     }
   },
   mounted: function(){
@@ -36,7 +36,7 @@ export default {
   },
   watch: {
     isLoggedIn: function() {
-      this.loggedIn = this.isLoggedIn
+      this.isLoggedInData = this.isLoggedIn
     }
   },
   methods: {
@@ -63,5 +63,3 @@ export default {
   }
 };
 </script>
-
-<style></style>

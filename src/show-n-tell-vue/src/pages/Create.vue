@@ -25,7 +25,7 @@
       </div>
       <button class="m-1 p-3 align-self-center" type="button" 
         @click="createImage"
-        :disabled="isCreating || !canCreate">{{ isCreating ? "Creating..." : "Create"}}</button>
+        :disabled="isCreating || !canCreate">Create</button>
       <div class="text-center"
           v-if="isCreating">
           <b-spinner class="mt-4 text-center" label="Creating..."></b-spinner>
