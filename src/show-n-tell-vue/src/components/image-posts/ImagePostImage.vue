@@ -19,8 +19,6 @@ export default {
         }
     },
     mounted: function() {
-        console.log('test');
-        
         this.loadImage()
     },
     watch: {

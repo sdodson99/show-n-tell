@@ -36,7 +36,7 @@
 </template>
 
 <script>
-import Hamburger from './Hamburger'
+import Hamburger from '../utilities/Hamburger'
 
 export default {
   name: "TheHeader",

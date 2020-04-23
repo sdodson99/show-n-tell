@@ -62,7 +62,6 @@ router.addRoutes([
     component: () => import("./pages/Explore"),
     props: {
       imagePostService: ServiceContainer.ImagePostService,
-      randomImagePostService: ServiceContainer.RandomImagePostService,
       likeVueService: likeVueService,
       commentVueService: commentVueService,
       userService: ServiceContainer.UserService
