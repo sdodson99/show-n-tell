@@ -1,3 +1,5 @@
+export const ModuleName = "explore"
+
 export const Action = {
     FETCH_IMAGE_POST_BY_ID: "EXPLORE_FETCH_IMAGE_POST_BY_ID",
     FETCH_RANDOM_IMAGE_POST: "EXPLORE_FETCH_RANDOM_IMAGE_POST",

@@ -1,7 +1,7 @@
 <template>
   <div class="d-flex flex-column align-items-center">
     <h1>Login</h1>
-    <div v-if="!isLoading" class="d-flex flex-column align-items-center">
+    <div v-if="!isLoggingIn" class="d-flex flex-column align-items-center">
       <p class="my-3 font-weight-light text-center">
         Click below to login to your Show 'N Tell account with Google.
       </p>
@@ -18,14 +18,18 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
+import { ModuleName, Action } from '../store/modules/authentication/types'
 import GoogleLogin from "vue-google-login";
 
 export default {
   name: "Login",
+  components: {
+    GoogleLogin
+  },
   props: {
-    authenticationService: Object,
-    redirect: String,
-    back: Boolean
+    redirectPath: String,
+    redirectBack: Boolean
   },
   data() {
     return {
@@ -36,30 +40,23 @@ export default {
       googleRenderParams: {
         width: 150,
         height: 50
-      },
-      isLoading: false
+      }
     };
   },
-  components: {
-    GoogleLogin
+  computed: {
+    ...mapState({
+      isLoggingIn: (state) => state.authentication.isLoggingIn
+    })
   },
   methods: {
     onLoginSuccess: async function(result) {
-      this.isLoading = true
+      const token = result.getAuthResponse().id_token;
 
-      const accessToken = result.getAuthResponse().id_token;
-
-      if (await this.authenticationService.login(accessToken)) {
-        if(this.redirect) {
-          this.$router.push({path: this.redirect})
-        } else if (this.back) {
-          this.$router.go(-1)
-        } else {
-          this.$router.push({path: "/"})
-        }
-      }
-
-      this.isLoading = false
+      this.$store.dispatch(`${ModuleName}/${Action.LOGIN}`, {
+        token,
+        redirectPath: this.redirectPath,
+        redirectBack: this.redirectBack
+      })
     },
     onLoginFailure: function(e) {
       console.log(e);

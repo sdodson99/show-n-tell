@@ -19,8 +19,8 @@ const commentVueService = new CommentVueService(ServiceContainer.CommentService,
 
 router.addRoutes([
   {
-    path: "/",
     name: "Home",
+    path: "/",
     redirect: "/explore",
   },
   {
@@ -127,21 +127,18 @@ router.addRoutes([
     component: () => import("./pages/Login"),
     props: (route) => {
       return {
-        authenticationService: ServiceContainer.AuthenticationService,
-        redirect: route.query.redirect,
-        back: route.query.back
+        redirectPath: route.query.redirect,
+        redirectBack: route.query.back
       }
     }
   },
   {
+    name: "Logout",
     path: "/logout",
     meta: {
       title: "Logout"
     },
-    component: () => import("./pages/Logout"),
-    props: {
-      authenticationService: ServiceContainer.AuthenticationService
-    }
+    component: () => import("./pages/Logout")
   }, 
   {
     path: "*",

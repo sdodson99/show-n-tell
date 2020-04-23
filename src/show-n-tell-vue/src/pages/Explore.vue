@@ -54,7 +54,8 @@
 
 <script>
 import { mapGetters, mapState } from 'vuex'
-import { Action } from '../store/modules/explore/types'
+import { ModuleName as ExploreModuleName, Action as ExploreAction } from '../store/modules/explore/types'
+import { ModuleName as AuthenticationModuleName } from '../store/modules/authentication/types'
 
 import UnauthorizedError from '../errors/unauthorized-error'
 import NotFoundError from '../errors/not-found-error'
@@ -81,45 +82,41 @@ export default {
     ...mapState({
       isLoading: (state) => state.explore.isLoading,
       noImagePostsAvailable: (state) => state.explore.noImagePostsAvailable,
-      imagePostNotFound: (state) => state.explore.imagePostNotFound
+      imagePostNotFound: (state) => state.explore.imagePostNotFound,
+      currentUser: (state) => state.authentication.currentUser
     }),
-    ...mapGetters('explore', ['currentImagePost', 'canExplore', 'hasPreviousImagePost']),
+    ...mapGetters(ExploreModuleName, ['currentImagePost', 'canExplore', 'hasPreviousImagePost']),
+    ...mapGetters(AuthenticationModuleName, ['isLoggedIn']),
     noImageMessage: function() {
       if(this.noImagePostsAvailable) return "No images have been posted."
       if(this.imagePostNotFound) return "The selected image does not exist."
       return ""
     },
     isLiked: function() {
-      return this.isLoggedIn && this.currentImage.likes.some(l => l.userEmail === this.currentUser.email)
+      return this.isLoggedIn && this.currentImagePost.likes.some(l => l.userEmail === this.currentUser.email)
     },
     isUsersPost: function() {
-      return this.isLoggedIn && this.currentImage.userEmail === this.currentUser.email
-    },
-    isLoggedIn: function() {
-      return this.currentUser !== null
-    },
-    currentUser: function() {
-      return this.userService.getUser()
+      return this.isLoggedIn && this.currentImagePost.userEmail === this.currentUser.email
     },
     currentImagePostRoute: function() {
-      return `/explore/${this.currentImage.id}`
+      return `/explore/${this.currentImagePost.id}`
     }
   },
   created: async function() {
     const initialImageId = this.$route.params.initialId;
     
     if(initialImageId) {
-      this.$store.dispatch(`explore/${Action.FETCH_IMAGE_POST_BY_ID}`, initialImageId)
+      this.$store.dispatch(`${ExploreModuleName}/${ExploreAction.FETCH_IMAGE_POST_BY_ID}`, initialImageId)
     } else {
-      this.$store.dispatch(`explore/${Action.FETCH_RANDOM_IMAGE_POST}`)
+      this.$store.dispatch(`${ExploreModuleName}/${ExploreAction.FETCH_RANDOM_IMAGE_POST}`)
     }
   },
   methods: {
     onNextClick: async function() {
-      this.$store.dispatch(`explore/${Action.NEXT_IMAGE_POST}`)
+      this.$store.dispatch(`${ExploreModuleName}/${ExploreAction.NEXT_IMAGE_POST}`)
     },
     onPreviousClick: function() {
-      this.$store.dispatch(`explore/${Action.PREVIOUS_IMAGE_POST}`)
+      this.$store.dispatch(`${ExploreModuleName}/${ExploreAction.PREVIOUS_IMAGE_POST}`)
     },
     createComment: async function(comment) {
       this.currentImage.comments = await this.commentVueService.createComment(this.currentImage, comment, this.currentImagePostRoute)

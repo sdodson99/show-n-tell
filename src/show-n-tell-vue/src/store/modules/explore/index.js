@@ -27,7 +27,7 @@ const actions = {
         try {
             const randomImagePost = await randomImagePostService.getRandom();
 
-            let existingImagePost = state.imagePosts.find(p => p.id === randomImagePost.id)
+            const existingImagePost = state.imagePosts.find(p => p.id === randomImagePost.id)
     
             commit(Mutation.ADD_IMAGE_POST, existingImagePost || randomImagePost)
         } catch (error) {
