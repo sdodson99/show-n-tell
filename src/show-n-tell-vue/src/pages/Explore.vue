@@ -35,10 +35,10 @@
           :currentUser="currentUser"
           :imagePostUserEmail="currentImagePost.userEmail"
           :can-comment="isLoggedIn"
-          @commented="createComment"
           @username-clicked="viewProfile"
-          @edited="editComment"
-          @deleted="deleteComment"/>
+          @created="createImagePostComment"
+          @edited="editImagePostComment"
+          @deleted="deleteImagePostComment"/>
       </div>
     </div>
     <div class="mt-3"
@@ -84,15 +84,6 @@ export default {
       if(this.noImagePostsAvailable) return "No images have been posted."
       if(this.imagePostNotFound) return "The selected image does not exist."
       return ""
-    },
-    isLiked: function() {
-      return this.isLoggedIn && this.currentImagePost.likes.some(l => l.userEmail === this.currentUser.email)
-    },
-    isUsersPost: function() {
-      return this.isLoggedIn && this.currentImagePost.userEmail === this.currentUser.email
-    },
-    currentImagePostRoute: function() {
-      return `/explore/${this.currentImagePost.id}`
     }
   },
   created: async function() {
@@ -120,14 +111,14 @@ export default {
     deleteImagePost: function() {
       this.$store.dispatch(`${ExploreModuleName}/${ExploreAction.DELETE_IMAGE_POST}`)
     }, 
-    createComment: async function(comment) {
-      this.currentImage.comments = await this.commentVueService.createComment(this.currentImage, comment, this.currentImagePostRoute)
+    createImagePostComment: async function(comment) {
+      this.$store.dispatch(`${ExploreModuleName}/${ExploreAction.CREATE_IMAGE_POST_COMMENT}`, comment)
     },
-    editComment: async function(comment) {
-      this.currentImage.comments = await this.commentVueService.updateComment(this.currentImage, comment.id, comment.content, this.currentImagePostRoute)
+    editImagePostComment: async function(comment) {
+      this.$store.dispatch(`${ExploreModuleName}/${ExploreAction.UPDATE_IMAGE_POST_COMMENT}`, comment)
     },
-    deleteComment: async function(commentId) {
-      this.currentImage.comments = await this.commentVueService.deleteComment(this.currentImage, commentId, this.currentImagePostRoute)
+    deleteImagePostComment: async function(commentId) {
+      this.$store.dispatch(`${ExploreModuleName}/${ExploreAction.DELETE_IMAGE_POST_COMMENT}`, commentId)
     },
     viewProfile: function(username) {
       this.$router.push({path: `/profile/${username}`})

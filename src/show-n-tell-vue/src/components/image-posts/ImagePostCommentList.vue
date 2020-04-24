@@ -78,7 +78,7 @@ export default {
         },
         submit: function() {
             if(this.validComment) {
-                this.$emit('commented', this.newCommentContent)
+                this.$emit('created', this.newCommentContent)
                 this.newCommentContent = ""
             }
         }
