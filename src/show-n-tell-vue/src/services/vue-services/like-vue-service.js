@@ -14,9 +14,11 @@ class LikeVueService{
      * Like an image post and redirect to login if unauthorized.
      * @param {ImagePost} imagePost The image post to like.
      * @param {string} [authRedirect] A router login redirect url if authentication fails. 
-     * @returns {Array} The image post's new array of likes.
+     * @returns {Like} The new like for the image post. Null if the like failed.
      */
     async likeImagePost(imagePost, authRedirect) {
+        let like = null;
+
         if(!this.authenticationService.isLoggedIn()) {
             this.redirectToLogin(authRedirect)
         } else {
@@ -24,8 +26,7 @@ class LikeVueService{
 
             if(!this.isUsersPost(imagePost, currentUser)) {
                 try {
-                    const like = await this.likeService.likeImagePost(imagePost.id)
-                    imagePost.likes.push(like)
+                    like = await this.likeService.likeImagePost(imagePost.id)
                 } catch (error) {
                     if(error instanceof UnauthorizedError){
                         this.redirectToLogin(authRedirect)
@@ -34,15 +35,18 @@ class LikeVueService{
             }
         } 
 
-        return imagePost.likes
+        return like
     }
 
     /**
      * Unike an image post and redirect to login if unauthorized.
      * @param {ImagePost} imagePost The image post to unlike.
      * @param {string} [authRedirect] A router login redirect url if authentication fails. 
+     * @returns {Like} The like removed from the image post. Null if the unlike failed.
      */
     async unlikeImagePost(imagePost, authRedirect) {
+        let unlike = null
+
         if(!this.authenticationService.isLoggedIn()) {
             this.redirectToLogin(authRedirect)
         } else {
@@ -51,7 +55,7 @@ class LikeVueService{
             if(!this.isUsersPost(imagePost, currentUser)) {
                 try {
                     if(await this.likeService.unlikeImagePost(imagePost.id)){
-                        imagePost.likes = imagePost.likes.filter(l => l.userEmail !== currentUser.email)
+                        unlike = imagePost.likes.find(l => l.userEmail === currentUser.email)
                     }
                 } catch (error) {
                     if(error instanceof UnauthorizedError){
@@ -61,7 +65,7 @@ class LikeVueService{
             }
         } 
 
-        return imagePost.likes
+        return unlike
     }
 
     /**

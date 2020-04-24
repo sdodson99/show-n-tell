@@ -3,7 +3,7 @@
         <div class="d-flex flex-column flex-sm-row align-items-center justify-content-between">
             <div class="d-flex flex-column flex-sm-row">
                 <div class="username font-weight-bold"
-                    @click="() => $emit('usernameClicked', username)">
+                    @click="() => $emit('username-clicked', username)">
                     {{ username }}
                 </div>
                 <div class="mx-3 d-none d-sm-block">|</div>
@@ -22,7 +22,7 @@
         </div>
         <div class="mt-2">
             <div v-if="!isEditing">
-                {{ contentData }}
+                {{ content }}
             </div>
             <div class="text-right" v-else>
                 <textarea class="form-control" placeholder="New comment..." 
@@ -50,17 +50,16 @@ export default {
     },
     props: {
         username: String,
+        content: String,
+        dateCreated: Date,
         canDelete: Boolean,
         canEdit: Boolean,
-        content: String,
-        fallbackContent: String,
-        dateCreated: Date
+        fallbackContent: String
     },
     data: function() {
         return {
             isDeleting: false,
             isEditing: false,
-            contentData: this.content,
             editContent: this.content
         }
     },
@@ -85,7 +84,6 @@ export default {
         },
         submitEditComment: function() {
             this.$emit('edited', this.editContent)
-            this.contentData = this.editContent
             this.isEditing = false;
         }
     }

@@ -3,21 +3,21 @@
     <div class="d-flex flex-column flex-sm-row justify-content-between">
       <button class="m-1 order-sm-2" type="button" 
         :disabled="!canExplore" 
-        @click="onNextClick">Next</button>
+        @click="viewNext">Next</button>
       <button class="m-1 order-sm-1" type="button" 
         :disabled="!hasPreviousImagePost" 
-        @click="onPreviousClick">Previous</button>
+        @click="viewPrevious">Previous</button>
     </div>
     <div id="image-post" class="p-1" 
       v-if="!isLoading && currentImagePost && currentImagePost.imageUri">
       <image-post-detailed-image class="mt-3"
+          :image-post="currentImagePost"
+          :current-user="currentUser"
+          :can-view="false"
           maxImagePostHeight="50vh"
-          :imagePost="currentImagePost"
-          :imagePostService="imagePostService"
-          :likeVueService="likeVueService"
-          :currentUser="currentUser"
-          :canView="false"
-          @imagePostDeleted="imagePostDeleted"/>
+          @liked="likeImagePost"
+          @unliked="unlikeImagePost"
+          @deleted="deleteImagePost"/>
       <div class="my-4">
         <image-post-comment class="text-center text-sm-left"
           :content="currentImagePost.description"
@@ -26,7 +26,7 @@
           fallbackContent="No description available."
           :username="currentImagePost.username"
           :dateCreated="currentImagePost.dateCreated"
-          @usernameClicked="(username) => onProfileClick(username)"/>
+          @username-clicked="viewProfile"/>
       </div>
       <div class="my-4 text-center text-sm-left">
         <h3>Comments</h3>
@@ -36,7 +36,7 @@
           :imagePostUserEmail="currentImagePost.userEmail"
           :can-comment="isLoggedIn"
           @commented="createComment"
-          @usernameClicked="onProfileClick"
+          @username-clicked="viewProfile"
           @edited="editComment"
           @deleted="deleteComment"/>
       </div>
@@ -66,13 +66,6 @@ import ImagePostDetailedImage from '../components/image-posts/ImagePostDetailedI
 
 export default {
   name: "Explore",
-  props: {
-    imagePostService: Object,
-    likeVueService: Object,
-    commentVueService: Object,
-    commentService: Object,
-    userService: Object
-  },
   components: {
     ImagePostComment,
     ImagePostCommentList,
@@ -112,12 +105,21 @@ export default {
     }
   },
   methods: {
-    onNextClick: async function() {
+    viewNext: async function() {
       this.$store.dispatch(`${ExploreModuleName}/${ExploreAction.NEXT_IMAGE_POST}`)
     },
-    onPreviousClick: function() {
+    viewPrevious: function() {
       this.$store.dispatch(`${ExploreModuleName}/${ExploreAction.PREVIOUS_IMAGE_POST}`)
     },
+    likeImagePost: function() {
+      this.$store.dispatch(`${ExploreModuleName}/${ExploreAction.LIKE_IMAGE_POST}`)
+    },
+    unlikeImagePost: function() {
+      this.$store.dispatch(`${ExploreModuleName}/${ExploreAction.UNLIKE_IMAGE_POST}`)
+    },
+    deleteImagePost: function() {
+      this.$store.dispatch(`${ExploreModuleName}/${ExploreAction.DELETE_IMAGE_POST}`)
+    }, 
     createComment: async function(comment) {
       this.currentImage.comments = await this.commentVueService.createComment(this.currentImage, comment, this.currentImagePostRoute)
     },
@@ -127,20 +129,7 @@ export default {
     deleteComment: async function(commentId) {
       this.currentImage.comments = await this.commentVueService.deleteComment(this.currentImage, commentId, this.currentImagePostRoute)
     },
-    imagePostDeleted: async function(id) {
-      this.images = this.images.filter(p => p.id !== id)
-
-      // Get an initial image if length is 0.
-      if(this.images.length === 0) {
-        await this.getRandomImage()
-      }
-
-      // Coerce current image index to the last image available if index larger than images length.
-      if(this.currentImageIndex >= this.images.length) {
-        this.currentImageIndex = this.images.length - 1
-      }
-    },
-    onProfileClick: function(username) {
+    viewProfile: function(username) {
       this.$router.push({path: `/profile/${username}`})
     }
   }

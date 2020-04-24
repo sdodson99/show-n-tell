@@ -38,21 +38,17 @@ export default {
                         let orientation = EXIF.getTag(loadedImage, "Orientation");
                         
                         LoadImage(loadedImage.src, (orientedImage) => {
-                            if(currentImageUri === this.imageUri) {
-                                this.setImage(orientedImage)
-                            }
+                            this.setImage(orientedImage, currentImageUri)
                         }, {
                             orientation: orientation
                         })
                     })
                 } else {
-                    if(currentImageUri === this.imageUri) {
-                        this.setImage(loadedImage)
-                    }
+                    this.setImage(loadedImage, currentImageUri)
                 }
             })  
         },
-        setImage: function(image) {
+        setImage: function(image, imageUri) {
             if(image instanceof Image) {
                 image.removeAttribute('width')
                 image.removeAttribute('height')
@@ -60,7 +56,10 @@ export default {
             image.style.maxHeight = this.maxHeight
             image.style.maxWidth = "100%"
 
-            this.$refs.imageContainer.appendChild(image)
+            // Make sure image did not change.
+            if(imageUri === this.imageUri) {
+                this.$refs.imageContainer.appendChild(image)
+            }
         },
         clearImage: function() {
             this.$refs.imageContainer.innerHTML = ""

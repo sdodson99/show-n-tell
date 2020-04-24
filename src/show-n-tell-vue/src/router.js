@@ -24,6 +24,13 @@ router.addRoutes([
     redirect: "/explore",
   },
   {
+    path: "/explore/:initialId?",
+    meta: {
+      title: "Explore"
+    },
+    component: () => import("./pages/Explore"),
+  },
+  {
     path: "/feed",
     meta: {
       title: "Feed",
@@ -55,19 +62,6 @@ router.addRoutes([
     }
   },
   {
-    path: "/explore/:initialId?",
-    meta: {
-      title: "Explore"
-    },
-    component: () => import("./pages/Explore"),
-    props: {
-      imagePostService: ServiceContainer.ImagePostService,
-      likeVueService: likeVueService,
-      commentVueService: commentVueService,
-      userService: ServiceContainer.UserService
-    }
-  },
-  {
     path: "/create",
     meta: {
       title: "Create",
@@ -79,7 +73,7 @@ router.addRoutes([
     }
   },
   {
-    path: "/imageposts/:imagePostId/edit",
+    path: "/image-posts/:imagePostId/edit",
     meta: {
       title: "Edit",
       authenticate: true

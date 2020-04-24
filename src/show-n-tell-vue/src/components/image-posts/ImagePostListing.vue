@@ -4,18 +4,14 @@
             <image-post-detailed-image class="image d-flex flex-column flex-grow-1"
                 maxImagePostHeight="30vh"
                 :imagePost="post"
-                :imagePostService="imagePostService"
-                :likeVueService="likeVueService"
                 :currentUser="currentUser"
                 :canView="true"
-                @imagePostDeleted="imagePostDeleted"/>
+                @image-post-deleted="() => imagePostDeleted()"/>
         </li>
     </ul>
 </template>
 
 <script>
-import UnauthorizedError from '../../errors/unauthorized-error'
-
 import ImagePostDetailedImage from './ImagePostDetailedImage'
 
 export default {
@@ -25,13 +21,13 @@ export default {
     },
     props: {
         imagePosts: Array,
-        imagePostService: Object,
-        likeVueService: Object,
         currentUser: Object
     }, 
     methods: {
-        imagePostDeleted: function(id) {
-            this.$emit('imagePostDeleted', id);
+        imagePostDeleted: function() {
+            console.log('test');
+            
+            //this.$emit('imagePostDeleted', id);
         }
     }
 }

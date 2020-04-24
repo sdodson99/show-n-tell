@@ -17,14 +17,14 @@
                 v-for="comment in comments"
                 :key="comment.id">
                 <image-post-comment
-                    :content="comment.content"
                     :username="comment.username"
-                    :canEdit="canEdit(comment)"
-                    :canDelete="canDelete(comment)"
-                    :dateCreated="comment.dateCreated"
-                    @usernameClicked="(username) => $emit('usernameClicked', username)"
-                    @deleted="() => $emit('deleted', comment.id)"
-                    @edited="(content) => $emit('edited', {id: comment.id, content: content})"/>
+                    :content="comment.content"
+                    :date-created="comment.dateCreated"
+                    :can-edit="canEdit(comment)"
+                    :can-delete="canDelete(comment)"
+                    @username-clicked="(username) => $emit('username-clicked', username)"
+                    @edited="(content) => $emit('edited', {id: comment.id, content: content})"
+                    @deleted="() => $emit('deleted', comment.id)"/>
              </li>
          </ul>
          <div class="mt-2 text-center" 
