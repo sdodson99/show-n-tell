@@ -67,10 +67,7 @@ router.addRoutes([
       title: "Create",
       authenticate: true
     },
-    component: () => import("./pages/Create"),
-    props: {
-      imagePostService: ServiceContainer.ImagePostService
-    }
+    component: () => import("./pages/Create")
   },
   {
     path: "/image-posts/:imagePostId/edit",

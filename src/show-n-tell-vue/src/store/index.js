@@ -10,6 +10,7 @@ import CommentVueService from "../services/vue-services/comment-vue-service";
 import createAuthenticationModule from './modules/authentication'
 import createExploreModule from './modules/explore'
 import createCreateModule from './modules/create';
+import createEditModule from './modules/edit';
 
 Vue.use(Vuex)
 
@@ -21,6 +22,7 @@ export default new Vuex.Store({
     modules: {
         authentication: createAuthenticationModule(ServiceContainer.AuthenticationService, router),
         explore: createExploreModule(ServiceContainer.ImagePostService, ServiceContainer.RandomImagePostService, likeVueService, commentVueService),
-        create: createCreateModule(ServiceContainer.ImagePostService, router)
+        create: createCreateModule(ServiceContainer.ImagePostService, router),
+        edit: createEditModule(ServiceContainer.ImagePostService, router)
     }
 })

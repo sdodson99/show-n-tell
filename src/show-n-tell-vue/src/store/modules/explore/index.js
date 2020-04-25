@@ -11,6 +11,7 @@ export default function createExploreModule(imagePostService, randomImagePostSer
 
     const getters = {
         currentImagePost: (state) => state.imagePosts[state.currentImagePostIndex],
+        noImagePosts: (state) => state.imagePosts.length === 0,
         canExplore: (state) => !state.noImagePostsAvailable,
         isShowingLastImage: (state) => state.currentImagePostIndex + 1 === state.imagePosts.length,
         hasPreviousImagePost: (state) => state.currentImagePostIndex > 0,
@@ -18,6 +19,10 @@ export default function createExploreModule(imagePostService, randomImagePostSer
     }
 
     const actions = {
+        [Action.CLEAR_IMAGE_POSTS]({ commit }) {
+            commit(Mutation.SET_CURRENT_IMAGE_POST_INDEX, 0)
+            commit(Mutation.SET_IMAGE_POSTS, [])
+        },
         async [Action.FETCH_RANDOM_IMAGE_POST]({ commit }) {
             commit(Mutation.SET_IS_LOADING, true)
 
@@ -136,6 +141,7 @@ export default function createExploreModule(imagePostService, randomImagePostSer
         [Mutation.REMOVE_COMMENT_FROM_CURRENT_IMAGE_POST]: (state, commentId) => {
             state.imagePosts[state.currentImagePostIndex].comments = state.imagePosts[state.currentImagePostIndex].comments.filter(c => c.id !== commentId)
         },
+        [Mutation.SET_IMAGE_POSTS]: (state, imagePosts) => state.imagePosts = imagePosts,
         [Mutation.SET_CURRENT_IMAGE_POST_INDEX]: (state, currentImagePostIndex) => state.currentImagePostIndex = currentImagePostIndex,
         [Mutation.SET_NO_IMAGE_POSTS_AVAILABLE]: (state, noImagePostsAvailable) => state.noImagePostsAvailable = noImagePostsAvailable,
         [Mutation.SET_IMAGE_POST_NOT_FOUND]: (state, imagePostNotFound) => state.imagePostNotFound = imagePostNotFound,

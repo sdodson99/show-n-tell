@@ -1,0 +1,15 @@
+export const ModuleName = "edit"
+
+export const Action = {
+    SET_IMAGE_POST_BY_ID: "SET_IMAGE_POST_BY_ID",
+    UPDATE_IMAGE_POST: "UPDATE_IMAGE_POST"
+}
+
+export const Mutation = {
+    SET_IMAGE_POST_ID: "SET_IMAGE_POST_ID",
+    SET_IMAGE_URI: "SET_IMAGE_URI",
+    SET_DESCRIPTION: "SET_DESCRIPTION",
+    SET_TAGS: "SET_TAGS",
+    SET_IS_LOADING: "SET_IS_LOADING",
+    SET_IS_UPDATING: "SET_IS_UPDATING"
+} 

@@ -75,7 +75,7 @@ export default {
       imagePostNotFound: (state) => state.explore.imagePostNotFound,
       currentUser: (state) => state.authentication.currentUser
     }),
-    ...mapGetters(ExploreModuleName, ['currentImagePost', 'canExplore', 'hasPreviousImagePost']),
+    ...mapGetters(ExploreModuleName, ['currentImagePost', 'noImagePosts', 'canExplore', 'hasPreviousImagePost']),
     ...mapGetters(AuthenticationModuleName, ['isLoggedIn']),
     noImageMessage: function() {
       if(this.noImagePostsAvailable) return "No images have been posted."
@@ -84,12 +84,16 @@ export default {
     }
   },
   created: async function() {
-    const initialImageId = this.$route.params.initialId;
+    this.$store.dispatch(`${ExploreModuleName}/${ExploreAction.CLEAR_IMAGE_POSTS}`)
     
-    if(initialImageId) {
-      this.$store.dispatch(`${ExploreModuleName}/${ExploreAction.FETCH_IMAGE_POST_BY_ID}`, initialImageId)
-    } else {
-      this.$store.dispatch(`${ExploreModuleName}/${ExploreAction.FETCH_RANDOM_IMAGE_POST}`)
+    if(this.noImagePosts) {
+      const initialImageId = this.$route.params.initialId;
+      
+      if(initialImageId) {
+        this.$store.dispatch(`${ExploreModuleName}/${ExploreAction.FETCH_IMAGE_POST_BY_ID}`, initialImageId)
+      } else {
+        this.$store.dispatch(`${ExploreModuleName}/${ExploreAction.FETCH_RANDOM_IMAGE_POST}`)
+      }
     }
   },
   methods: {

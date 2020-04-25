@@ -28,31 +28,34 @@ export default {
     },
     methods: {
         loadImage: function() {
-            const currentImageUri = this.imageUri
             this.clearImage()
+            const currentImageUri = this.imageUri
             
-            LoadImage(currentImageUri, (loadedImage) => {
-                
-                if(this.isJPEG(loadedImage.src)) {
-                    EXIF.getData(loadedImage, () => {
-                        let orientation = EXIF.getTag(loadedImage, "Orientation");
-                        
-                        LoadImage(loadedImage.src, (orientedImage) => {
-                            this.setImage(orientedImage, currentImageUri)
-                        }, {
-                            orientation: orientation
+            if(currentImageUri) {
+                LoadImage(currentImageUri, (loadedImage) => {
+                    
+                    if(this.isJPEG(loadedImage.src)) {
+                        EXIF.getData(loadedImage, () => {
+                            let orientation = EXIF.getTag(loadedImage, "Orientation");
+                            
+                            LoadImage(loadedImage.src, (orientedImage) => {
+                                this.setImage(orientedImage, currentImageUri)
+                            }, {
+                                orientation: orientation
+                            })
                         })
-                    })
-                } else {
-                    this.setImage(loadedImage, currentImageUri)
-                }
-            })  
+                    } else {
+                        this.setImage(loadedImage, currentImageUri)
+                    }
+                })  
+            }
         },
         setImage: function(image, imageUri) {
             if(image instanceof Image) {
                 image.removeAttribute('width')
                 image.removeAttribute('height')
             }
+
             image.style.maxHeight = this.maxHeight
             image.style.maxWidth = "100%"
 
@@ -65,7 +68,7 @@ export default {
             this.$refs.imageContainer.innerHTML = ""
         },        
         isJPEG: function(src) {
-            return src.endsWith('jpeg') || src.endsWith('jpg')
+            return src && (src.endsWith('jpeg') || src.endsWith('jpg'))
         }
     }
 }
