@@ -63,11 +63,11 @@ export default {
         }
       }
     },
-    created: async function() {
+    created: function() {
         this.$store.dispatch(`${ModuleName}/${Action.SET_IMAGE_POST_BY_ID}`, this.$route.params.imagePostId)
     },
     methods: {
-        updateImagePost: async function() {
+        updateImagePost: function() {
           this.$store.dispatch(`${ModuleName}/${Action.UPDATE_IMAGE_POST}`)
         }
     }

@@ -1,20 +1,23 @@
 <template>
     <div class="text-center text-sm-left">
         <h1 class="text-center">Feed</h1>
-        <ul v-if="isLoaded && imagePosts.length > 0">
+        <ul v-if="!isLoading && imagePosts.length > 0">
             <li class="image-post py-5" v-for="post in imagePosts" :key="post.id">
                 <image-post-detailed-image class="mt-3"
-                    maxImagePostHeight="50vh"
                     :imagePost="post"
-                    :currentUser="currentUser"/>
+                    :currentUser="currentUser"
+                    :canView="true"
+                    maxImagePostHeight="50vh"
+                    @liked="() => likeImagePost(post)"
+                    @unliked="() => unlikeImagePost(post)"/>
                 <div class="my-4">
                     <image-post-comment
+                        :username="post.username"
                         :content="post.description"
+                        :dateCreated="post.dateCreated"
                         :canEdit="false"
                         :canDelete="false"
                         fallbackContent="No description available."
-                        :username="post.username"
-                        :dateCreated="post.dateCreated"
                         @usernameClicked="(username) => viewProfile(username)"/>
                 </div>
                 <button class="mt-3 w-100" v-b-toggle="'comments-accordion' + post.id">
@@ -25,7 +28,8 @@
                         :comments="post.comments"
                         :canComment="isLoggedIn"
                         :currentUser="currentUser"
-                        @commented="(comment) => createComment(post, comment)"
+                        :imagePostUserEmail="post.userEmail"
+                        @created="(content) => createComment(post, content)"
                         @edited="(comment) => editComment(post, comment)"
                         @deleted="(commentId) => deleteComment(post, commentId)"
                         @usernameClicked="viewProfile"/>
@@ -33,24 +37,27 @@
             </li>
         </ul>
         <div class="text-center"
-            v-else-if="isLoaded">
+            v-else-if="!isLoading">
             <div class="mt-4">Your feed is empty.</div>
             <div class="link mt-3" @click="$router.push({path:'/explore'})">
                 Explore posts and follow users who have posted in order to populate your feed.
             </div>
         </div>
         <div class="text-center"
-            v-else-if="!isLoaded">
+            v-else-if="isLoading">
             <b-spinner class="mt-4 text-center" label="Loading feed..."></b-spinner>
         </div>
     </div>
 </template>
 
 <script>
+import { mapState, mapGetters } from 'vuex'
+import { ModuleName as AuthenticationModuleName } from '../store/modules/authentication/types'
+import { ModuleName as FeedModuleName, Action } from '../store/modules/feed/types'
+
 import ImagePostComment from '../components/image-posts/ImagePostComment'
 import ImagePostCommentList from '../components/image-posts/ImagePostCommentList'
 import ImagePostDetailedImage from '../components/image-posts/ImagePostDetailedImage'
-import UnauthorizedError from '../errors/unauthorized-error'
 
 export default {
     name: "Feed",
@@ -59,46 +66,32 @@ export default {
         ImagePostCommentList,
         ImagePostDetailedImage
     },
-    data: function() {
-        return {
-            imagePosts: [],
-            isLoaded: false
-        }
-    },
     computed: {
-        isLoggedIn: function() {
-            return this.currentUser != null
-        },
-        isUsersPost: function() {
-            return post => this.isLoggedIn && post.user.email === this.currentUser.email
-        },
-        isLiked: function() {
-            return post => this.isLoggedIn && post.likes.some(l => l.userEmail === this.currentUser.email)
-        },
-        currentUser: function() {            
-            return this.userService.getUser()
-        }
+        ...mapState({
+            imagePosts: state => state.feed.imagePosts,
+            isLoading: state => state.feed.isLoading,
+            currentUser: state => state.authentication.currentUser
+        }),
+        ...mapGetters(AuthenticationModuleName, ['isLoggedIn'])
     },
-    created: async function() {
-        try {  
-            this.imagePosts = await this.feedService.getFeed()
-        } catch (error) {
-            if(error instanceof UnauthorizedError) {
-                this.$router.push({path: "/login", query: { back: true }})
-            }
-        }
-
-        this.isLoaded = true;
+    created: function() {
+        this.$store.dispatch(`${FeedModuleName}/${Action.GET_FEED}`)
     },
     methods: {
-        createComment: async function(imagePost, comment) {
-            imagePost.comments = await this.commentVueService.createComment(imagePost, comment)
+        likeImagePost: function(imagePost) {
+            this.$store.dispatch(`${FeedModuleName}/${Action.LIKE_IMAGE_POST}`, imagePost)
+        },
+        unlikeImagePost: function(imagePost) {
+            this.$store.dispatch(`${FeedModuleName}/${Action.UNLIKE_IMAGE_POST}`, imagePost)
+        },
+        createComment: async function(imagePost, content) {
+            this.$store.dispatch(`${FeedModuleName}/${Action.CREATE_IMAGE_POST_COMMENT}`, { imagePost, content })
         },
         editComment: async function(imagePost, comment) {
-            imagePost.comments = await this.commentVueService.updateComment(imagePost, comment.id, comment.content)
+            this.$store.dispatch(`${FeedModuleName}/${Action.UPDATE_IMAGE_POST_COMMENT}`, { imagePost, comment })
         },
         deleteComment: async function(imagePost, commentId) {
-            imagePost.comments = await this.commentVueService.deleteComment(imagePost, commentId)
+            this.$store.dispatch(`${FeedModuleName}/${Action.DELETE_IMAGE_POST_COMMENT}`, { imagePost, commentId})
         },
         viewProfile: function(username) {
             this.$router.push({path: `/profile/${username}`})

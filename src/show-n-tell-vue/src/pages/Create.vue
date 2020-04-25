@@ -59,7 +59,7 @@ export default {
       }
     },
     methods: {
-      createImage: async function() {
+      createImage: function() {
         const newImagePost = {
           image: this.image,
           description: this.description,

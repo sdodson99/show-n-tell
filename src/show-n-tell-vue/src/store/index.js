@@ -27,7 +27,7 @@ export default new Vuex.Store({
         explore: createExploreModule(ServiceContainer.ImagePostService, ServiceContainer.RandomImagePostService, likeVueService, commentVueService),
         create: createCreateModule(ServiceContainer.ImagePostService, router),
         edit: createEditModule(ServiceContainer.ImagePostService, router),
-        feed: createFeedModule(),
+        feed: createFeedModule(ServiceContainer.FeedService, likeVueService, commentVueService, router),
         profile: createProfileModule(),
         search: createSearchModule()
     }

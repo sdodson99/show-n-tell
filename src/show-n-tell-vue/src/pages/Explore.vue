@@ -97,7 +97,7 @@ export default {
     }
   },
   methods: {
-    viewNext: async function() {
+    viewNext: function() {
       this.$store.dispatch(`${ExploreModuleName}/${ExploreAction.NEXT_IMAGE_POST}`)
     },
     viewPrevious: function() {
@@ -112,13 +112,13 @@ export default {
     deleteImagePost: function() {
       this.$store.dispatch(`${ExploreModuleName}/${ExploreAction.DELETE_IMAGE_POST}`)
     }, 
-    createImagePostComment: async function(comment) {
+    createImagePostComment: function(comment) {
       this.$store.dispatch(`${ExploreModuleName}/${ExploreAction.CREATE_IMAGE_POST_COMMENT}`, comment)
     },
-    editImagePostComment: async function(comment) {
+    editImagePostComment: function(comment) {
       this.$store.dispatch(`${ExploreModuleName}/${ExploreAction.UPDATE_IMAGE_POST_COMMENT}`, comment)
     },
-    deleteImagePostComment: async function(commentId) {
+    deleteImagePostComment: function(commentId) {
       this.$store.dispatch(`${ExploreModuleName}/${ExploreAction.DELETE_IMAGE_POST_COMMENT}`, commentId)
     },
     viewProfile: function(username) {

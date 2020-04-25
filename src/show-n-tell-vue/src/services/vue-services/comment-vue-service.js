@@ -77,7 +77,7 @@ class CommentVueService{
         } else {
             try {
                 if(await this.commentService.deleteComment(imagePost.id, commentId)) {
-                    deletedComment = imagePost.comments.find(c => c.id !== commentId)
+                    deletedComment = imagePost.comments.find(c => c.id === commentId)
                 }
             } catch (error) {
                 if(error instanceof UnauthorizedError){
