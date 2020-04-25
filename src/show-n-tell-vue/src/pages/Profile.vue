@@ -23,8 +23,6 @@
                 </div>
                 <image-post-listing 
                     :image-posts="profile.imagePosts" 
-                    :like-vue-service="likeVueService"
-                    :image-post-service="imagePostService"
                     :current-user="currentUser"
                     @imagePostDeleted="imagePostDeleted"/>
             </div>
@@ -48,13 +46,6 @@ export default {
     name: "Profile",
     components: {
         ImagePostListing
-    },
-    props: {
-        imagePostService: Object,
-        likeVueService: Object,
-        profileService: Object,
-        followService: Object,
-        userService: Object
     },
     data: function() {
         return {

@@ -12,8 +12,6 @@
         <image-post-listing
             v-else-if="hasImagePosts && !isLoading"
             :image-posts="imagePosts"
-            :image-post-service="imagePostService"
-            :like-vue-service="likeVueService"
             :current-user="currentUser"
             @imagePostDeleted="imagePostDeleted"/>
     </div>
@@ -28,11 +26,7 @@ export default {
         ImagePostListing
     },
     props: {
-        query: String,
-        searchService: Object,
-        imagePostService: Object,
-        likeVueService: Object,
-        userService: Object
+        query: String
     },
     data: function() {
         return {

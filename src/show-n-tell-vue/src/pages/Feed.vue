@@ -6,8 +6,6 @@
                 <image-post-detailed-image class="mt-3"
                     maxImagePostHeight="50vh"
                     :imagePost="post"
-                    :imagePostService="imagePostService"
-                    :likeVueService="likeVueService"
                     :currentUser="currentUser"/>
                 <div class="my-4">
                     <image-post-comment
@@ -60,13 +58,6 @@ export default {
         ImagePostComment,
         ImagePostCommentList,
         ImagePostDetailedImage
-    },
-    props: {
-        userService: Object,
-        imagePostService: Object,
-        feedService: Object,
-        commentVueService: Object,
-        likeVueService: Object
     },
     data: function() {
         return {
