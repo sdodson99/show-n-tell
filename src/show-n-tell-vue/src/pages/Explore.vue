@@ -57,9 +57,6 @@ import { mapGetters, mapState } from 'vuex'
 import { ModuleName as ExploreModuleName, Action as ExploreAction } from '../store/modules/explore/types'
 import { ModuleName as AuthenticationModuleName } from '../store/modules/authentication/types'
 
-import UnauthorizedError from '../errors/unauthorized-error'
-import NotFoundError from '../errors/not-found-error'
-
 import ImagePostComment from '../components/image-posts/ImagePostComment'
 import ImagePostCommentList from '../components/image-posts/ImagePostCommentList'
 import ImagePostDetailedImage from '../components/image-posts/ImagePostDetailedImage'
