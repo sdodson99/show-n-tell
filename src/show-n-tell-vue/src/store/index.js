@@ -11,6 +11,9 @@ import createAuthenticationModule from './modules/authentication'
 import createExploreModule from './modules/explore'
 import createCreateModule from './modules/create';
 import createEditModule from './modules/edit';
+import createFeedModule from './modules/feed';
+import createProfileModule from './modules/profile';
+import createSearchModule from './modules/search';
 
 Vue.use(Vuex)
 
@@ -23,6 +26,9 @@ export default new Vuex.Store({
         authentication: createAuthenticationModule(ServiceContainer.AuthenticationService, router),
         explore: createExploreModule(ServiceContainer.ImagePostService, ServiceContainer.RandomImagePostService, likeVueService, commentVueService),
         create: createCreateModule(ServiceContainer.ImagePostService, router),
-        edit: createEditModule(ServiceContainer.ImagePostService, router)
+        edit: createEditModule(ServiceContainer.ImagePostService, router),
+        feed: createFeedModule(),
+        profile: createProfileModule(),
+        search: createSearchModule()
     }
 })
