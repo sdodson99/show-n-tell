@@ -53,7 +53,8 @@
 <script>
 import { mapState, mapGetters } from 'vuex'
 import { ModuleName as AuthenticationModuleName } from '../store/modules/authentication/types'
-import { ModuleName as FeedModuleName, Action } from '../store/modules/feed/types'
+import { ModuleName as ImagePostsModuleName, Action as ImagePostsAction } from '../store/modules/image-posts/types'
+import { ModuleName as FeedModuleName, Action as FeedAction } from '../store/modules/feed/types'
 
 import ImagePostComment from '../components/image-posts/ImagePostComment'
 import ImagePostCommentList from '../components/image-posts/ImagePostCommentList'
@@ -66,32 +67,38 @@ export default {
         ImagePostCommentList,
         ImagePostDetailedImage
     },
+    data: function() {
+        return {
+            isLoading: false
+        }
+    },
     computed: {
         ...mapState({
-            imagePosts: state => state.feed.imagePosts,
-            isLoading: state => state.feed.isLoading,
             currentUser: state => state.authentication.currentUser
         }),
+        ...mapGetters(FeedModuleName, ['imagePosts']),
         ...mapGetters(AuthenticationModuleName, ['isLoggedIn'])
     },
-    created: function() {
-        this.$store.dispatch(`${FeedModuleName}/${Action.GET_FEED}`)
+    created: async function() {
+        this.isLoading = true;
+        await this.$store.dispatch(`${FeedModuleName}/${FeedAction.GET_FEED}`)
+        this.isLoading = false;
     },
     methods: {
         likeImagePost: function(imagePost) {
-            this.$store.dispatch(`${FeedModuleName}/${Action.LIKE_IMAGE_POST}`, imagePost)
+            this.$store.dispatch(`${ImagePostsModuleName}/${ImagePostsAction.LIKE_IMAGE_POST}`, imagePost)
         },
         unlikeImagePost: function(imagePost) {
-            this.$store.dispatch(`${FeedModuleName}/${Action.UNLIKE_IMAGE_POST}`, imagePost)
+            this.$store.dispatch(`${ImagePostsModuleName}/${ImagePostsAction.UNLIKE_IMAGE_POST}`, imagePost)
         },
         createComment: function(imagePost, content) {
-            this.$store.dispatch(`${FeedModuleName}/${Action.CREATE_IMAGE_POST_COMMENT}`, { imagePost, content })
+            this.$store.dispatch(`${ImagePostsModuleName}/${ImagePostsAction.CREATE_IMAGE_POST_COMMENT}`, { imagePost, content })
         },
         editComment: function(imagePost, comment) {
-            this.$store.dispatch(`${FeedModuleName}/${Action.UPDATE_IMAGE_POST_COMMENT}`, { imagePost, comment })
+            this.$store.dispatch(`${ImagePostsModuleName}/${ImagePostsAction.UPDATE_IMAGE_POST_COMMENT}`, { imagePost, comment })
         },
         deleteComment: function(imagePost, commentId) {
-            this.$store.dispatch(`${FeedModuleName}/${Action.DELETE_IMAGE_POST_COMMENT}`, { imagePost, commentId})
+            this.$store.dispatch(`${ImagePostsModuleName}/${ImagePostsAction.DELETE_IMAGE_POST_COMMENT}`, { imagePost, commentId})
         },
         viewProfile: function(username) {
             this.$router.push({path: `/profile/${username}`})

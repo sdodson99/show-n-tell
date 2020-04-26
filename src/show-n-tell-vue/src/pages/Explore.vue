@@ -54,7 +54,7 @@
 
 <script>
 import { mapGetters, mapState } from 'vuex'
-import { ModuleName as ExploreModuleName, Action as ExploreAction } from '../store/modules/explore/types'
+import { ModuleName as ExploreModuleName, Action as ExploreAction, Mutation } from '../store/modules/explore/types'
 import { ModuleName as ImagePostsModuleName, Action as ImagePostsAction } from '../store/modules/image-posts/types'
 import { ModuleName as AuthenticationModuleName } from '../store/modules/authentication/types'
 
@@ -84,7 +84,9 @@ export default {
       return ""
     }
   },
-  created: async function() {
+  created: function() {
+    this.$store.commit(`${ExploreModuleName}/${Mutation.CLEAR_IMAGE_POST_IDS}`)
+
     const initialImageId = this.$route.params.initialId;
     
     if(initialImageId) {

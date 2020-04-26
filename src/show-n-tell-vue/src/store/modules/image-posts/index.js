@@ -1,7 +1,9 @@
 import Vue from 'vue'
 import { Action, Mutation } from './types'
 
-export default function createImagePostsModule(imagePostService, likeVueService, commentVueService) {
+import UnauthorizedError from '../../../errors/unauthorized-error'
+
+export default function createImagePostsModule(imagePostService, likeVueService, commentVueService, router) {
     const state = {
         imagePosts: {}
     }
@@ -37,11 +39,43 @@ export default function createImagePostsModule(imagePostService, likeVueService,
                 commit(Mutation.REMOVE_COMMENT_FROM_IMAGE_POST, { imagePostId: imagePost.id, commentId })
             } 
         },
+        async [Action.FETCH_IMAGE_POST_BY_ID]({ commit }, id) {
+            const imagePost = await imagePostService.getById(id)
+            if(imagePost && imagePost.id) {
+                commit(Mutation.UPDATE_IMAGE_POSTS, [imagePost])
+            }
+        },
+        async [Action.CREATE_IMAGE_POST]({ commit }, imagePost) {
+            try {
+                const createdImagePost = await imagePostService.create(imagePost);
+      
+                if(createdImagePost.id) {
+                    commit(Mutation.UPDATE_IMAGE_POSTS, [createdImagePost])
+                    router.push({path: `/explore/${createdImagePost.id}`})
+                }
+            } catch (error) {
+                if(error instanceof UnauthorizedError) {
+                    router.push({path: "/login", query: { back: true }})
+                }
+            }
+        },
+        async [Action.UPDATE_IMAGE_POST]({ commit }, { imagePostId, imagePost}) {
+            try {
+                const updatedImagePost = await imagePostService.update(imagePostId, imagePost)
+
+                if(updatedImagePost.id) {
+                    commit(Mutation.UPDATE_IMAGE_POSTS, [updatedImagePost])
+                    router.push({path: `/explore/${updatedImagePost.id}`})
+                }
+            } catch (error) {
+                if(error instanceof UnauthorizedError) {
+                    router.push({path: "/login", query: { back: true }})
+                }
+            }
+        },
         async [Action.DELETE_IMAGE_POST]({ commit }, imagePostId) {
             if(await imagePostService.delete(imagePostId)) {
                 commit(Mutation.REMOVE_IMAGE_POST, imagePostId)
-                console.log(state);
-                
             }
         }
     }

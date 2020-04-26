@@ -22,7 +22,7 @@
                     This user has not posted any images yet.
                 </div>
                 <image-post-listing 
-                    :image-posts="profile.imagePosts" 
+                    :image-posts="imagePosts" 
                     :current-user="currentUser"
                     @liked="likeImagePost"
                     @unliked="unlikeImagePost"
@@ -41,7 +41,8 @@
 
 <script>
 import { mapState, mapGetters } from "vuex";
-import { ModuleName as ProfileModuleName, Action } from "../store/modules/profile/types"
+import { ModuleName as ProfileModuleName, Action as ProfileAction } from "../store/modules/profile/types"
+import { ModuleName as ImagePostsModuleName, Action as ImagePostsAction } from "../store/modules/image-posts/types"
 
 import ImagePostListing from '../components/image-posts/ImagePostListing'
 
@@ -50,16 +51,21 @@ export default {
     components: {
         ImagePostListing
     },
+    data: function() {
+        return {
+            isLoading: false
+        }
+    },
     computed: {
         ...mapState({
             profile: state => state.profile.profile,
             profileUsername: state => state.profile.profileUsername,
             profileNotFound: state => state.profile.profileNotFound,
-            isLoading: state => state.profile.isLoading,
             currentUser: state => state.authentication.currentUser
         }),
+        ...mapGetters(ProfileModuleName, ['imagePosts']),
         hasNoImagePosts: function() {
-            return this.profile.imagePosts && this.profile.imagePosts.length === 0
+            return this.imagePosts && this.imagePosts.length === 0
         },
         isUsersProfile: function() {
             return this.currentUser && this.currentUser.username === this.profileUsername
@@ -83,23 +89,25 @@ export default {
         }
     },
     methods: {
-        loadProfile: function() {
-            this.$store.dispatch(`${ProfileModuleName}/${Action.GET_PROFILE_BY_USERNAME}`, this.$route.params.username)
+        loadProfile: async function() {
+            this.isLoading = true;
+            await this.$store.dispatch(`${ProfileModuleName}/${ProfileAction.GET_PROFILE_BY_USERNAME}`, this.$route.params.username)
+            this.isLoading = false;
         },
         followProfile: function() {
-            this.$store.dispatch(`${ProfileModuleName}/${Action.FOLLOW_PROFILE}`)
+            this.$store.dispatch(`${ProfileModuleName}/${ProfileAction.FOLLOW_PROFILE}`)
         },
         unfollowProfile: function() {
-            this.$store.dispatch(`${ProfileModuleName}/${Action.UNFOLLOW_PROFILE}`)
+            this.$store.dispatch(`${ProfileModuleName}/${ProfileAction.UNFOLLOW_PROFILE}`)
         },
         likeImagePost: function(imagePost) {
-            this.$store.dispatch(`${ProfileModuleName}/${Action.LIKE_IMAGE_POST}`, imagePost)
+            this.$store.dispatch(`${ImagePostsModuleName}/${ImagePostsAction.LIKE_IMAGE_POST}`, imagePost)
         },
         unlikeImagePost: function(imagePost) {
-            this.$store.dispatch(`${ProfileModuleName}/${Action.UNLIKE_IMAGE_POST}`, imagePost)
+            this.$store.dispatch(`${ImagePostsModuleName}/${ImagePostsAction.UNLIKE_IMAGE_POST}`, imagePost)
         },
         deleteImagePost: function(imagePost) {
-            this.$store.dispatch(`${ProfileModuleName}/${Action.DELETE_IMAGE_POST}`, imagePost.id)
+            this.$store.dispatch(`${ProfileModuleName}/${ProfileAction.DELETE_IMAGE_POST}`, imagePost.id)
         },
         viewExplore: function() {
             this.$router.push({path: "/explore"})
