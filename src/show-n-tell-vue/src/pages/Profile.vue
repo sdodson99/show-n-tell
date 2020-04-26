@@ -41,7 +41,6 @@
 
 <script>
 import { mapState, mapGetters } from "vuex";
-import { ModuleName as AuthenticationModuleName } from "../store/modules/authentication/types"
 import { ModuleName as ProfileModuleName, Action } from "../store/modules/profile/types"
 
 import ImagePostListing from '../components/image-posts/ImagePostListing'

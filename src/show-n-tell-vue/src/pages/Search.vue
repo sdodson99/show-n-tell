@@ -13,11 +13,16 @@
             v-else-if="hasImagePosts && !isLoading"
             :image-posts="imagePosts"
             :current-user="currentUser"
-            @imagePostDeleted="imagePostDeleted"/>
+            @liked="likeImagePost"
+            @unliked="unlikeImagePost"
+            @deleted="deleteImagePost"/>
     </div>
 </template>
 
 <script>
+import { mapState, mapGetters } from "vuex";
+import { ModuleName, Action } from "../store/modules/search/types"
+
 import ImagePostListing from '../components/image-posts/ImagePostListing'
 
 export default {
@@ -28,41 +33,37 @@ export default {
     props: {
         query: String
     },
-    data: function() {
-        return {
-            imagePosts: [],
-            isLoading: true
-        }
-    },
     computed: {
+        ...mapState({
+            imagePosts: (state) => state.search.imagePosts,
+            isLoading: (state) => state.search.isLoading,
+            currentUser: (state) => state.authentication.currentUser
+        }),
         hasImagePosts: function(){
             return this.imagePosts.length > 0
-        },
-        currentUser: function() {
-            return this.userService.getUser()
         }
     },
-    created: async function() {
-        await this.searchImagePosts()
+    created: function() {
+        this.searchImagePosts()
     },
     watch: {
-        query: async function() {
-            await this.searchImagePosts()
+        query: function() {
+            this.searchImagePosts()
         }
     },
     methods: {
-        searchImagePosts: async function() {
-            this.isLoading = true
-            this.imagePosts = await this.searchService.searchImagePosts(this.query)
-            this.isLoading = false
+        searchImagePosts: function() {
+            this.$store.dispatch(`${ModuleName}/${Action.SEARCH_IMAGE_POSTS}`, this.query)
         },
-        imagePostDeleted: function(imagePostId) {
-            this.imagePosts = this.imagePosts.filter(p => p.id !== imagePostId)
+        likeImagePost: function(imagePost) {
+            this.$store.dispatch(`${ModuleName}/${Action.LIKE_IMAGE_POST}`, imagePost)
+        },
+        unlikeImagePost: function(imagePost) {
+            this.$store.dispatch(`${ModuleName}/${Action.UNLIKE_IMAGE_POST}`, imagePost)
+        },
+        deleteImagePost: function(imagePost) {
+            this.$store.dispatch(`${ModuleName}/${Action.DELETE_IMAGE_POST}`, imagePost.id)
         }
     }
 }
 </script>
-
-<style>
-
-</style>
