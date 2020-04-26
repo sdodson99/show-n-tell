@@ -31,7 +31,7 @@
 
 <script>
 import { mapState } from 'vuex'
-import { ModuleName, Action, Mutation } from '../store/modules/edit/types'
+import { ModuleName, Action, Mutation } from '../store/modules/image-posts/types'
 
 import ImagePostImage from '../components/image-posts/ImagePostImage'
 
@@ -40,37 +40,47 @@ export default {
     components: {
         ImagePostImage
     },
-    computed: {
-      ...mapState({
-        imageUri: (state) => state.edit.imageUri,
-        isLoading: (state) => state.edit.isLoading,
-        isUpdating: (state) => state.edit.isUpdating
-      }),
-      description: {
-        get() {
-          return this.$store.state.edit.description
-        }, 
-        set(value) {
-          this.$store.commit(`${ModuleName}/${Mutation.SET_DESCRIPTION}`, value)
-        }
-      },
-      tags: {
-        get() {
-          return this.$store.state.edit.tags
-        },
-        set(value) {
-          this.$store.commit(`${ModuleName}/${Mutation.SET_TAGS}`, value)
-        }
+    data: function() {
+      return {
+        imagePostId: 0,
+        imageUri: "",
+        description: "",
+        tags: "",
+        isUpdating: false,
+        isLoading: false
       }
     },
-    created: function() {
-        this.$store.dispatch(`${ModuleName}/${Action.SET_IMAGE_POST_BY_ID}`, this.$route.params.imagePostId)
+    computed: {
+      ...mapState({
+        imagePosts: (state) => state.imagePosts.imagePosts
+      })
+    },
+    created: async function() {
+      this.isLoading = true;
+
+      this.imagePostId = this.$route.params.imagePostId
+      await this.$store.dispatch(`${ModuleName}/${Action.FETCH_IMAGE_POST_BY_ID}`, this.imagePostId)
+
+      this.imageUri = this.imagePosts[this.imagePostId].imageUri
+      this.description = this.imagePosts[this.imagePostId].description
+      this.tags = this.imagePosts[this.imagePostId].tags.join(',')
+
+      this.isLoading = false
     },
     methods: {
-        updateImagePost: function() {
-          this.$store.dispatch(`${ModuleName}/${Action.UPDATE_IMAGE_POST}`)
+      updateImagePost: async function() {
+        this.isUpdating = true;
+
+        const imagePost = {
+          description: this.description,
+          tags: this.tags.split(",").map(t => t.trim())
         }
+
+        await this.$store.dispatch(`${ModuleName}/${Action.UPDATE_IMAGE_POST}`, { imagePostId: this.imagePostId, imagePost })
+
+        this.isUpdating = false;
     }
+  }
 }
 </script>
 

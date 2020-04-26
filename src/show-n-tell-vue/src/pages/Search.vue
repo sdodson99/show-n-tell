@@ -21,7 +21,8 @@
 
 <script>
 import { mapState, mapGetters } from "vuex";
-import { ModuleName, Action } from "../store/modules/search/types"
+import { ModuleName as SearchModuleName, Action as SearchAction } from "../store/modules/search/types"
+import { ModuleName as ImagePostsModuleName, Action as ImagePostsAction } from "../store/modules/image-posts/types"
 
 import ImagePostListing from '../components/image-posts/ImagePostListing'
 
@@ -33,12 +34,16 @@ export default {
     props: {
         query: String
     },
+    data: function() {
+        return {
+            isLoading: false
+        }
+    },
     computed: {
         ...mapState({
-            imagePosts: (state) => state.search.imagePosts,
-            isLoading: (state) => state.search.isLoading,
             currentUser: (state) => state.authentication.currentUser
         }),
+        ...mapGetters(SearchModuleName, ['imagePosts']),
         hasImagePosts: function(){
             return this.imagePosts.length > 0
         }
@@ -52,17 +57,19 @@ export default {
         }
     },
     methods: {
-        searchImagePosts: function() {
-            this.$store.dispatch(`${ModuleName}/${Action.SEARCH_IMAGE_POSTS}`, this.query)
+        searchImagePosts: async function() {
+            this.isLoading = true;
+            await this.$store.dispatch(`${SearchModuleName}/${SearchAction.SEARCH_IMAGE_POSTS}`, this.query)
+            this.isLoading = false;
         },
         likeImagePost: function(imagePost) {
-            this.$store.dispatch(`${ModuleName}/${Action.LIKE_IMAGE_POST}`, imagePost)
+            this.$store.dispatch(`${ImagePostsModuleName}/${ImagePostsAction.LIKE_IMAGE_POST}`, imagePost)
         },
         unlikeImagePost: function(imagePost) {
-            this.$store.dispatch(`${ModuleName}/${Action.UNLIKE_IMAGE_POST}`, imagePost)
+            this.$store.dispatch(`${ImagePostsModuleName}/${ImagePostsAction.UNLIKE_IMAGE_POST}`, imagePost)
         },
         deleteImagePost: function(imagePost) {
-            this.$store.dispatch(`${ModuleName}/${Action.DELETE_IMAGE_POST}`, imagePost.id)
+            this.$store.dispatch(`${SearchModuleName}/${SearchAction.DELETE_IMAGE_POST}`, imagePost.id)
         }
     }
 }

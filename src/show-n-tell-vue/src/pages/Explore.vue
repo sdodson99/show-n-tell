@@ -54,7 +54,8 @@
 
 <script>
 import { mapGetters, mapState } from 'vuex'
-import { ModuleName as ExploreModuleName, Action as ExploreAction } from '../store/modules/explore/types'
+import { ModuleName as ExploreModuleName, Action as ExploreAction, Mutation } from '../store/modules/explore/types'
+import { ModuleName as ImagePostsModuleName, Action as ImagePostsAction } from '../store/modules/image-posts/types'
 import { ModuleName as AuthenticationModuleName } from '../store/modules/authentication/types'
 
 import ImagePostComment from '../components/image-posts/ImagePostComment'
@@ -83,15 +84,15 @@ export default {
       return ""
     }
   },
-  created: async function() {
-    this.$store.dispatch(`${ExploreModuleName}/${ExploreAction.CLEAR_IMAGE_POSTS}`)
+  created: function() {
+    this.$store.commit(`${ExploreModuleName}/${Mutation.CLEAR_IMAGE_POST_IDS}`)
+
+    const initialImageId = this.$route.params.initialId;
     
-    if(this.noImagePosts) {
-      const initialImageId = this.$route.params.initialId;
-      
-      if(initialImageId) {
-        this.$store.dispatch(`${ExploreModuleName}/${ExploreAction.FETCH_IMAGE_POST_BY_ID}`, initialImageId)
-      } else {
+    if(initialImageId) {
+      this.$store.dispatch(`${ExploreModuleName}/${ExploreAction.FETCH_IMAGE_POST_BY_ID}`, initialImageId)
+    } else {
+      if(this.noImagePosts) {
         this.$store.dispatch(`${ExploreModuleName}/${ExploreAction.FETCH_RANDOM_IMAGE_POST}`)
       }
     }
@@ -104,22 +105,22 @@ export default {
       this.$store.dispatch(`${ExploreModuleName}/${ExploreAction.PREVIOUS_IMAGE_POST}`)
     },
     likeImagePost: function() {
-      this.$store.dispatch(`${ExploreModuleName}/${ExploreAction.LIKE_IMAGE_POST}`)
+      this.$store.dispatch(`${ImagePostsModuleName}/${ImagePostsAction.LIKE_IMAGE_POST}`, this.currentImagePost)
     },
     unlikeImagePost: function() {
-      this.$store.dispatch(`${ExploreModuleName}/${ExploreAction.UNLIKE_IMAGE_POST}`)
+      this.$store.dispatch(`${ImagePostsModuleName}/${ImagePostsAction.UNLIKE_IMAGE_POST}`, this.currentImagePost)
     },
     deleteImagePost: function() {
       this.$store.dispatch(`${ExploreModuleName}/${ExploreAction.DELETE_IMAGE_POST}`)
     }, 
-    createImagePostComment: function(comment) {
-      this.$store.dispatch(`${ExploreModuleName}/${ExploreAction.CREATE_IMAGE_POST_COMMENT}`, comment)
+    createImagePostComment: function(content) {
+      this.$store.dispatch(`${ImagePostsModuleName}/${ImagePostsAction.CREATE_IMAGE_POST_COMMENT}`, { imagePost: this.currentImagePost, content })
     },
     editImagePostComment: function(comment) {
-      this.$store.dispatch(`${ExploreModuleName}/${ExploreAction.UPDATE_IMAGE_POST_COMMENT}`, comment)
+      this.$store.dispatch(`${ImagePostsModuleName}/${ImagePostsAction.UPDATE_IMAGE_POST_COMMENT}`, { imagePost: this.currentImagePost, comment })
     },
     deleteImagePostComment: function(commentId) {
-      this.$store.dispatch(`${ExploreModuleName}/${ExploreAction.DELETE_IMAGE_POST_COMMENT}`, commentId)
+      this.$store.dispatch(`${ImagePostsModuleName}/${ExploreAction.DELETE_IMAGE_POST_COMMENT}`, { imagePost: this.currentImagePost, commentId })
     },
     viewProfile: function(username) {
       this.$router.push({path: `/profile/${username}`})

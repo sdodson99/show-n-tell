@@ -2,8 +2,7 @@ import { Action, Mutation } from './types'
 
 export default function createAuthenticationModule(authenticationService, router) {
     const state = {
-        currentUser: authenticationService.getUser(),
-        isLoggingIn: false
+        currentUser: authenticationService.getUser()
     }
 
     const getters = {
@@ -12,8 +11,6 @@ export default function createAuthenticationModule(authenticationService, router
 
     const actions = {
         async [Action.LOGIN]({ commit }, { token, redirectPath, redirectBack }) {
-            commit(Mutation.SET_IS_LOGGING_IN, true)
-
             const user = await authenticationService.login(token)
             commit(Mutation.SET_CURRENT_USER, user)
 
@@ -24,8 +21,6 @@ export default function createAuthenticationModule(authenticationService, router
             } else {
                 router.push({name: "Home"})
             }
-
-            commit(Mutation.SET_IS_LOGGING_IN, false)
         },
         async [Action.LOGOUT]({ commit }) {
             if(authenticationService.logout()) {

@@ -33,6 +33,7 @@ export default {
   },
   data() {
     return {
+      isLoggingIn: false,
       googleParams: {
         client_id:
           "462162693296-pesibunbs71up7lress4c6b549bd2qld.apps.googleusercontent.com"
@@ -43,20 +44,18 @@ export default {
       }
     };
   },
-  computed: {
-    ...mapState({
-      isLoggingIn: (state) => state.authentication.isLoggingIn
-    })
-  },
   methods: {
     onLoginSuccess: async function(result) {
-      const token = result.getAuthResponse().id_token;
+      this.isLoggingIn = true
 
-      this.$store.dispatch(`${ModuleName}/${Action.LOGIN}`, {
+      const token = result.getAuthResponse().id_token;
+      await this.$store.dispatch(`${ModuleName}/${Action.LOGIN}`, {
         token,
         redirectPath: this.redirectPath,
         redirectBack: this.redirectBack
       })
+
+      this.isLoggingIn = false
     },
     onLoginFailure: function(e) {
       console.log(e);

@@ -8,9 +8,8 @@ import LikeVueService from "../services/vue-services/like-vue-service";
 import CommentVueService from "../services/vue-services/comment-vue-service";
 
 import createAuthenticationModule from './modules/authentication'
+import createImagePostsModule from './modules/image-posts'
 import createExploreModule from './modules/explore'
-import createCreateModule from './modules/create';
-import createEditModule from './modules/edit';
 import createFeedModule from './modules/feed';
 import createProfileModule from './modules/profile';
 import createSearchModule from './modules/search';
@@ -24,11 +23,10 @@ const commentVueService = new CommentVueService(ServiceContainer.CommentService,
 export default new Vuex.Store({
     modules: {
         authentication: createAuthenticationModule(ServiceContainer.AuthenticationService, router),
-        explore: createExploreModule(ServiceContainer.ImagePostService, ServiceContainer.RandomImagePostService, likeVueService, commentVueService),
-        create: createCreateModule(ServiceContainer.ImagePostService, router),
-        edit: createEditModule(ServiceContainer.ImagePostService, router),
-        feed: createFeedModule(ServiceContainer.FeedService, likeVueService, commentVueService, router),
-        profile: createProfileModule(ServiceContainer.ProfileService, ServiceContainer.FollowService, ServiceContainer.ImagePostService, likeVueService, router),
+        imagePosts: createImagePostsModule(ServiceContainer.ImagePostService, likeVueService, commentVueService, router),
+        explore: createExploreModule(ServiceContainer.ImagePostService, ServiceContainer.RandomImagePostService),
+        feed: createFeedModule(ServiceContainer.FeedService, router),
+        profile: createProfileModule(ServiceContainer.ProfileService, ServiceContainer.FollowService, ServiceContainer.ImagePostService, router),
         search: createSearchModule(ServiceContainer.SearchService, ServiceContainer.ImagePostService, likeVueService, router)
     }
 })

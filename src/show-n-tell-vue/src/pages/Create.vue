@@ -35,8 +35,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
-import { ModuleName, Action } from '../store/modules/create/types'
+import { ModuleName, Action } from '../store/modules/image-posts/types'
 
 export default {
     name: "Create",
@@ -44,13 +43,11 @@ export default {
       return {
         image: null,
         description: "",
-        tags: ""
+        tags: "",
+        isCreating: false
       }
     },
     computed: {
-      ...mapState({
-        isCreating: (state) => state.create.isCreating
-      }),
       imageName: function() {
         return this.image ? this.image.name : "Choose File";
       },
@@ -59,14 +56,18 @@ export default {
       }
     },
     methods: {
-      createImage: function() {
+      createImage: async function() {
+        this.isCreating = true;
+
         const newImagePost = {
           image: this.image,
           description: this.description,
           tags: this.tags.split(",").map(t => t.trim())
         }
 
-        this.$store.dispatch(`${ModuleName}/${Action.CREATE_IMAGE_POST}`, newImagePost)
+        await this.$store.dispatch(`${ModuleName}/${Action.CREATE_IMAGE_POST}`, newImagePost)
+
+        this.isCreating = false;
       },
       handleImageChange: function(event) {
         const file = event.target.files[0];
