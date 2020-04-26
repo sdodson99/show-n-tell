@@ -47,7 +47,7 @@ export default function createFeedModule(feedService, likeVueService, commentVue
                 commit(Mutation.UPDATE_COMMENT_ON_IMAGE_POST, { imagePostId: imagePost.id, comment: updatedComment })
             }
         },
-        async [Action.DELETE_IMAGE_POST_COMMENT]({ commit }, {imagePost, commentId}) {
+        async [Action.DELETE_IMAGE_POST_COMMENT]({ commit }, { imagePost, commentId }) {
             const deletedComment = await commentVueService.deleteComment(imagePost, commentId, '/feed')
             if(deletedComment) {
                 commit(Mutation.REMOVE_COMMENT_FROM_IMAGE_POST, { imagePostId: imagePost.id, commentId })

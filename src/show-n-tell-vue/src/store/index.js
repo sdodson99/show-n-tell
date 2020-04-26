@@ -8,6 +8,7 @@ import LikeVueService from "../services/vue-services/like-vue-service";
 import CommentVueService from "../services/vue-services/comment-vue-service";
 
 import createAuthenticationModule from './modules/authentication'
+import createImagePostsModule from './modules/image-posts'
 import createExploreModule from './modules/explore'
 import createCreateModule from './modules/create';
 import createEditModule from './modules/edit';
@@ -24,7 +25,8 @@ const commentVueService = new CommentVueService(ServiceContainer.CommentService,
 export default new Vuex.Store({
     modules: {
         authentication: createAuthenticationModule(ServiceContainer.AuthenticationService, router),
-        explore: createExploreModule(ServiceContainer.ImagePostService, ServiceContainer.RandomImagePostService, likeVueService, commentVueService),
+        imagePosts: createImagePostsModule(ServiceContainer.ImagePostService, likeVueService, commentVueService),
+        explore: createExploreModule(ServiceContainer.ImagePostService, ServiceContainer.RandomImagePostService),
         create: createCreateModule(ServiceContainer.ImagePostService, router),
         edit: createEditModule(ServiceContainer.ImagePostService, router),
         feed: createFeedModule(ServiceContainer.FeedService, likeVueService, commentVueService, router),
