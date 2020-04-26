@@ -22,7 +22,7 @@
         </div>
         <div class="mt-2">
             <div v-if="!isEditing">
-                {{ content }}
+                {{ contentData }}
             </div>
             <div class="text-right" v-else>
                 <textarea class="form-control" placeholder="New comment..." 
@@ -60,12 +60,15 @@ export default {
         return {
             isDeleting: false,
             isEditing: false,
+            contentData: this.content,
             editContent: this.content
         }
     },
     watch: {
         content: function() {
             this.contentData = this.content
+            console.log('test');
+            
         }
     },
     computed: {
@@ -84,6 +87,7 @@ export default {
         },
         submitEditComment: function() {
             this.$emit('edited', this.editContent)
+            this.contentData = this.editContent
             this.isEditing = false;
         }
     }
