@@ -19,7 +19,7 @@
           :disabled="isUpdating"></textarea>
       </div>
       <button class="m-1 p-3 align-self-center" type="button" 
-        @click="saveImagePost"
+        @click="updateImagePost"
         :disabled="isUpdating">Save</button>
       <div class="text-center"
           v-if="isUpdating">
@@ -30,57 +30,45 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
+import { ModuleName, Action, Mutation } from '../store/modules/edit/types'
+
 import ImagePostImage from '../components/image-posts/ImagePostImage'
-import UnauthorizedError from '../errors/unauthorized-error'
 
 export default {
     name: "Edit",
     components: {
         ImagePostImage
     },
-    props: {
-        imagePostService: Object
-    },
-    data: function() {
-        return {
-            imagePostId: 0,
-            imageUri: null,
-            description: "",
-            tags: "",
-            isUpdating: false
+    computed: {
+      ...mapState({
+        imageUri: (state) => state.edit.imageUri,
+        isLoading: (state) => state.edit.isLoading,
+        isUpdating: (state) => state.edit.isUpdating
+      }),
+      description: {
+        get() {
+          return this.$store.state.edit.description
+        }, 
+        set(value) {
+          this.$store.commit(`${ModuleName}/${Mutation.SET_DESCRIPTION}`, value)
         }
+      },
+      tags: {
+        get() {
+          return this.$store.state.edit.tags
+        },
+        set(value) {
+          this.$store.commit(`${ModuleName}/${Mutation.SET_TAGS}`, value)
+        }
+      }
     },
-    created: async function() {
-        this.imagePostId = this.$route.params.imagePostId
-        const currentImagePost = await this.imagePostService.getById(this.imagePostId)
-
-        this.imageUri = currentImagePost.imageUri
-        this.description = currentImagePost.description
-        this.tags = currentImagePost.tags.join(',')
+    created: function() {
+        this.$store.dispatch(`${ModuleName}/${Action.SET_IMAGE_POST_BY_ID}`, this.$route.params.imagePostId)
     },
     methods: {
-        saveImagePost: async function() {
-            this.isUpdating = true
-
-            try {
-                const currentImageId = this.imagePostId
-                const updateImageRequest = {
-                    description: this.description,
-                    tags: this.tags.split(",").map(t => t.trim())
-                }
-
-                const updatedImage = await this.imagePostService.update(currentImageId, updateImageRequest)
-
-                if(updatedImage.id) {
-                    this.$router.push({path: `/explore/${updatedImage.id}`})
-                }
-            } catch (error) {
-                if(error instanceof UnauthorizedError) {
-                  this.$router.push({path: "/login", query: { back: true }})
-                }
-            }
-
-            this.isUpdating = false
+        updateImagePost: function() {
+          this.$store.dispatch(`${ModuleName}/${Action.UPDATE_IMAGE_POST}`)
         }
     }
 }

@@ -16,7 +16,6 @@ class APIGoogleAuthenticationService{
         this.baseUrl = baseUrl
         this.tokenService = tokenService
         this.userService = userService
-        this.subscribers = {}
     }
 
     /**
@@ -40,8 +39,6 @@ class APIGoogleAuthenticationService{
         this.tokenService.setToken(token)
         this.userService.setUser(user)
 
-        this.publish(AuthenticationEvents.LOGIN, true)
-
         return user;
     }
 
@@ -52,8 +49,6 @@ class APIGoogleAuthenticationService{
     logout() {
         this.userService.clearUser()
         this.tokenService.clearToken() 
-        
-        this.publish(AuthenticationEvents.LOGOUT, false)
 
         return true
     }
@@ -72,37 +67,6 @@ class APIGoogleAuthenticationService{
      */
     isLoggedIn() {
         return this.userService.getUser() !== null && this.tokenService.getToken() !== null
-    }
-
-    /**
-     * Subscribe to an authentication event.
-     * @param {string} event The event to subscribe to.
-     * @param {callback} callback The callback for the event.
-     */
-    subscribe(event, callback) {
-        if(!this.subscribers[event]) {
-            this.subscribers[event] = []
-        }
-
-        this.subscribers[event].push(callback)
-
-        const callbackIndex = this.subscribers[event].length - 1
-        return () => {
-            return this.subscribers[event].splice(callbackIndex, 1)
-        }
-    }
-
-    /**
-     * Publish an authentication event to subscrivers.
-     * @param {string} event The event to publish.
-     * @param {Object} data The data for the event.
-     */
-    publish(event, data) {
-        if(this.subscribers[event]) {
-            this.subscribers[event].forEach(callback => {
-                callback(data)
-            })
-        }
     }
 }
 

@@ -2,16 +2,16 @@
     <div>
         <image-post-image :class="{ pointer: canView }" 
             :max-height="maxImagePostHeight" 
-            :imageUri="imagePost.imageUri"
+            :image-uri="imagePost.imageUri"
             @click="viewImagePost"/>
         <div class="d-flex flex-column flex-sm-row align-items-center justify-content-sm-between">
             <image-post-feedback class="mt-3 mt-sm-1"
-                :canLike="!isUsersImagePost"
-                :liked="isLiked"
-                :likeCount="imagePost.likes.length"
-                :commentCount="imagePost.comments.length"
-                @liked="likeImage"
-                @unliked="unlikeImage"/>
+                :is-liked="isLiked"
+                :can-like="!isUsersImagePost"
+                :like-count="imagePost.likes.length"
+                :comment-count="imagePost.comments.length"
+                @liked="$emit('liked')"
+                @unliked="$emit('unliked')"/>
             <more-dropdown v-if="canView || isUsersImagePost">
                 <more-dropdown-item
                     v-if="canView"
@@ -21,7 +21,7 @@
                     @click="editImagePost">Edit</more-dropdown-item>
                 <more-dropdown-item
                     v-if="isUsersImagePost" 
-                    @click="deleteImagePost">{{ isDeleting ? "Deleting..." : "Delete"}}</more-dropdown-item>
+                    @click="$emit('deleted')">Delete</more-dropdown-item>
             </more-dropdown>
         </div>
     </div>
@@ -45,16 +45,9 @@ export default {
     },
     props: {
         imagePost: Object,
-        imagePostService: Object,
-        likeVueService: Object,
         currentUser: Object,
         maxImagePostHeight: String,
         canView: Boolean
-    },
-    data: function() {
-        return {
-            isDeleting: false
-        }
     },
     computed: {
         isUsersImagePost: function() {
@@ -65,38 +58,13 @@ export default {
         }
     },
     methods: {
-        likeImage: async function() {
-            this.imagePost.likes = await this.likeVueService.likeImagePost(this.imagePost)
-        },
-        unlikeImage: async function() {
-            this.imagePost.likes = await this.likeVueService.unlikeImagePost(this.imagePost)
-        },
         viewImagePost: function() {
             if(this.canView) {
                 this.$router.push({path: `/explore/${this.imagePost.id}`})
             }
         },
         editImagePost: function() {
-            this.$router.push({path: `/imagePosts/${this.imagePost.id}/edit`})
-        },
-        deleteImagePost: async function() {
-            this.isDeleting = true
-
-            const imagePostId = this.imagePost.id
-
-            try {
-                const success = await this.imagePostService.delete(imagePostId)
-
-                if(success) {
-                    this.$emit("imagePostDeleted", imagePostId)
-                }
-            } catch (error) {
-                if(error instanceof UnauthorizedError) {
-                    this.$router.push({path: "/login", query: { back: true }})
-                }
-            }
-
-            this.isDeleting = false
+            this.$router.push({path: `/image-posts/${this.imagePost.id}/edit`})
         }
     }
 }

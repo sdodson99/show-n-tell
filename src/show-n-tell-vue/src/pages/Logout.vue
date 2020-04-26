@@ -8,14 +8,12 @@
 </template>
 
 <script>
+import { ModuleName, Action } from '../store/modules/authentication/types'
+
 export default {
   name: "Logout",
-  props: {
-    authenticationService: Object
-  },
   created: function() {
-    this.authenticationService.logout();
-    this.$router.push({path: "/"})
+    this.$store.dispatch(`${ModuleName}/${Action.LOGOUT}`)
   }
 };
 </script>

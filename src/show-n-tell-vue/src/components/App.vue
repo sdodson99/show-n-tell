@@ -1,41 +1,16 @@
 <template>
   <div id="app">
-    <Layout :is-logged-in="isLoggedIn"/>
+    <layout></layout>
   </div>
 </template>
 
 <script>
 import Layout from "./layout/Layout";
-import { AuthenticationEvents } from "../services/api-google-authentication-service"
 
 export default {
   name: "App",
   components: {
     Layout
-  },
-  props: {
-    imagePostService: Object,
-    authenticationService: Object
-  },
-  data: function() {
-    return {
-      isLoggedIn: this.authenticationService.isLoggedIn(),
-      loginUnsubscribe: null,
-      logoutUnsubscribe: null
-    }
-  },
-  created: function() {
-    this.loginUnsubscribe = this.authenticationService.subscribe(AuthenticationEvents.LOGIN, () => {
-      this.isLoggedIn = true
-    })
-
-    this.logoutUnsubscribe = this.authenticationService.subscribe(AuthenticationEvents.LOGOUT, () => {
-      this.isLoggedIn = false
-    })
-  },
-  destroyed: function() {
-    this.loginUnsubscribe()
-    this.logoutUnsubscribe()
   }
 };
 </script>

@@ -35,22 +35,22 @@
 </template>
 
 <script>
-import UnauthorizedError from '../errors/unauthorized-error'
+import { mapState } from 'vuex'
+import { ModuleName, Action } from '../store/modules/create/types'
 
 export default {
     name: "Create",
-    props: {
-      imagePostService: Object
-    },
     data: function() {
       return {
         image: null,
         description: "",
-        tags: "",
-        isCreating: false
+        tags: ""
       }
     },
     computed: {
+      ...mapState({
+        isCreating: (state) => state.create.isCreating
+      }),
       imageName: function() {
         return this.image ? this.image.name : "Choose File";
       },
@@ -59,28 +59,14 @@ export default {
       }
     },
     methods: {
-      createImage: async function() {
-        this.isCreating = true
-
-        const newImage = {
+      createImage: function() {
+        const newImagePost = {
           image: this.image,
           description: this.description,
           tags: this.tags.split(",").map(t => t.trim())
         }
 
-        try{
-          const createdImage = await this.imagePostService.create(newImage);
-
-          if(createdImage.id) {
-            this.$router.push({path: `/explore/${createdImage.id}`})
-          }
-        } catch (error) {
-          if(error instanceof UnauthorizedError) {
-              this.$router.push({path: "/login", query: { back: true }})
-          }
-        }
-
-        this.isCreating = false
+        this.$store.dispatch(`${ModuleName}/${Action.CREATE_IMAGE_POST}`, newImagePost)
       },
       handleImageChange: function(event) {
         const file = event.target.files[0];

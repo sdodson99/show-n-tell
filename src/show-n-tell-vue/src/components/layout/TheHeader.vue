@@ -36,43 +36,32 @@
 </template>
 
 <script>
-import Hamburger from './Hamburger'
+import { mapGetters } from 'vuex'
+
+import Hamburger from '../utilities/Hamburger'
 
 export default {
   name: "TheHeader",
   components: {
     Hamburger
   },
-  props: {
-    isLoggedIn: Boolean
-  },
   data: function(){
     return {
-      searchContent: "",
-      isLoggedInData: this.isLoggedIn,
-      menuItems: []
+      searchContent: ""
     }
   },
-  created: function() {
-    this.loadMenuItems()
-  },
-  watch: {
-    isLoggedIn: function() {
-      this.isLoggedInData = this.isLoggedIn
-      this.loadMenuItems()
-    }
-  },
-  methods: {
-    loadMenuItems: function(){
-      this.menuItems = []
+  computed: {
+    ...mapGetters('authentication', ['isLoggedIn']),
+    menuItems: function() {
+      const menuItems = []
 
-      this.menuItems.push({
+      menuItems.push({
         name: "Explore",
         to: "/explore"
       })
 
-      if(this.isLoggedInData) {
-        this.menuItems.push(
+      if(this.isLoggedIn) {
+        menuItems.push(
         {
           name: "Feed",
           to: "/feed"
@@ -90,13 +79,17 @@ export default {
           to: "/logout"
         })
       } else {
-        this.menuItems.push(
+        menuItems.push(
         {
           name: "Login",
           to: "/login"
         })
       }
-    },
+
+      return menuItems
+    }
+  },
+  methods: {
     search: function() {
       if(this.$refs.searchForm.reportValidity()) {
         this.$router.push({path: "/search", query: { q: this.searchContent }})

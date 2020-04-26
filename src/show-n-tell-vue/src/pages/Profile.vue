@@ -1,7 +1,7 @@
 <template>
     <div>
-        <div v-if="profileFound">
-            <h1 class="text-center">{{ username }}</h1>
+        <div v-if="!profileNotFound">
+            <h1 class="text-center">{{ profileUsername }}</h1>
             <div v-if="!isLoading">
                 <div class="d-flex flex-column align-items-center">
                     <div v-if="!isUsersProfile" class="mt-4">
@@ -23,25 +23,26 @@
                 </div>
                 <image-post-listing 
                     :image-posts="profile.imagePosts" 
-                    :like-vue-service="likeVueService"
-                    :image-post-service="imagePostService"
                     :current-user="currentUser"
-                    @imagePostDeleted="imagePostDeleted"/>
+                    @liked="likeImagePost"
+                    @unliked="unlikeImagePost"
+                    @deleted="deleteImagePost"/>
             </div>
             <div v-else class="text-center">
                 <b-spinner class="mt-4" label="Loading profile..."></b-spinner>
             </div>
         </div>
         <div v-else>
-            <h1 class="text-center">The profile '{{ username }}' does not exist.</h1>
+            <h1 class="text-center">The profile '{{ profileUsername }}' does not exist.</h1>
             <div class="mt-3 text-center pointer" @click="viewExplore"><u>Go explore instead.</u></div>
         </div>
     </div>
 </template>
 
 <script>
-import UnauthorizedError from '../errors/unauthorized-error'
-import NotFoundError from '../errors/not-found-error'
+import { mapState, mapGetters } from "vuex";
+import { ModuleName as ProfileModuleName, Action } from "../store/modules/profile/types"
+
 import ImagePostListing from '../components/image-posts/ImagePostListing'
 
 export default {
@@ -49,27 +50,19 @@ export default {
     components: {
         ImagePostListing
     },
-    props: {
-        imagePostService: Object,
-        likeVueService: Object,
-        profileService: Object,
-        followService: Object,
-        userService: Object
-    },
-    data: function() {
-        return {
-            username: "",
-            profile: {},
-            isLoading: true,
-            profileFound: true
-        }
-    },
     computed: {
+        ...mapState({
+            profile: state => state.profile.profile,
+            profileUsername: state => state.profile.profileUsername,
+            profileNotFound: state => state.profile.profileNotFound,
+            isLoading: state => state.profile.isLoading,
+            currentUser: state => state.authentication.currentUser
+        }),
         hasNoImagePosts: function() {
             return this.profile.imagePosts && this.profile.imagePosts.length === 0
         },
         isUsersProfile: function() {
-            return this.currentUser !== null && this.currentUser.username === this.profile.username
+            return this.currentUser && this.currentUser.username === this.profileUsername
         },
         followerCount: function() {
             return this.profile.followers && this.profile.followers.length
@@ -78,66 +71,35 @@ export default {
             return this.profile.following && this.profile.following.length
         },
         isFollowing: function() {
-            return this.currentUser !== null && this.profile.followers && this.profile.followers.some(f => f.followerEmail === this.currentUser.email)
-        },
-        currentUser: function() {
-            return this.userService.getUser()
+            return this.currentUser && this.profile.followers && this.profile.followers.some(f => f.followerEmail === this.currentUser.email)
         }
     },
     created: function() {
         this.loadProfile()
     },
     watch: {
-        '$route.params.username': async function() {
-            await this.loadProfile()
+        '$route.params.username': function() {
+            this.loadProfile()
         }
     },
     methods: {
-        loadProfile: async function() {
-            this.isLoading = true
-            this.profileFound = true
-
-            this.username = this.$route.params.username
-
-            try {
-                const profile = await this.profileService.getProfile(this.username)
-                profile.imagePosts = profile.imagePosts.sort((a, b) => new Date(b.dateCreated) - new Date(a.dateCreated))
-
-                this.profile = profile
-            } catch (error) {
-                if(error instanceof NotFoundError)
-                {
-                    this.profileFound = false
-                }
-            }
-            
-            this.isLoading = false;
+        loadProfile: function() {
+            this.$store.dispatch(`${ProfileModuleName}/${Action.GET_PROFILE_BY_USERNAME}`, this.$route.params.username)
         },
-        followProfile: async function() {
-            try {
-                const follow = await this.followService.follow(this.profile.username)
-                this.profile.followers.push(follow)
-            } catch (error) {
-                if(error instanceof UnauthorizedError) {
-                  this.$router.push({path: "/login", query: { back: true }})
-                }
-            }
+        followProfile: function() {
+            this.$store.dispatch(`${ProfileModuleName}/${Action.FOLLOW_PROFILE}`)
         },
-        unfollowProfile: async function() {
-            try {
-                const success = await this.followService.unfollow(this.profile.username)
-
-                if(success) {
-                    this.profile.followers = this.profile.followers.filter(f => f.followerEmail !== this.currentUser.email)
-                }
-            } catch (error) {
-                if(error instanceof UnauthorizedError) {
-                    this.$router.push({path: "/login", query: { back: true }})
-                }
-            }
+        unfollowProfile: function() {
+            this.$store.dispatch(`${ProfileModuleName}/${Action.UNFOLLOW_PROFILE}`)
         },
-        imagePostDeleted: function(imagePostId) {
-            this.profile.imagePosts = this.profile.imagePosts.filter(p => p.id !== imagePostId)
+        likeImagePost: function(imagePost) {
+            this.$store.dispatch(`${ProfileModuleName}/${Action.LIKE_IMAGE_POST}`, imagePost)
+        },
+        unlikeImagePost: function(imagePost) {
+            this.$store.dispatch(`${ProfileModuleName}/${Action.UNLIKE_IMAGE_POST}`, imagePost)
+        },
+        deleteImagePost: function(imagePost) {
+            this.$store.dispatch(`${ProfileModuleName}/${Action.DELETE_IMAGE_POST}`, imagePost.id)
         },
         viewExplore: function() {
             this.$router.push({path: "/explore"})

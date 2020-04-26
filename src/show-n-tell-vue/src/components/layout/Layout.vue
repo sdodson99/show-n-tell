@@ -1,6 +1,6 @@
 <template>
   <div>
-    <the-header :is-logged-in="isLoggedInData" />
+    <the-header/>
     <div v-if="statusMessage" :class="alertClass" class="alert text-center">
       {{ statusMessage }}
     </div>
@@ -18,26 +18,17 @@ export default {
   components: {
     TheHeader
   },
-  props: {
-    isLoggedIn: Boolean
-  },
   data: function() {
     return {
       statusMessage: "",
       alertClass: "" || "alert-primary",
-      timeoutHandle: 0,
-      isLoggedInData: this.isLoggedIn
+      timeoutHandle: 0
     }
   },
   mounted: function(){
     this.$el.addEventListener('alert-success', this.alertSuccess)
     this.$el.addEventListener('alert-status', this.alertStatus)
     this.$el.addEventListener('alert-error', this.alertError)
-  },
-  watch: {
-    isLoggedIn: function() {
-      this.isLoggedInData = this.isLoggedIn
-    }
   },
   methods: {
     alertSuccess: function(e) {

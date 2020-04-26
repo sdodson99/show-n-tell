@@ -2,43 +2,43 @@
   <div>
     <div class="d-flex flex-column flex-sm-row justify-content-between">
       <button class="m-1 order-sm-2" type="button" 
-        :disabled="!canViewNext" 
-        @click="nextImage">Next</button>
+        :disabled="!canExplore" 
+        @click="viewNext">Next</button>
       <button class="m-1 order-sm-1" type="button" 
-        :disabled="!hasPreviousImage" 
-        @click="previousImage">Previous</button>
+        :disabled="!hasPreviousImagePost" 
+        @click="viewPrevious">Previous</button>
     </div>
     <div id="image-post" class="p-1" 
-      v-if="!isLoading && currentImage.imageUri">
+      v-if="!isLoading && currentImagePost && currentImagePost.imageUri">
       <image-post-detailed-image class="mt-3"
+          :image-post="currentImagePost"
+          :current-user="currentUser"
+          :can-view="false"
           maxImagePostHeight="50vh"
-          :imagePost="currentImage"
-          :imagePostService="imagePostService"
-          :likeVueService="likeVueService"
-          :currentUser="currentUser"
-          :canView="false"
-          @imagePostDeleted="imagePostDeleted"/>
+          @liked="likeImagePost"
+          @unliked="unlikeImagePost"
+          @deleted="deleteImagePost"/>
       <div class="my-4">
         <image-post-comment class="text-center text-sm-left"
-          :content="currentImage.description"
+          :content="currentImagePost.description"
           :canEdit="false"
           :canDelete="false"
           fallbackContent="No description available."
-          :username="currentImage.username"
-          :dateCreated="currentImage.dateCreated"
-          @usernameClicked="(username) => viewProfile(username)"/>
+          :username="currentImagePost.username"
+          :dateCreated="currentImagePost.dateCreated"
+          @username-clicked="viewProfile"/>
       </div>
       <div class="my-4 text-center text-sm-left">
         <h3>Comments</h3>
         <image-post-comment-list class="mt-3" 
-          :comments="currentImage.comments"
+          :comments="currentImagePost.comments"
           :currentUser="currentUser"
-          :imagePostUserEmail="currentImage.userEmail"
+          :imagePostUserEmail="currentImagePost.userEmail"
           :can-comment="isLoggedIn"
-          @commented="createComment"
-          @usernameClicked="viewProfile"
-          @edited="editComment"
-          @deleted="deleteComment"/>
+          @username-clicked="viewProfile"
+          @created="createImagePostComment"
+          @edited="editImagePostComment"
+          @deleted="deleteImagePostComment"/>
       </div>
     </div>
     <div class="mt-3"
@@ -53,8 +53,9 @@
 </template>
 
 <script>
-import UnauthorizedError from '../errors/unauthorized-error'
-import NotFoundError from '../errors/not-found-error'
+import { mapGetters, mapState } from 'vuex'
+import { ModuleName as ExploreModuleName, Action as ExploreAction } from '../store/modules/explore/types'
+import { ModuleName as AuthenticationModuleName } from '../store/modules/authentication/types'
 
 import ImagePostComment from '../components/image-posts/ImagePostComment'
 import ImagePostCommentList from '../components/image-posts/ImagePostCommentList'
@@ -62,152 +63,66 @@ import ImagePostDetailedImage from '../components/image-posts/ImagePostDetailedI
 
 export default {
   name: "Explore",
-  props: {
-    imagePostService: Object,
-    randomImagePostService: Object,
-    likeVueService: Object,
-    commentVueService: Object,
-    commentService: Object,
-    userService: Object
-  },
   components: {
     ImagePostComment,
     ImagePostCommentList,
     ImagePostDetailedImage
   },
-  data: function(){
-    return {
-      images: [],
-      currentImageIndex: 0,
-      noImageMessage: "",
-      canViewNext: true,
-      isLoading: true
-    }
-  },
   computed: {
-    currentImage: function() {
-      return this.images[this.currentImageIndex] || {};
-    },
-    isShowingLastImage: function() {
-      return this.currentImageIndex + 1 === this.images.length
-    },
-    hasPreviousImage: function() {
-      return this.currentImageIndex > 0;
-    },
-    isLiked: function() {
-      return this.isLoggedIn && this.currentImage.likes.some(l => l.userEmail === this.currentUser.email)
-    },
-    isUsersPost: function() {
-      return this.isLoggedIn && this.currentImage.userEmail === this.currentUser.email
-    },
-    isLoggedIn: function() {
-      return this.currentUser !== null
-    },
-    currentUser: function() {
-      return this.userService.getUser()
-    },
-    currentImagePostRoute: function() {
-      return `/explore/${this.currentImage.id}`
+    ...mapState({
+      isLoading: (state) => state.explore.isLoading,
+      noImagePostsAvailable: (state) => state.explore.noImagePostsAvailable,
+      imagePostNotFound: (state) => state.explore.imagePostNotFound,
+      currentUser: (state) => state.authentication.currentUser
+    }),
+    ...mapGetters(ExploreModuleName, ['currentImagePost', 'noImagePosts', 'canExplore', 'hasPreviousImagePost']),
+    ...mapGetters(AuthenticationModuleName, ['isLoggedIn']),
+    noImageMessage: function() {
+      if(this.noImagePostsAvailable) return "No images have been posted."
+      if(this.imagePostNotFound) return "The selected image does not exist."
+      return ""
     }
   },
-  created: async function() {   
-    const initialImageId = this.$route.params.initialId;
+  created: async function() {
+    this.$store.dispatch(`${ExploreModuleName}/${ExploreAction.CLEAR_IMAGE_POSTS}`)
     
-    // If initial id is provided, show the image with the id.
-    if(initialImageId) {
-      await this.getImage(initialImageId)
-    // If no initial id is provided, show a random image.
-    } else {
-      await this.getRandomImage()
+    if(this.noImagePosts) {
+      const initialImageId = this.$route.params.initialId;
+      
+      if(initialImageId) {
+        this.$store.dispatch(`${ExploreModuleName}/${ExploreAction.FETCH_IMAGE_POST_BY_ID}`, initialImageId)
+      } else {
+        this.$store.dispatch(`${ExploreModuleName}/${ExploreAction.FETCH_RANDOM_IMAGE_POST}`)
+      }
     }
   },
   methods: {
-    getImage: async function(id) {
-      this.isLoading = true
-
-      try {
-        const image = await this.imagePostService.getById(id);
-        
-        this.images.push(image)
-      } catch (error) {
-        this.noImageMessage = "The selected image does not exist."
-        this.currentImageIndex = -1
-      }
-
-      this.isLoading = false
+    viewNext: function() {
+      this.$store.dispatch(`${ExploreModuleName}/${ExploreAction.NEXT_IMAGE_POST}`)
     },
-    getRandomImage: async function() {
-      this.isLoading = true
-
-      try {
-        let newImage = await this.randomImagePostService.getRandom();
-        
-        let existingImage = this.images.find(p => p.id === newImage.id)
-
-        // If the new image already exists in the history, add the already existing image.
-        if(existingImage) {
-          this.images.push(existingImage)
-        } else {
-          this.images.push(newImage)
-        }
-      } catch (error) {
-        this.disableViewNextImage()
-      }
-
-      this.isLoading = false
+    viewPrevious: function() {
+      this.$store.dispatch(`${ExploreModuleName}/${ExploreAction.PREVIOUS_IMAGE_POST}`)
     },
-    nextImage: async function() {
-      // If the last image is being shown, we need to ask for another image.
-      if(this.isShowingLastImage) {
-        await this.getRandomImage()
-      }
-      
-      this.currentImageIndex++;
+    likeImagePost: function() {
+      this.$store.dispatch(`${ExploreModuleName}/${ExploreAction.LIKE_IMAGE_POST}`)
     },
-    previousImage: function() {
-      let success = false
-
-      if(this.hasPreviousImage) {
-        this.currentImageIndex--;
-        success = true
-      }
-
-      return success
+    unlikeImagePost: function() {
+      this.$store.dispatch(`${ExploreModuleName}/${ExploreAction.UNLIKE_IMAGE_POST}`)
+    },
+    deleteImagePost: function() {
+      this.$store.dispatch(`${ExploreModuleName}/${ExploreAction.DELETE_IMAGE_POST}`)
+    }, 
+    createImagePostComment: function(comment) {
+      this.$store.dispatch(`${ExploreModuleName}/${ExploreAction.CREATE_IMAGE_POST_COMMENT}`, comment)
+    },
+    editImagePostComment: function(comment) {
+      this.$store.dispatch(`${ExploreModuleName}/${ExploreAction.UPDATE_IMAGE_POST_COMMENT}`, comment)
+    },
+    deleteImagePostComment: function(commentId) {
+      this.$store.dispatch(`${ExploreModuleName}/${ExploreAction.DELETE_IMAGE_POST_COMMENT}`, commentId)
     },
     viewProfile: function(username) {
       this.$router.push({path: `/profile/${username}`})
-    },
-    likeImage: async function() {
-      this.currentImage.likes = await this.likeVueService.likeImagePost(this.currentImage, this.currentImagePostRoute)
-    },
-    unlikeImage: async function() {
-      this.currentImage.likes = await this.likeVueService.unlikeImagePost(this.currentImage, this.currentImagePostRoute)
-    },
-    createComment: async function(comment) {
-      this.currentImage.comments = await this.commentVueService.createComment(this.currentImage, comment, this.currentImagePostRoute)
-    },
-    editComment: async function(comment) {
-      this.currentImage.comments = await this.commentVueService.updateComment(this.currentImage, comment.id, comment.content, this.currentImagePostRoute)
-    },
-    deleteComment: async function(commentId) {
-      this.currentImage.comments = await this.commentVueService.deleteComment(this.currentImage, commentId, this.currentImagePostRoute)
-    },
-    imagePostDeleted: async function(id) {
-      this.images = this.images.filter(p => p.id !== id)
-
-      // Get an initial image if length is 0.
-      if(this.images.length === 0) {
-        await this.getRandomImage()
-      }
-
-      // Coerce current image index to the last image available if index larger than images length.
-      if(this.currentImageIndex >= this.images.length) {
-        this.currentImageIndex = this.images.length - 1
-      }
-    },
-    disableViewNextImage: function () {
-      this.noImageMessage = "No images have been posted."
-      this.canViewNext = false;
     }
   }
 };

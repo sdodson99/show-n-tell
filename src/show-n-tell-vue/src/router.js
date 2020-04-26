@@ -2,8 +2,6 @@ import Vue from "vue";
 import VueRouter from "vue-router";
 
 import ServiceContainer from "./services/service-container";
-import LikeVueService from "./services/vue-services/like-vue-service";
-import CommentVueService from "./services/vue-services/comment-vue-service";
 
 const TITLE_SUFFIX = " - Show 'N Tell";
 
@@ -13,15 +11,18 @@ const router = new VueRouter({
   mode: "history"
 })
 
-// Create services that depend on router.
-const likeVueService = new LikeVueService(ServiceContainer.LikeService, ServiceContainer.AuthenticationService, router)
-const commentVueService = new CommentVueService(ServiceContainer.CommentService, ServiceContainer.AuthenticationService, router)
-
 router.addRoutes([
   {
-    path: "/",
     name: "Home",
+    path: "/",
     redirect: "/explore",
+  },
+  {
+    path: "/explore/:initialId?",
+    meta: {
+      title: "Explore"
+    },
+    component: () => import("./pages/Explore"),
   },
   {
     path: "/feed",
@@ -29,14 +30,7 @@ router.addRoutes([
       title: "Feed",
       authenticate: true
     },
-    component: () => import("./pages/Feed"),
-    props: {
-      userService: ServiceContainer.UserService,
-      imagePostService: ServiceContainer.ImagePostService,
-      likeVueService: likeVueService,
-      commentVueService: commentVueService,
-      feedService: ServiceContainer.FeedService
-    }
+    component: () => import("./pages/Feed")
   },
   {
     path: "/search",
@@ -46,26 +40,8 @@ router.addRoutes([
     component: () => import("./pages/Search"),
     props: (route) => {
       return {
-        query: route.query.q,
-        searchService: ServiceContainer.SearchService,
-        imagePostService: ServiceContainer.ImagePostService,
-        likeVueService: likeVueService,
-        userService: ServiceContainer.UserService
+        query: route.query.q
     }
-    }
-  },
-  {
-    path: "/explore/:initialId?",
-    meta: {
-      title: "Explore"
-    },
-    component: () => import("./pages/Explore"),
-    props: {
-      imagePostService: ServiceContainer.ImagePostService,
-      randomImagePostService: ServiceContainer.RandomImagePostService,
-      likeVueService: likeVueService,
-      commentVueService: commentVueService,
-      userService: ServiceContainer.UserService
     }
   },
   {
@@ -74,21 +50,15 @@ router.addRoutes([
       title: "Create",
       authenticate: true
     },
-    component: () => import("./pages/Create"),
-    props: {
-      imagePostService: ServiceContainer.ImagePostService
-    }
+    component: () => import("./pages/Create")
   },
   {
-    path: "/imageposts/:imagePostId/edit",
+    path: "/image-posts/:imagePostId/edit",
     meta: {
       title: "Edit",
       authenticate: true
     },
-    component: () => import("./pages/Edit"),
-    props: {
-      imagePostService: ServiceContainer.ImagePostService
-    }
+    component: () => import("./pages/Edit")
   },
   {
     path: "/profile",
@@ -110,14 +80,7 @@ router.addRoutes([
     meta: {
       title: "Profile"
     },
-    component: () => import("./pages/Profile"),
-    props: {
-      imagePostService: ServiceContainer.ImagePostService,
-      profileService: ServiceContainer.ProfileService,
-      followService: ServiceContainer.FollowService,
-      likeVueService: likeVueService,
-      userService: ServiceContainer.UserService
-    }
+    component: () => import("./pages/Profile")
   },
   {
     path: "/login",
@@ -128,21 +91,18 @@ router.addRoutes([
     component: () => import("./pages/Login"),
     props: (route) => {
       return {
-        authenticationService: ServiceContainer.AuthenticationService,
-        redirect: route.query.redirect,
-        back: route.query.back
+        redirectPath: route.query.redirect,
+        redirectBack: route.query.back
       }
     }
   },
   {
+    name: "Logout",
     path: "/logout",
     meta: {
       title: "Logout"
     },
-    component: () => import("./pages/Logout"),
-    props: {
-      authenticationService: ServiceContainer.AuthenticationService
-    }
+    component: () => import("./pages/Logout")
   }, 
   {
     path: "*",

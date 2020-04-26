@@ -10,20 +10,20 @@ class CommentVueService{
     /**
      * Post a comment on an image post.
      * @param {ImagePost} imagePost The image post to comment on.
-     * @param {Comment} comment The comment to add to the image post.
+     * @param {string} comment The comment content to add to the image post.
      * @param {string} [authRedirect] A router login redirect url if authentication fails. 
-     * @returns {Array} The image post's new array of comments.
+     * @returns {Comment} The created comment. Null if comment creation failed.
      */
     async createComment(imagePost, comment, authRedirect) {
+        let createdComment = null;
+
         if(comment) {
             if(!this.authenticationService.isLoggedIn()) {
                 this.redirectToLogin(authRedirect)
             } else {
                 try {
-                    const createdComment = await this.commentService.createComment(imagePost.id, comment)
+                    createdComment = await this.commentService.createComment(imagePost.id, comment)
                     createdComment.username = this.authenticationService.getUser().username
-        
-                    imagePost.comments.push(createdComment)
                 } catch (error) {
                     if(error instanceof UnauthorizedError){
                         this.redirectToLogin(authRedirect)
@@ -32,7 +32,7 @@ class CommentVueService{
             }
         }
 
-        return imagePost.comments
+        return createdComment
     }
 
     /**
@@ -41,17 +41,17 @@ class CommentVueService{
      * @param {number} commentId The id of the comment to update.
      * @param {string} content The new comment content.
      * @param {string} [authRedirect] A router login redirect url if authentication fails. 
-     * @returns {Array} The image post's new array of comments.
+     * @returns {Comment} The updated comment. Null if the comment update failed.
      */
     async updateComment(imagePost, commentId, content, authRedirect) {
+        let updatedComment = null;
+
         if(!this.authenticationService.isLoggedIn()) {
             this.redirectToLogin(authRedirect)
         } else {
             try {
-                const updatedComment = await this.commentService.updateComment(imagePost.id, commentId, content)
-
-                const currentCommentId = imagePost.comments.findIndex(c => c.id === commentId)
-                imagePost.comments[currentCommentId] = updatedComment
+                updatedComment = await this.commentService.updateComment(imagePost.id, commentId, content)
+                updatedComment.username = this.authenticationService.getUser().username
             } catch (error) {
                 if(error instanceof UnauthorizedError){
                     this.redirectToLogin(authRedirect)
@@ -59,7 +59,7 @@ class CommentVueService{
             }
         }
 
-        return imagePost.comments
+        return updatedComment
     }
 
     /**
@@ -67,15 +67,17 @@ class CommentVueService{
      * @param {ImagePost} imagePost The image post to delete the comment from.
      * @param {number} commentId The id of the comment to delete.
      * @param {string} [authRedirect] A router login redirect url if authentication fails. 
-     * @returns {Array} The image post's new array of comments.
+     * @returns {Comment} The deleted image post comment. Null if the comment delete failed.
      */
     async deleteComment(imagePost, commentId, authRedirect) {
+        let deletedComment = null;
+
         if(!this.authenticationService.isLoggedIn()) {
             this.redirectToLogin(authRedirect)
         } else {
             try {
                 if(await this.commentService.deleteComment(imagePost.id, commentId)) {
-                    imagePost.comments = imagePost.comments.filter(c => c.id !== commentId)
+                    deletedComment = imagePost.comments.find(c => c.id === commentId)
                 }
             } catch (error) {
                 if(error instanceof UnauthorizedError){
@@ -84,7 +86,7 @@ class CommentVueService{
             }
         }
 
-        return imagePost.comments
+        return deletedComment
     }
 
     /**
