@@ -2,11 +2,13 @@
     <ul class="row justify-content-center justify-content-lg-start">
         <li class="col-lg-4 d-flex flex-column mt-5" v-for="post in imagePosts" :key="post.id">
             <image-post-detailed-image class="image d-flex flex-column flex-grow-1"
-                maxImagePostHeight="30vh"
                 :imagePost="post"
                 :currentUser="currentUser"
+                maxImagePostHeight="30vh"
                 :canView="true"
-                @image-post-deleted="() => imagePostDeleted()"/>
+                @liked="() => $emit('liked', post)"
+                @unliked="() => $emit('unliked', post)"
+                @deleted="() => $emit('deleted', post)"/>
         </li>
     </ul>
 </template>
@@ -22,13 +24,6 @@ export default {
     props: {
         imagePosts: Array,
         currentUser: Object
-    }, 
-    methods: {
-        imagePostDeleted: function() {
-            console.log('test');
-            
-            //this.$emit('imagePostDeleted', id);
-        }
     }
 }
 </script>

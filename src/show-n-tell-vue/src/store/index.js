@@ -28,7 +28,7 @@ export default new Vuex.Store({
         create: createCreateModule(ServiceContainer.ImagePostService, router),
         edit: createEditModule(ServiceContainer.ImagePostService, router),
         feed: createFeedModule(ServiceContainer.FeedService, likeVueService, commentVueService, router),
-        profile: createProfileModule(),
-        search: createSearchModule()
+        profile: createProfileModule(ServiceContainer.ProfileService, ServiceContainer.FollowService, ServiceContainer.ImagePostService, likeVueService, router),
+        search: createSearchModule(ServiceContainer.SearchService, likeVueService, router)
     }
 })

@@ -8,10 +8,6 @@ export default function createFeedModule(feedService, likeVueService, commentVue
         isLoading: false
     }
 
-    const getters = {
-
-    }
-
     const actions = {
         async [Action.GET_FEED]({ commit }) {
             commit(Mutation.SET_IS_LOADING, true)
@@ -100,7 +96,6 @@ export default function createFeedModule(feedService, likeVueService, commentVue
     return {
         namespaced: true,
         state,
-        getters,
         actions,
         mutations
     }

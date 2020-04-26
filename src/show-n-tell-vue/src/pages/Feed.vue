@@ -84,13 +84,13 @@ export default {
         unlikeImagePost: function(imagePost) {
             this.$store.dispatch(`${FeedModuleName}/${Action.UNLIKE_IMAGE_POST}`, imagePost)
         },
-        createComment: async function(imagePost, content) {
+        createComment: function(imagePost, content) {
             this.$store.dispatch(`${FeedModuleName}/${Action.CREATE_IMAGE_POST_COMMENT}`, { imagePost, content })
         },
-        editComment: async function(imagePost, comment) {
+        editComment: function(imagePost, comment) {
             this.$store.dispatch(`${FeedModuleName}/${Action.UPDATE_IMAGE_POST_COMMENT}`, { imagePost, comment })
         },
-        deleteComment: async function(imagePost, commentId) {
+        deleteComment: function(imagePost, commentId) {
             this.$store.dispatch(`${FeedModuleName}/${Action.DELETE_IMAGE_POST_COMMENT}`, { imagePost, commentId})
         },
         viewProfile: function(username) {
