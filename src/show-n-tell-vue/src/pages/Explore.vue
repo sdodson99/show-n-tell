@@ -86,6 +86,7 @@ export default {
   },
   created: function() {
     this.$store.commit(`${ExploreModuleName}/${Mutation.CLEAR_IMAGE_POST_IDS}`)
+    this.$store.commit(`${ExploreModuleName}/${Mutation.SET_CURRENT_IMAGE_POST_INDEX}`, 0)
 
     const initialImageId = this.$route.params.initialId;
     
