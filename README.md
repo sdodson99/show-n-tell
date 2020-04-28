@@ -8,29 +8,29 @@ Follow the following steps to run Show 'N Tell locally after cloning.
 
 ### API
 1. Start the database.
-```bash
+```
 docker-compose -f "src/api/ShowNTell.API/docker-compose.yml" up -d --build
 ```
 2. (Optional) Ensure tests pass.
-```bash
+```
 dotnet test "src/api"
 ```
 3. Run the application.
-```bash
+```
 dotnet run --project "src/api/ShowNTell.API"
 ```
 
 ### Vue Client
 You **must** start the API first (see above) in order for the Vue client to work in development.
 1. Change directory to "show-n-tell-vue".
-```bash
+```
 cd "src/show-n-tell-vue"
 ```
 2. Install packages.
-```bash
+```
 npm install
 ```
 3. Run the application.
-```bash
+```
 npm run serve
 ```
