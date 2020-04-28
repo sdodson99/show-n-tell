@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div id="new-comment-form" class="d-flex flex-column align-items-center align-items-sm-end"
+        <div id="new-comment-form" class="d-flex flex-column align-items-end"
             v-if="canComment">
             <textarea class="form-control" placeholder="New comment..."
                 v-model="newCommentContent"></textarea>

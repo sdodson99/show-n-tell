@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="d-flex flex-column flex-sm-row align-items-center justify-content-between">
+        <div class="d-flex flex-column flex-sm-row justify-content-between">
             <div class="d-flex flex-column flex-sm-row">
                 <div class="username font-weight-bold"
                     @click="() => $emit('username-clicked', username)">

@@ -19,7 +19,7 @@
           @unliked="unlikeImagePost"
           @deleted="deleteImagePost"/>
       <div class="my-4">
-        <image-post-comment class="text-center text-sm-left"
+        <image-post-comment
           :content="currentImagePost.description"
           :canEdit="false"
           :canDelete="false"
@@ -28,7 +28,7 @@
           :dateCreated="currentImagePost.dateCreated"
           @username-clicked="viewProfile"/>
       </div>
-      <div class="my-4 text-center text-sm-left">
+      <div class="my-4">
         <h3>Comments</h3>
         <image-post-comment-list class="mt-3" 
           :comments="currentImagePost.comments"
