@@ -85,16 +85,13 @@ export default {
     }
   },
   created: function() {
-    this.$store.commit(`${ExploreModuleName}/${Mutation.CLEAR_IMAGE_POST_IDS}`)
-    this.$store.commit(`${ExploreModuleName}/${Mutation.SET_CURRENT_IMAGE_POST_INDEX}`, 0)
-
     const initialImageId = this.$route.params.initialId;
     
     if(initialImageId) {
-      this.$store.dispatch(`${ExploreModuleName}/${ExploreAction.FETCH_IMAGE_POST_BY_ID}`, initialImageId)
+      this.$store.dispatch(`${ExploreModuleName}/${ExploreAction.VIEW_IMAGE_POST_BY_ID}`, initialImageId)
     } else {
       if(this.noImagePosts) {
-        this.$store.dispatch(`${ExploreModuleName}/${ExploreAction.FETCH_RANDOM_IMAGE_POST}`)
+        this.$store.dispatch(`${ExploreModuleName}/${ExploreAction.VIEW_RANDOM_IMAGE_POST}`)
       }
     }
   },

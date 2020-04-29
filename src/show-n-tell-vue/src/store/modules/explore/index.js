@@ -21,32 +21,24 @@ export default function createExploreModule(imagePostService, randomImagePostSer
     }
 
     const actions = {
-        async [Action.FETCH_RANDOM_IMAGE_POST]({ commit }) {
+        async [Action.VIEW_RANDOM_IMAGE_POST]({ commit, dispatch }) {
             commit(Mutation.SET_IS_LOADING, true)
 
             try {
                 const randomImagePost = await randomImagePostService.getRandom();
-
-                if(randomImagePost && randomImagePost.id) {
-                    commit(Mutation.ADD_IMAGE_POST_ID, randomImagePost.id)
-                    commit(`${ImagePostsModuleName}/${ImagePostsMutation.UPDATE_IMAGE_POSTS}`, [randomImagePost], { root: true })
-                }
+                dispatch(Action.VIEW_IMAGE_POST, randomImagePost)
             } catch (error) {
-                commit(Mutation.SET_HAS_NO_IMAGE_POSTS, true)
+                commit(Mutation.SET_NO_IMAGE_POSTS_AVAILABLE, true)
             }
 
             commit(Mutation.SET_IS_LOADING, false)
         },
-        async [Action.FETCH_IMAGE_POST_BY_ID]({ commit }, id) {
+        async [Action.VIEW_IMAGE_POST_BY_ID]({ commit, dispatch }, id) {
             commit(Mutation.SET_IS_LOADING, true)
 
             try {
                 const imagePost = await imagePostService.getById(id);
-                
-                if(imagePost && imagePost.id) {
-                    commit(Mutation.ADD_IMAGE_POST_ID, imagePost.id)
-                    commit(`${ImagePostsModuleName}/${ImagePostsMutation.UPDATE_IMAGE_POSTS}`, [imagePost], { root: true })
-                }
+                dispatch(Action.VIEW_IMAGE_POST, imagePost)
             } catch (error) {
                 commit(Mutation.SET_IMAGE_POST_NOT_FOUND, true)
                 commit(Mutation.SET_CURRENT_IMAGE_POST_INDEX, -1)
@@ -54,12 +46,21 @@ export default function createExploreModule(imagePostService, randomImagePostSer
 
             commit(Mutation.SET_IS_LOADING, false)
         },
+        [Action.VIEW_IMAGE_POST]({ commit }, imagePost) {            
+            if(imagePost && imagePost.id) {
+                commit(Mutation.ADD_IMAGE_POST_ID, imagePost.id)                
+                commit(`${ImagePostsModuleName}/${ImagePostsMutation.UPDATE_IMAGE_POSTS}`, [imagePost], { root: true })
+                commit(Mutation.SET_CURRENT_IMAGE_POST_INDEX, state.imagePostIds.length - 1)
+                commit(Mutation.SET_NO_IMAGE_POSTS_AVAILABLE, false)
+                commit(Mutation.SET_IMAGE_POST_NOT_FOUND, false)
+            }
+        },
         async [Action.NEXT_IMAGE_POST]({ commit, getters, dispatch }) {
             if(getters.isShowingLastImage) {
-                await dispatch(Action.FETCH_RANDOM_IMAGE_POST);
+                await dispatch(Action.VIEW_RANDOM_IMAGE_POST);
+            } else {
+                commit(Mutation.SET_CURRENT_IMAGE_POST_INDEX, state.currentImagePostIndex + 1)
             }
-
-            commit(Mutation.SET_CURRENT_IMAGE_POST_INDEX, state.currentImagePostIndex + 1)
         },
         [Action.PREVIOUS_IMAGE_POST]({ commit, getters }) {
             if(getters.hasPreviousImagePost) {
@@ -71,13 +72,8 @@ export default function createExploreModule(imagePostService, randomImagePostSer
                 commit(Mutation.REMOVE_IMAGE_POST_ID, getters.currentImagePostId)
 
                 // Get an initial image if length is 0.
-                if(state.imagePostIds.length === 0) {
-                    await dispatch(Action.FETCH_RANDOM_IMAGE_POST)
-                }
-
-                // Coerce current image index to the last image available if index larger than images length.
-                if(state.currentImagePostIndex >= state.imagePostIds.length) {
-                    commit(Mutation.SET_CURRENT_IMAGE_POST_INDEX, state.imagePostIds.length - 1)
+                if(getters.noImagePosts) {
+                    await dispatch(Action.VIEW_RANDOM_IMAGE_POST)
                 }
             }
         }
@@ -85,8 +81,14 @@ export default function createExploreModule(imagePostService, randomImagePostSer
 
     const mutations = {
         [Mutation.ADD_IMAGE_POST_ID]: (state, imagePostId) => state.imagePostIds.push(imagePostId),
-        [Mutation.REMOVE_IMAGE_POST_ID]: (state, id) => state.imagePostIds = state.imagePostIds.filter(x => x !== id),
-        [Mutation.CLEAR_IMAGE_POST_IDS]: (state) => state.imagePostIds = [],
+        [Mutation.REMOVE_IMAGE_POST_ID]: (state, id) => {
+            state.imagePostIds = state.imagePostIds.filter(x => x !== id)
+
+            // Coerce current image index to the last image available if index larger than images length.
+            if(state.currentImagePostIndex >= state.imagePostIds.length) {
+                state.currentImagePostIndex = state.imagePostIds.length - 1
+            }
+        },
         [Mutation.SET_CURRENT_IMAGE_POST_INDEX]: (state, currentImagePostIndex) => state.currentImagePostIndex = currentImagePostIndex,
         [Mutation.SET_NO_IMAGE_POSTS_AVAILABLE]: (state, noImagePostsAvailable) => state.noImagePostsAvailable = noImagePostsAvailable,
         [Mutation.SET_IMAGE_POST_NOT_FOUND]: (state, imagePostNotFound) => state.imagePostNotFound = imagePostNotFound,
