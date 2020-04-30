@@ -1,7 +1,16 @@
-import { Action, Mutation } from './types'
+import { ModuleName, Action, Mutation } from './types'
 import { ModuleName as ImagePostsModuleName, Action as ImagePostsAction, Mutation as ImagePostsMutation } from '../image-posts/types'
 
-export default function createExploreModule(imagePostService, randomImagePostService) {
+export { ModuleName } from './types'
+
+export default function createExploreModule(imagePostService, randomImagePostService, store) {
+    store.subscribe((mutation) => {
+        if(mutation.type === `${ImagePostsModuleName}/${ImagePostsMutation.REMOVE_IMAGE_POST}`) {
+            const imagePostId = mutation.payload
+            store.commit(`${ModuleName}/${Mutation.REMOVE_IMAGE_POST_ID}`, imagePostId)
+        }
+    })
+
     const state = {
         imagePostIds: [],
         currentImagePostIndex: 0,
@@ -67,8 +76,10 @@ export default function createExploreModule(imagePostService, randomImagePostSer
                 commit(Mutation.SET_CURRENT_IMAGE_POST_INDEX, state.currentImagePostIndex - 1)
             }
         },
-        async [Action.DELETE_IMAGE_POST]({ commit, getters, dispatch }) {
-            if(await imagePostService.delete(getters.currentImagePostId)) {
+        async [Action.DELETE_IMAGE_POST]({ commit, getters, dispatch, rootState }) {
+            await dispatch(`${ImagePostsModuleName}/${ImagePostsAction.DELETE_IMAGE_POST}`, getters.currentImagePostId, { root: true })
+
+            if(!rootState.imagePosts.imagePosts[getters.currentImagePostId]) {
                 commit(Mutation.REMOVE_IMAGE_POST_ID, getters.currentImagePostId)
 
                 // Get an initial image if length is 0.

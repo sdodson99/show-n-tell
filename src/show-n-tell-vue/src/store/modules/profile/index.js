@@ -1,10 +1,12 @@
 import { Action, Mutation } from './types'
-import { ModuleName as ImagePostsModuleName, Mutation as ImagePostsMutation } from '../image-posts/types'
+import { ModuleName as ImagePostsModuleName, Action as ImagePostsAction, Mutation as ImagePostsMutation } from '../image-posts/types'
 
 import UnauthorizedError from "../../../errors/unauthorized-error";
 import NotFoundError from "../../../errors/not-found-error";
 
-export default function createProfileModule(profileService, followService, imagePostService, router) {
+export { ModuleName } from './types'
+
+export default function createProfileModule(profileService, followService, router) {
     const state = {
         profile: {},
         imagePostIds: [],
@@ -56,8 +58,10 @@ export default function createProfileModule(profileService, followService, image
                 }
             }
         },
-        async [Action.DELETE_IMAGE_POST]({ commit }, imagePostId) {
-            if(await imagePostService.delete(imagePostId)) {
+        async [Action.DELETE_IMAGE_POST]({ commit, dispatch, rootState }, imagePostId) {
+            await dispatch(`${ImagePostsModuleName}/${ImagePostsAction.DELETE_IMAGE_POST}`, imagePostId, { root: true })
+
+            if(!rootState.imagePosts.imagePosts[imagePostId]) {
                 commit(Mutation.REMOVE_IMAGE_POST_FROM_PROFILE, imagePostId)
             }
         }

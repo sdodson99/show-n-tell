@@ -3,6 +3,8 @@ import { Action, Mutation } from './types'
 
 import UnauthorizedError from '../../../errors/unauthorized-error'
 
+export { ModuleName } from './types'
+
 export default function createImagePostsModule(imagePostService, likeVueService, commentVueService, router) {
     const state = {
         imagePosts: {}

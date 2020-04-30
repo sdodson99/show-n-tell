@@ -1,5 +1,7 @@
 import { Action, Mutation } from './types'
 
+export { ModuleName } from './types'
+
 export default function createAuthenticationModule(authenticationService, router) {
     const state = {
         currentUser: authenticationService.getUser()

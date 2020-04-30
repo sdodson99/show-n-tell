@@ -3,6 +3,8 @@ import { ModuleName as ImagePostsModuleName, Mutation as ImagePostsMutation } fr
 
 import UnauthorizedError from '../../../errors/unauthorized-error'
 
+export { ModuleName } from './types'
+
 export default function createFeedModule(feedService, router) {
     const state = {
         imagePostIds: []

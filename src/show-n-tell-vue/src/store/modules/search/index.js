@@ -1,7 +1,9 @@
 import { Action, Mutation } from './types'
-import { ModuleName as ImagePostsModuleName, Mutation as ImagePostsMutation } from '../image-posts/types'
+import { ModuleName as ImagePostsModuleName, Action as ImagePostsAction, Mutation as ImagePostsMutation } from '../image-posts/types'
 
-export default function createSearchModule(searchService, imagePostService) {
+export { ModuleName } from './types'
+
+export default function createSearchModule(searchService) {
     const state = {
         imagePostIds: []
     }
@@ -17,8 +19,10 @@ export default function createSearchModule(searchService, imagePostService) {
             commit(`${ImagePostsModuleName}/${ImagePostsMutation.UPDATE_IMAGE_POSTS}`, imagePosts, { root: true })
             commit(Mutation.SET_IMAGE_POST_IDS, imagePosts.map(p => p.id))
         },
-        async [Action.DELETE_IMAGE_POST]({ commit }, imagePostId) {
-            if(await imagePostService.delete(imagePostId)) {
+        async [Action.DELETE_IMAGE_POST]({ commit, dispatch, rootState }, imagePostId) {
+            await dispatch(`${ImagePostsModuleName}/${ImagePostsAction.DELETE_IMAGE_POST}`, imagePostId, { root: true })
+
+            if(!rootState.imagePosts.imagePosts[imagePostId]) {
                 commit(Mutation.REMOVE_IMAGE_POST_FROM_SEARCH, imagePostId)
             }
         }
