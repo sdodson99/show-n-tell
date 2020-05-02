@@ -3,10 +3,25 @@
 
 A social media platform to show off your prized possessions.
 
-## Description
+# Table of Contents
+- [Description](#description)
+- [Features](#features)
+- [Demo](#demo)
+- [Technology](#technology)
+  * [API](#api)
+  * [Vue Client](#vue-client)
+- [How to Run Locally](#how-to-run-locally)
+  * [API](#api-1)
+  * [Vue Client](#vue-client-1)
+- [Deployment](#deployment)
+  * [API](#api-2)
+  * [Vue Client](#vue-client-2)
+- [Contributing](#contributing)
+
+# Description
 Show ‘N Tell is a social media platform for users to upload and discover images of other user’s sentimental, valuable, or random items. Many people have interesting items with compelling background stories that they value and think other people would appreciate. Show ‘N Tell allows people to upload images and write stories about their interesting items for the world to recognize.
 
-## Features
+# Features
 * Explore random image posts created by other users
 * Upload images with descriptions to share with other users
 * Like and comment on other user's image posts
@@ -16,10 +31,11 @@ Show ‘N Tell is a social media platform for users to upload and discover image
 * Search for image posts
 * Add tags to uploaded image posts to increase search rank
 
-## Demo
+# Demo
 [Click here](https://youtu.be/FHNkPVIfIvw) for a Show 'N Tell demo featuring several features from above.
 
-## API Technology
+# Technology
+## API
 * ASP.NET Core
 * Entity Framework Core w/ SQL Server
 * Swagger UI
@@ -30,16 +46,16 @@ Show ‘N Tell is a social media platform for users to upload and discover image
 * Azure Event Grid to subscribe to Azure Blob Storage image deletes
 * Azure Container Instances to deploy API from Docker image
 
-## Vue Client Technology
+## Vue Client
 * Vue.js
 * Vue Router
 * Vuex
 * Bootstrap
 
-## How to Run Locally
+# How to Run Locally
 Follow the following steps to run Show 'N Tell locally after cloning.
 
-### API
+## API
 1. Start the database.
 ```
 docker-compose -f "src/api/ShowNTell.API/docker-compose.yml" up -d --build
@@ -53,7 +69,7 @@ dotnet test "src/api"
 dotnet run --project "src/api/ShowNTell.API"
 ```
 
-### Vue Client
+## Vue Client
 You **must** start the API first (see above) in order for the Vue client to work in development.
 1. Change directory to "show-n-tell-vue".
 ```
@@ -68,14 +84,14 @@ npm install
 npm run serve
 ```
 
-## Deployment
+# Deployment
 It is **strongly recommended** to successfully run the application locally before attempting to deploy. Deployment steps
 **do not** describe the creation or configuration of external services, such as Azure or Surge.
 
-### API
+## API
 1. Add an appsettings.Production.json file to src/api/ShowNTell.API.
 2. Configure the appsettings.Production.json file.
-```json
+```
 {
     "APPLICATION_INSIGHTS_KEY": "<KEY>", // For logging with Azure Application Insights.
     "DATABASE": "<CONNECTIONG STRING>", // For connecting to a SQL Server database with Entity Framework.
@@ -96,7 +112,7 @@ docker push <DOCKER REPOSITORY OR AZURE CONTAINER REGISTRY URI>
 az container restart --name <CONTAINER NAME> --resource-group <CONTAINER RESOURCE GROUP NAME>
 ```
 
-### Vue Client
+## Vue Client
 1. Change directory to "show-n-tell-vue".
 ```
 cd "src/show-n-tell-vue"
@@ -109,7 +125,7 @@ npm install
 ```
 npm run build
 ```
-4. Specify your desired domain in the "deploy" script in "package.json".
+4. Specify your desired domain in the "deploy" script of "package.json".
 ```json
 {
     "scripts": {
@@ -122,6 +138,6 @@ npm run build
 npm run deploy
 ```
 
-## Contributing
+# Contributing
 Please create a new issue if you have any questions, problems, or suggestions. Feel free to open a 
 pull request if you have a feature or fix you want to contribute to the project.
