@@ -1,8 +1,6 @@
 <template>
-    <div id="root">
-        <div id="image-container" ref="imageContainer" @click="$emit('click')" class="d-flex align-items-center justify-content-center">
-            <img :src="imageUri" :style="{ maxHeight: maxHeight }"/>
-        </div>
+    <div id="image-container" ref="imageContainer" @click="$emit('click')" class="d-flex align-items-center justify-content-center">
+        <img :src="imageUri" :style="{ maxHeight: maxHeight }"/>
     </div>
 </template>
 
@@ -20,10 +18,6 @@ export default {
 </script>
 
 <style scoped>
-#root {
-    height: 100%;
-    min-height: 100px;
-}
 
 #image-container{
     background: var(--color-grayscale-light);
@@ -31,5 +25,9 @@ export default {
     border: 1px solid var(--color-primary-dark);
     min-height: 100px;
     height: 100%;
+}
+
+img {
+    max-width: 100%;
 }
 </style>
