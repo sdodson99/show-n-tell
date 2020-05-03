@@ -69,7 +69,7 @@ jobs:
 
     - name: Build API Docker Image
       if: github.event_name != 'pull_request'
-      run: docker build --rm -f "src/api/Dockerfile" -t ${{ env.DOCKER_REPOSITORY_TAG }} "src/api" --build-arg KEY_VAULT_NAME="${ env.KEY_VAULT_NAME}" --build-arg AZURE_CLIENT_ID="${{ env.API_AZURE_CLIENT_ID }}" --build-arg AZURE_CLIENT_SECRET="${{ env.API_AZURE_CLIENT_SECRET }}" --build-arg AZURE_TENANT_ID="${{ env.API_AZURE_TENANT_ID }}"
+      run: docker build --rm -f "src/api/Dockerfile" -t ${{ env.DOCKER_REPOSITORY_TAG }} "src/api" --build-arg KEY_VAULT_NAME="${{ env.KEY_VAULT_NAME }}" --build-arg AZURE_CLIENT_ID="${{ env.API_AZURE_CLIENT_ID }}" --build-arg AZURE_CLIENT_SECRET="${{ env.API_AZURE_CLIENT_SECRET }}" --build-arg AZURE_TENANT_ID="${{ env.API_AZURE_TENANT_ID }}"
 
     - name: Deploy API to Docker Repository
       if: github.event_name != 'pull_request'
