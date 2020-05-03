@@ -21,6 +21,7 @@ using ShowNTell.API.Models.Requests;
 using ShowNTell.API.Services.CurrentUsers;
 using ShowNTell.API.Services.EventGridImageBlobDeletes;
 using ShowNTell.API.Services.EventGridValidations;
+using ShowNTell.API.Services.ImageOptimizations;
 using ShowNTell.AzureStorage.Services;
 using ShowNTell.AzureStorage.Services.BlobClientFactories;
 using ShowNTell.Domain.Services;
@@ -107,6 +108,7 @@ namespace ShowNTell.API
             services.AddSingleton<IImagePostService, EFImagePostService>();
             services.AddSingleton<ISearchService, EFSearchService>();
             services.AddSingleton<IRandomImagePostService, EFRandomImagePostService>();
+            services.AddSingleton<IImageOptimizationService, ExifImageOptimizationService>();
             services.AddSingleton<IImageStorage>(GetImageStorage());
             services.AddSingleton<AdminDataSeeder>();
             services.AddSingleton<IEventGridValidationService, EventGridValidationService>();

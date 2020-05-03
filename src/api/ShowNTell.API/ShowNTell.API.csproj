@@ -13,6 +13,8 @@
 
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="9.0.0" />
+    <PackageReference Include="ExifOrient" Version="0.1.1" />
+    <PackageReference Include="ExifOrient.AspNetCore" Version="0.1.1" />
     <PackageReference Include="McMaster.AspNetCore.LetsEncrypt" Version="0.4.0" />
     <PackageReference Include="McMaster.AspNetCore.LetsEncrypt.Azure" Version="0.4.0" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.13.1" />

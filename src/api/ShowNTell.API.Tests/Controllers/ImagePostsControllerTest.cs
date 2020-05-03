@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -8,6 +9,7 @@ using NUnit.Framework;
 using ShowNTell.API.Controllers;
 using ShowNTell.API.Models.Requests;
 using ShowNTell.API.Models.Responses;
+using ShowNTell.API.Services.ImageOptimizations;
 using ShowNTell.API.Tests.BaseFixtures;
 using ShowNTell.Domain.Exceptions;
 using ShowNTell.Domain.Models;
@@ -23,6 +25,7 @@ namespace ShowNTell.API.Tests.Controllers
         private Mock<IRandomImagePostService> _mockRandomImagePostService;
         private Mock<ISearchService> _mockSearchService;
         private Mock<IImageStorage> _mockImageStorage;
+        private Mock<IImageOptimizationService> _mockImageOptimizationService;
         private ImagePostsController _controller;
 
         [SetUp]
@@ -32,9 +35,10 @@ namespace ShowNTell.API.Tests.Controllers
             _mockRandomImagePostService = new Mock<IRandomImagePostService>();
             _mockSearchService = new Mock<ISearchService>();
             _mockImageStorage = new Mock<IImageStorage>();
+            _mockImageOptimizationService = new Mock<IImageOptimizationService>();
 
             _controller = new ImagePostsController(_mockImagePostService.Object, _mockRandomImagePostService.Object,
-                _mockSearchService.Object, _mockImageStorage.Object, _mapper, _logger, _currentUserService);
+                _mockSearchService.Object, _mockImageStorage.Object, _mockImageOptimizationService.Object, _mapper, _logger, _currentUserService);
         }
 
         [Test]
