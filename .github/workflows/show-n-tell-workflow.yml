@@ -18,14 +18,11 @@ jobs:
       DOCKER_REPOSITORY_USERNAME: ${{ secrets.DOCKER_REPOSITORY_USERNAME }}
       DOCKER_REPOSITORY_PASSWORD: ${{ secrets.DOCKER_REPOSITORY_PASSWORD }}
       DOCKER_REPOSITORY_TAG: ${{ secrets.DOCKER_REPOSITORY_USERNAME }}/show-n-tell-api
-      DATABASE_CONNECTION_STRING: ${{ secrets.DATABASE_CONNECTION_STRING }}
-      BLOB_STORAGE: ${{ secrets.BLOB_STORAGE }}
-      APPLICATION_INSIGHTS_KEY: ${{ secrets.APPLICATION_INSIGHTS_KEY }}
       SURGE_TOKEN: ${{ secrets.SURGE_TOKEN }}
-      IMAGE_BLOB_DELETE_TOKEN: ${{ secrets.IMAGE_BLOB_DELETE_TOKEN }}
-      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-      AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
-      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      KEY_VAULT_NAME: ${{ secrets.KEY_VAULT_NAME }}
+      API_AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      API_AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+      API_AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
 
     steps:
     - uses: actions/checkout@v2
@@ -72,7 +69,7 @@ jobs:
 
     - name: Build API Docker Image
       if: github.event_name != 'pull_request'
-      run: docker build --rm -f "src/api/Dockerfile" -t ${{ env.DOCKER_REPOSITORY_TAG }} "src/api" --build-arg DATABASE="${{ env.DATABASE_CONNECTION_STRING }}" --build-arg BLOB_STORAGE="${{ env.BLOB_STORAGE }}" --build-arg APPLICATION_INSIGHTS_KEY="${{ env.APPLICATION_INSIGHTS_KEY }}" --build-arg IMAGE_BLOB_DELETE_TOKEN="${{ env.IMAGE_BLOB_DELETE_TOKEN }}" --build-arg AZURE_CLIENT_ID="${{ env.AZURE_CLIENT_ID }}" --build-arg AZURE_CLIENT_SECRET="${{ env.AZURE_CLIENT_SECRET }}" --build-arg AZURE_TENANT_ID="${{ env.AZURE_TENANT_ID }}"
+      run: docker build --rm -f "src/api/Dockerfile" -t ${{ env.DOCKER_REPOSITORY_TAG }} "src/api" --build-arg KEY_VAULT_NAME="${ env.KEY_VAULT_NAME}" --build-arg AZURE_CLIENT_ID="${{ env.API_AZURE_CLIENT_ID }}" --build-arg AZURE_CLIENT_SECRET="${{ env.API_AZURE_CLIENT_SECRET }}" --build-arg AZURE_TENANT_ID="${{ env.API_AZURE_TENANT_ID }}"
 
     - name: Deploy API to Docker Repository
       if: github.event_name != 'pull_request'

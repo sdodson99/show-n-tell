@@ -2,6 +2,8 @@ using System;
 using System.IO;
 using System.Reflection;
 using AutoMapper;
+using Azure.Identity;
+using Azure.Security.KeyVault.Secrets;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -35,11 +37,12 @@ namespace ShowNTell.API
 
         public Startup(IConfiguration configuration, IWebHostEnvironment environment)
         {
-            Configuration = configuration;
             Environment = environment;
+            Configuration = CreateShowNTellConfiguration(configuration);
         }
 
-        public IConfiguration Configuration { get; }
+        public ShowNTellConfiguration Configuration { get; }
+
         public IWebHostEnvironment Environment { get; }
 
         public void ConfigureServices(IServiceCollection services)
@@ -104,26 +107,19 @@ namespace ShowNTell.API
             services.AddSingleton<ISearchService, EFSearchService>();
             services.AddSingleton<IRandomImagePostService, EFRandomImagePostService>();
             services.AddSingleton<IImageOptimizationService, NoneImageOptimizationService>();
-            services.AddSingleton<IImageStorage>(GetImageStorage());
+            services.AddSingleton<IImageStorage>(CreateImageStorage());
             services.AddSingleton<AdminDataSeeder>();
+            services.AddSingleton<IMapper>(new MapperFactory().CreateMapper());
             services.AddSingleton<IEventGridValidationService, EventGridValidationService>();
             services.AddSingleton<IEventGridImageBlobDeleteService>((c) => 
-                new EventGridImageBlobDeleteService(c.GetRequiredService<IImagePostService>(), 
-                    GetConfigurationValue("IMAGE_BLOB_DELETE_TOKEN")));
-
-            services.AddSingleton<IShowNTellDbContextFactory>(new ShowNTellDbContextFactory(GetDbContextOptionsBuilderAction()));
-            services.AddSingleton<IMapper>(new MapperFactory().CreateMapper());
+                new EventGridImageBlobDeleteService(c.GetRequiredService<IImagePostService>(), Configuration.ImageBlobDeleteToken));
+            services.AddSingleton<IShowNTellDbContextFactory>(CreateShowNTellDbContextFactory());
 
             if(Environment.IsProduction())
             {
                 services.AddLogging(options => {
-                    string instrumentationKey = GetConfigurationValue("APPLICATION_INSIGHTS_KEY");
-                    options.AddApplicationInsights(instrumentationKey);
+                    options.AddApplicationInsights(Configuration.ApplicationInsightsKey);
                 });
-
-                // services.AddLetsEncrypt().PersistCertificatesToAzureKeyVault(o => {
-                //     o.AzureKeyVaultEndpoint = "https://snt-https.vault.azure.net/";
-                // });
             }
         }
 
@@ -157,38 +153,57 @@ namespace ShowNTell.API
             });
         }
 
-        private Action<DbContextOptionsBuilder> GetDbContextOptionsBuilderAction()
+        private IShowNTellDbContextFactory CreateShowNTellDbContextFactory()
         {
-            string connectionString = GetConfigurationValue("database");
-
-            return o => o.UseSqlServer(connectionString);
+            return new ShowNTellDbContextFactory(o => o.UseSqlServer(Configuration.DatabaseConnectionString));
         }
 
-        private IImageStorage GetImageStorage()
+        private IImageStorage CreateImageStorage()
         {
-            IImageStorage imageStorage;
+            IImageStorage storage; 
 
             if(Environment.IsProduction())
             {
-                string connectionString = GetConfigurationValue("BLOB_STORAGE");
-
-                imageStorage = new AzureBlobImageStorage(new AzureBlobClientFactory(connectionString, "images"));
-            }
+                storage = new AzureBlobImageStorage(new AzureBlobClientFactory(Configuration.BlobStorageConnectionString, "images"));
+            } 
             else
             {
                 string imageOutputPath = Path.Combine(Environment.WebRootPath, IMAGE_DIRECTORY_NAME);
-                string baseUrl = GetConfigurationValue("BaseUrl");
-                string imageBaseUri = Path.Combine(baseUrl, STATIC_FILE_BASE_URI, IMAGE_DIRECTORY_NAME);
+                string imageBaseUri = Path.Combine(Configuration.BaseUrl, STATIC_FILE_BASE_URI, IMAGE_DIRECTORY_NAME);
 
-                imageStorage = new LocalImageStorage(imageOutputPath, imageBaseUri);
+                storage = new LocalImageStorage(imageOutputPath, imageBaseUri);
             }
 
-            return imageStorage;
+            return storage;
         }
 
-        private string GetConfigurationValue(string key)
+        private ShowNTellConfiguration CreateShowNTellConfiguration(IConfiguration configuration)
         {
-            string value = Configuration.GetValue<string>(key);
+            ShowNTellConfiguration showNTellConfiguration = new ShowNTellConfiguration();
+            if(Environment.IsProduction())
+            {
+                string keyVaultName = GetConfigurationValue(configuration, "KEY_VAULT_NAME");
+                string keyVaultUri = $"https://{keyVaultName}.vault.azure.net";
+                SecretClient keyVaultClient = new SecretClient(new Uri(keyVaultUri), new DefaultAzureCredential());
+
+                showNTellConfiguration.DatabaseConnectionString = keyVaultClient.GetSecret("DATABASE-CONNECTION-STRING").Value.Value;
+                showNTellConfiguration.ApplicationInsightsKey = keyVaultClient.GetSecret("APPLICATION-INSIGHTS-KEY").Value.Value;
+                showNTellConfiguration.BlobStorageConnectionString = keyVaultClient.GetSecret("BLOB-STORAGE-CONNECTION-STRING").Value.Value;
+            }
+            else
+            {
+                showNTellConfiguration.DatabaseConnectionString = GetConfigurationValue(configuration, "DATABASE");
+            }
+
+            showNTellConfiguration.BaseUrl = GetConfigurationValue(configuration, "BASE_URL");
+            showNTellConfiguration.ImageBlobDeleteToken = GetConfigurationValue(configuration, "IMAGE_BLOB_DELETE_TOKEN");
+
+            return showNTellConfiguration;
+        }
+
+        private string GetConfigurationValue(IConfiguration configuration, string key)
+        {
+            string value = configuration.GetValue<string>(key);
 
             if(string.IsNullOrEmpty(value))
             {
@@ -196,6 +211,15 @@ namespace ShowNTell.API
             }
 
             return value;
+        }
+
+        public class ShowNTellConfiguration
+        {
+            public string DatabaseConnectionString { get; set; }
+            public string ApplicationInsightsKey { get; set; }
+            public string BlobStorageConnectionString { get; set; }
+            public string BaseUrl { get; set; }
+            public string ImageBlobDeleteToken { get; set; }
         }
     }
 }
