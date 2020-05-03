@@ -151,7 +151,7 @@ namespace ShowNTell.API.Controllers
             IFormFile image = imagePostRequest.Image;
 
             // Optimize image.
-            _logger.LogInformation("Optimize image.");
+            _logger.LogInformation("Optimizing image.");
             Stream imageStream = _imageOptimizationService.Optimize(image);
 
             // Store image file.

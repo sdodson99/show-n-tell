@@ -15,7 +15,7 @@ namespace ShowNTell.API.Services.ImageOptimizations
 
         public Stream Optimize(IFormFile image)
         {
-            return _orientationNormalizer.Normalize(image);
+            return new MemoryStream(_orientationNormalizer.Normalize(image, Path.GetExtension(image.FileName)));
         }
     }
 }

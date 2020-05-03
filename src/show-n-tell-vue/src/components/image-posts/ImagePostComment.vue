@@ -67,8 +67,6 @@ export default {
     watch: {
         content: function() {
             this.contentData = this.content
-            console.log('test');
-            
         }
     },
     computed: {
