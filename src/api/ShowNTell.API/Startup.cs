@@ -108,7 +108,7 @@ namespace ShowNTell.API
             services.AddSingleton<IImagePostService, EFImagePostService>();
             services.AddSingleton<ISearchService, EFSearchService>();
             services.AddSingleton<IRandomImagePostService, EFRandomImagePostService>();
-            services.AddSingleton<IImageOptimizationService, ExifImageOptimizationService>();
+            services.AddSingleton<IImageOptimizationService, NoneImageOptimizationService>();
             services.AddSingleton<IImageStorage>(GetImageStorage());
             services.AddSingleton<AdminDataSeeder>();
             services.AddSingleton<IEventGridValidationService, EventGridValidationService>();
