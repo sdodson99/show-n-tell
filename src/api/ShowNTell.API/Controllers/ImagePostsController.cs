@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using ExifOrient.AspNetCore;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -11,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using ShowNTell.API.Models.Requests;
 using ShowNTell.API.Models.Responses;
 using ShowNTell.API.Services.CurrentUsers;
+using ShowNTell.API.Services.ImageOptimizations;
 using ShowNTell.Domain.Exceptions;
 using ShowNTell.Domain.Models;
 using ShowNTell.Domain.Services;
@@ -25,6 +27,7 @@ namespace ShowNTell.API.Controllers
         private readonly IImagePostService _imagePostService;
         private readonly IRandomImagePostService _randomImagePostService;
         private readonly ISearchService _searchService;
+        private readonly IImageOptimizationService _imageOptimizationService;
         private readonly IImageStorage _imageStorage;
         private readonly IMapper _mapper;
         private readonly ILogger<ImagePostsController> _logger;
@@ -34,12 +37,14 @@ namespace ShowNTell.API.Controllers
             IRandomImagePostService randomImagePostService,
             ISearchService searchService,
             IImageStorage imageStorage,
+            IImageOptimizationService imageOptimizationService,
             IMapper mapper, ILogger<ImagePostsController> logger, ICurrentUserService currentUserService)
         {
             _imagePostService = imagePostService;
             _randomImagePostService = randomImagePostService;
             _searchService = searchService;
             _imageStorage = imageStorage;
+            _imageOptimizationService = imageOptimizationService;
             _mapper = mapper;
             _logger = logger;
             _currentUserService = currentUserService;
@@ -143,10 +148,15 @@ namespace ShowNTell.API.Controllers
             User user = _currentUserService.GetCurrentUser(HttpContext);
             _logger.LogInformation("Requesting user email: {0}", user.Email);
 
-            // Store image file.
             IFormFile image = imagePostRequest.Image;
+
+            // Optimize image.
+            _logger.LogInformation("Optimize image.");
+            Stream imageStream = _imageOptimizationService.Optimize(image);
+
+            // Store image file.
             _logger.LogInformation("Saving image file with filename '{0}'.", image.FileName);
-            string imageUri = await _imageStorage.SaveImage(image.OpenReadStream(), Path.GetExtension(image.FileName));
+            string imageUri = await _imageStorage.SaveImage(imageStream, Path.GetExtension(image.FileName));
             _logger.LogInformation("Successfully saved image file at location '{0}'.", imageUri);
 
             // Save image database record.

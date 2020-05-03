@@ -1,14 +1,10 @@
 <template>
-    <div id="root">
-        <div id="image-container" ref="imageContainer" @click="$emit('click')" class="d-flex align-items-center justify-content-center">
-        </div>
+    <div id="image-container" ref="imageContainer" @click="$emit('click')" class="d-flex align-items-center justify-content-center">
+        <img :src="imageUri" :style="{ maxHeight: maxHeight }"/>
     </div>
 </template>
 
 <script>
-import LoadImage from 'blueimp-load-image'
-import EXIF from 'exif-js'
-
 export default {
     name: "ImagePostImage",
     props: {
@@ -17,68 +13,11 @@ export default {
             type: String,
             default: "25vh"
         }
-    },
-    mounted: function() {
-        this.loadImage()
-    },
-    watch: {
-        imageUri: function() {
-            this.loadImage()
-        }
-    },
-    methods: {
-        loadImage: function() {
-            this.clearImage()
-            const currentImageUri = this.imageUri
-            
-            if(currentImageUri) {
-                LoadImage(currentImageUri, (loadedImage) => {
-                    
-                    if(this.isJPEG(loadedImage.src)) {
-                        EXIF.getData(loadedImage, () => {
-                            let orientation = EXIF.getTag(loadedImage, "Orientation");
-                            
-                            LoadImage(loadedImage.src, (orientedImage) => {
-                                this.setImage(orientedImage, currentImageUri)
-                            }, {
-                                orientation: orientation
-                            })
-                        })
-                    } else {
-                        this.setImage(loadedImage, currentImageUri)
-                    }
-                })  
-            }
-        },
-        setImage: function(image, imageUri) {
-            if(image instanceof Image) {
-                image.removeAttribute('width')
-                image.removeAttribute('height')
-            }
-
-            image.style.maxHeight = this.maxHeight
-            image.style.maxWidth = "100%"
-
-            // Make sure image did not change.
-            if(imageUri === this.imageUri) {
-                this.$refs.imageContainer.appendChild(image)
-            }
-        },
-        clearImage: function() {
-            this.$refs.imageContainer.innerHTML = ""
-        },        
-        isJPEG: function(src) {
-            return src && (src.endsWith('jpeg') || src.endsWith('jpg'))
-        }
     }
 }
 </script>
 
 <style scoped>
-#root {
-    height: 100%;
-    min-height: 100px;
-}
 
 #image-container{
     background: var(--color-grayscale-light);
@@ -86,5 +25,9 @@ export default {
     border: 1px solid var(--color-primary-dark);
     min-height: 100px;
     height: 100%;
+}
+
+img {
+    max-width: 100%;
 }
 </style>
