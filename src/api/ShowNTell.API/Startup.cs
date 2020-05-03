@@ -108,7 +108,7 @@ namespace ShowNTell.API
             services.AddSingleton<IImagePostService, EFImagePostService>();
             services.AddSingleton<ISearchService, EFSearchService>();
             services.AddSingleton<IRandomImagePostService, EFRandomImagePostService>();
-            services.AddSingleton<IImageOptimizationService, NoneImageOptimizationService>();
+            services.AddSingleton<IImageOptimizationService>(GetImageOptimizationService());
             services.AddSingleton<IImageStorage>(GetImageStorage());
             services.AddSingleton<AdminDataSeeder>();
             services.AddSingleton<IEventGridValidationService, EventGridValidationService>();
@@ -204,6 +204,18 @@ namespace ShowNTell.API
             }
 
             return imageStorage;
+        }
+
+        private IImageOptimizationService GetImageOptimizationService()
+        {
+            if(Environment.IsProduction())
+            {
+                return new NoneImageOptimizationService();
+            }
+            else
+            {
+                return new ExifImageOptimizationService();
+            }
         }
 
         private string GetConfigurationValue(string key)

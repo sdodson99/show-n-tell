@@ -29,5 +29,6 @@ export default {
 
 img {
     max-width: 100%;
+    image-orientation: from-image;
 }
 </style>
