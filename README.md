@@ -89,25 +89,27 @@ It is **strongly recommended** to successfully run the application locally befor
 **do not** describe the creation or configuration of external services, such as Azure or Surge.
 
 ## API
-1. Add an appsettings.Production.json file to src/api/ShowNTell.API.
-2. Configure the appsettings.Production.json file.
+1. Create an Azure Key Vault with the following keys.
+* DATABASE-CONNECTION-STRING: For connecting to a production database.
+* BLOB-STORAGE-CONNECTION-STRING: For connecting to and storing images in Azure Blob Storage.
+* APPLICATION-INSIGHTS-KEY: For logging with application insights.
+2. Add an appsettings.Production.json file to src/api/ShowNTell.API.
+3. Configure the appsettings.Production.json file.
 ```
 {
-    "APPLICATION_INSIGHTS_KEY": "<KEY>", // For logging with Azure Application Insights.
-    "DATABASE": "<CONNECTIONG STRING>", // For connecting to a SQL Server database with Entity Framework.
-    "BLOB_STORAGE": "<KEY>", // For storing images in Azure Blob Storage.
+    "KEY_VAULT_NAME": "<NAME>", // For getting application secrets.
     "IMAGE_BLOB_DELETE_TOKEN": "<TOKEN>", // Optional, for authenticating image delete events from Azure Blob Storage.
 }
 ```
-3. Build the API Docker image and tag the image with the desired Docker repository or Azure Container Registry URI.
+4. Build the API Docker image and tag the image with the desired Docker repository or Azure Container Registry URI.
 ```
 docker build --pull --rm -f "src/api/Dockerfile" -t <DOCKER REPOSITORY OR AZURE CONTAINER REGISTRY URI> "src/api"
 ```
-4. Push the tagged Docker image.
+5. Push the tagged Docker image.
 ```
 docker push <DOCKER REPOSITORY OR AZURE CONTAINER REGISTRY URI>
 ```
-5. Restart the Azure Container Instance referencing the Docker image.
+6. Restart the Azure Container Instance referencing the Docker image.
 ```
 az container restart --name <CONTAINER NAME> --resource-group <CONTAINER RESOURCE GROUP NAME>
 ```
