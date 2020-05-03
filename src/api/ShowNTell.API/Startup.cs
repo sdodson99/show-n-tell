@@ -1,13 +1,11 @@
 using System;
 using System.IO;
-using System.Net;
 using System.Reflection;
 using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,9 +13,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using SeanDodson.GoogleJWTAuthentication.Extensions;
-using ShowNTell.API.Models;
 using ShowNTell.API.Models.MappingProfiles;
-using ShowNTell.API.Models.Requests;
 using ShowNTell.API.Services.CurrentUsers;
 using ShowNTell.API.Services.EventGridImageBlobDeletes;
 using ShowNTell.API.Services.EventGridValidations;
@@ -26,7 +22,6 @@ using ShowNTell.AzureStorage.Services;
 using ShowNTell.AzureStorage.Services.BlobClientFactories;
 using ShowNTell.Domain.Services;
 using ShowNTell.Domain.Services.ImageStorages;
-using ShowNTell.EntityFramework;
 using ShowNTell.EntityFramework.DataSeeders;
 using ShowNTell.EntityFramework.Services;
 using ShowNTell.EntityFramework.ShowNTellDbContextFactories;
@@ -108,7 +103,7 @@ namespace ShowNTell.API
             services.AddSingleton<IImagePostService, EFImagePostService>();
             services.AddSingleton<ISearchService, EFSearchService>();
             services.AddSingleton<IRandomImagePostService, EFRandomImagePostService>();
-            services.AddSingleton<IImageOptimizationService>(GetImageOptimizationService());
+            services.AddSingleton<IImageOptimizationService, NoneImageOptimizationService>();
             services.AddSingleton<IImageStorage>(GetImageStorage());
             services.AddSingleton<AdminDataSeeder>();
             services.AddSingleton<IEventGridValidationService, EventGridValidationService>();
@@ -165,7 +160,7 @@ namespace ShowNTell.API
         private Action<DbContextOptionsBuilder> GetDbContextOptionsBuilderAction()
         {
             string connectionString = GetConfigurationValue("database");
-            
+
             return o => o.UseSqlServer(connectionString);
         }
 
@@ -189,18 +184,6 @@ namespace ShowNTell.API
             }
 
             return imageStorage;
-        }
-
-        private IImageOptimizationService GetImageOptimizationService()
-        {
-            if(Environment.IsProduction())
-            {
-                return new NoneImageOptimizationService();
-            }
-            else
-            {
-                return new ExifImageOptimizationService();
-            }
         }
 
         private string GetConfigurationValue(string key)
