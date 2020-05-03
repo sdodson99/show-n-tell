@@ -43,6 +43,7 @@ Show ‘N Tell is a social media platform for users to upload and discover image
 * Azure SQL for production database
 * Azure Blob Storage for production image storage
 * Azure Application Insights for production logging
+* Azure Key Vault for storing secrets (keys, connection strings, etc.)
 * Azure Event Grid to subscribe to Azure Blob Storage image deletes
 * Azure Container Instances to deploy API from Docker image
 
@@ -93,26 +94,20 @@ It is **strongly recommended** to successfully run the application locally befor
 * DATABASE-CONNECTION-STRING: For connecting to a production database.
 * BLOB-STORAGE-CONNECTION-STRING: For connecting to and storing images in Azure Blob Storage.
 * APPLICATION-INSIGHTS-KEY: For logging with application insights.
-2. Add an appsettings.Production.json file to src/api/ShowNTell.API.
-3. Configure the appsettings.Production.json file.
-```
-{
-    "KEY_VAULT_NAME": "<NAME>", // For getting application secrets.
-    "IMAGE_BLOB_DELETE_TOKEN": "<TOKEN>", // Optional, for authenticating image delete events from Azure Blob Storage.
-}
-```
-4. Build the API Docker image and tag the image with the desired Docker repository or Azure Container Registry URI.
+2. Build the API Docker image and tag the image with the desired Docker repository or Azure Container Registry URI.
 ```
 docker build --pull --rm -f "src/api/Dockerfile" -t <DOCKER REPOSITORY OR AZURE CONTAINER REGISTRY URI> "src/api"
 ```
-5. Push the tagged Docker image.
+3. Push the tagged Docker image.
 ```
 docker push <DOCKER REPOSITORY OR AZURE CONTAINER REGISTRY URI>
 ```
-6. Restart the Azure Container Instance referencing the Docker image.
+4. Create the Azure Container Instance referencing the Docker image. 
 ```
-az container restart --name <CONTAINER NAME> --resource-group <CONTAINER RESOURCE GROUP NAME>
+az container create --name <CONTAINER NAME> -g <RESOURCE GROUP> --image <PUSHED IMAGE> --location <LOCATION> --environment-variables KEY_VAULT_NAME=<KEY VAULT NAME> --secure-environment-variables AZURE_CLIENT_ID=<ID> AZURE_TENANT_ID=<ID> AZURE_CLIENT_SECRET=<SECRET>
 ```
+
+**Note:** Ensure the production environment has credentials to access the Azure Key Vault. 
 
 ## Vue Client
 1. Change directory to "show-n-tell-vue".

@@ -14,3 +14,4 @@ node_modules/
 appsettings.Production.json
 *.csproj.user
 Demo.mp4
+secrets.txt
