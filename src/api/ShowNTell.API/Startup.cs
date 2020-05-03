@@ -116,25 +116,16 @@ namespace ShowNTell.API
                 new EventGridImageBlobDeleteService(c.GetRequiredService<IImagePostService>(), 
                     GetConfigurationValue("IMAGE_BLOB_DELETE_TOKEN")));
 
-            Action<DbContextOptionsBuilder> dbContextOptionsBuilderAction = GetDbContextOptionsBuilderAction();
-            services.AddSingleton<IShowNTellDbContextFactory>(new ShowNTellDbContextFactory(dbContextOptionsBuilderAction));
-            services.AddDbContext<ShowNTellDbContext>(dbContextOptionsBuilderAction);
-
-            IMapper mapper = new MapperFactory().CreateMapper();
-            services.AddSingleton<IMapper>(mapper);
-
-            services.AddLogging(options => {
-                if(Environment.IsProduction())
-                {
-                    string instrumentationKey = GetConfigurationValue("APPLICATION_INSIGHTS_KEY");
-                    options.AddApplicationInsights(instrumentationKey);
-                }
-            });
+            services.AddSingleton<IShowNTellDbContextFactory>(new ShowNTellDbContextFactory(GetDbContextOptionsBuilderAction()));
+            services.AddSingleton<IMapper>(new MapperFactory().CreateMapper());
 
             if(Environment.IsProduction())
             {
-                // services.AddLetsEncrypt();
-                
+                services.AddLogging(options => {
+                    string instrumentationKey = GetConfigurationValue("APPLICATION_INSIGHTS_KEY");
+                    options.AddApplicationInsights(instrumentationKey);
+                });
+
                 // services.AddLetsEncrypt().PersistCertificatesToAzureKeyVault(o => {
                 //     o.AzureKeyVaultEndpoint = "https://snt-https.vault.azure.net/";
                 // });
@@ -154,24 +145,17 @@ namespace ShowNTell.API
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Show 'N Tell API v1");
                 c.RoutePrefix = string.Empty;
             });
-
             app.UseStaticFiles("/" + STATIC_FILE_BASE_URI);
-
-            // app.UseHttpsRedirection();
-
+            app.UseHttpsRedirection();
             app.UseRouting();
-
-            //Add cors for all alternative domains.
             app.UseCors(policy =>
             {
                 policy.AllowAnyOrigin()
                     .AllowAnyHeader()
                     .AllowAnyMethod();
             });
-
             app.UseAuthentication();
             app.UseAuthorization();
-
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
@@ -181,6 +165,7 @@ namespace ShowNTell.API
         private Action<DbContextOptionsBuilder> GetDbContextOptionsBuilderAction()
         {
             string connectionString = GetConfigurationValue("database");
+            
             return o => o.UseSqlServer(connectionString);
         }
 
