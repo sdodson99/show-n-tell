@@ -1,10 +1,10 @@
 using System.Threading.Tasks;
 using Microsoft.Azure.EventGrid.Models;
 using Newtonsoft.Json;
-using ShowNTell.Domain.Exceptions;
+using ShowNTell.AzureFunctions.Exceptions;
 using ShowNTell.Domain.Services;
 
-namespace ShowNTell.API.Services.EventGridImageBlobDeletes
+namespace ShowNTell.AzureFunctions.Services.EventGridImageBlobDeletes
 {
     public class EventGridImageBlobDeleteService : IEventGridImageBlobDeleteService
     {

@@ -44,7 +44,7 @@ Show ‘N Tell is a social media platform for users to upload and discover image
 * Azure Blob Storage for production image storage
 * Azure Application Insights for production logging
 * Azure Key Vault for storing secrets (keys, connection strings, etc.)
-* Azure Event Grid to subscribe to Azure Blob Storage image deletes
+* Azure Event Grid + Azure Function webhook to handle Azure Blob Storage image deletes
 * Azure Container Instances to deploy API from Docker image
 
 ## Vue Client

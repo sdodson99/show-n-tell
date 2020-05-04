@@ -1,9 +1,9 @@
 using System;
 using Microsoft.Azure.EventGrid.Models;
 using NUnit.Framework;
-using ShowNTell.API.Services.EventGridValidations;
+using ShowNTell.AzureFunctions.Services.EventGridValidations;
 
-namespace ShowNTell.API.Tests.Services.EventGridValidations
+namespace ShowNTell.AzureFunctions.Tests.Services.EventGridValidations
 {
     [TestFixture]
     public class EventGridValidationServiceTest

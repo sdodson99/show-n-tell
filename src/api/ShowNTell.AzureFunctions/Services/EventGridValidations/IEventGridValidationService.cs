@@ -1,7 +1,7 @@
 using Microsoft.Azure.EventGrid.Models;
 using System;
 
-namespace ShowNTell.API.Services.EventGridValidations
+namespace ShowNTell.AzureFunctions.Services.EventGridValidations
 {
     public interface IEventGridValidationService
     {

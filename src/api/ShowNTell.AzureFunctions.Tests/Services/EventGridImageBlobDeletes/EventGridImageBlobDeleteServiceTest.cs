@@ -2,11 +2,11 @@ using System.Threading.Tasks;
 using Microsoft.Azure.EventGrid.Models;
 using Moq;
 using NUnit.Framework;
-using ShowNTell.API.Services.EventGridImageBlobDeletes;
-using ShowNTell.Domain.Exceptions;
+using ShowNTell.AzureFunctions.Exceptions;
+using ShowNTell.AzureFunctions.Services.EventGridImageBlobDeletes;
 using ShowNTell.Domain.Services;
 
-namespace ShowNTell.API.Tests.Services.EventGridImageBlobDeletes
+namespace ShowNTell.AzureFunctions.Tests.Services.EventGridImageBlobDeletes
 {
     [TestFixture]
     public class EventGridImageBlobDeleteServiceTest

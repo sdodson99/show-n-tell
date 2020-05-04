@@ -2,7 +2,7 @@ using System;
 using Microsoft.Azure.EventGrid.Models;
 using Newtonsoft.Json;
 
-namespace ShowNTell.API.Services.EventGridValidations
+namespace ShowNTell.AzureFunctions.Services.EventGridValidations
 {
     public class EventGridValidationService : IEventGridValidationService
     {

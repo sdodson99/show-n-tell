@@ -17,8 +17,6 @@ using Microsoft.OpenApi.Models;
 using SeanDodson.GoogleJWTAuthentication.Extensions;
 using ShowNTell.API.Models.MappingProfiles;
 using ShowNTell.API.Services.CurrentUsers;
-using ShowNTell.API.Services.EventGridImageBlobDeletes;
-using ShowNTell.API.Services.EventGridValidations;
 using ShowNTell.API.Services.ImageOptimizations;
 using ShowNTell.AzureStorage.Services;
 using ShowNTell.AzureStorage.Services.BlobClientFactories;
@@ -110,9 +108,6 @@ namespace ShowNTell.API
             services.AddSingleton<IImageStorage>(CreateImageStorage());
             services.AddSingleton<AdminDataSeeder>();
             services.AddSingleton<IMapper>(new MapperFactory().CreateMapper());
-            services.AddSingleton<IEventGridValidationService, EventGridValidationService>();
-            services.AddSingleton<IEventGridImageBlobDeleteService>((c) => 
-                new EventGridImageBlobDeleteService(c.GetRequiredService<IImagePostService>(), Configuration.ImageBlobDeleteToken));
             services.AddSingleton<IShowNTellDbContextFactory>(CreateShowNTellDbContextFactory());
 
             if(Environment.IsProduction())
@@ -196,7 +191,6 @@ namespace ShowNTell.API
             }
 
             showNTellConfiguration.BaseUrl = GetConfigurationValue(configuration, "BASE_URL");
-            showNTellConfiguration.ImageBlobDeleteToken = GetConfigurationValue(configuration, "IMAGE_BLOB_DELETE_TOKEN");
 
             return showNTellConfiguration;
         }
@@ -219,7 +213,6 @@ namespace ShowNTell.API
             public string ApplicationInsightsKey { get; set; }
             public string BlobStorageConnectionString { get; set; }
             public string BaseUrl { get; set; }
-            public string ImageBlobDeleteToken { get; set; }
         }
     }
 }

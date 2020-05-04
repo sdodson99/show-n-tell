@@ -12,7 +12,10 @@ jobs:
 
     env: 
       API_WORKING_DIRECTORY: ./src/api
+      AZURE_FUNCTIONS_WORKING_DIRECTORY: ./src/api/ShowNTell.AzureFunctions
       VUE_WORKING_DIRECTORY: ./src/show-n-tell-vue
+      AZURE_FUNCTIONS_PUBLISH_PATH: ${{ github.workspace }}/.functions-publish
+      AZURE_FUNCTIONS_NAME: snt-functions
       BUILD_CONFIGURATION: Release
       AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
       DOCKER_REPOSITORY_USERNAME: ${{ secrets.DOCKER_REPOSITORY_USERNAME }}
@@ -21,6 +24,8 @@ jobs:
       SURGE_TOKEN: ${{ secrets.SURGE_TOKEN }}
 
     steps:
+
+    # Setup
     - uses: actions/checkout@v2
       
     - name: Setup .NET Core
@@ -33,6 +38,7 @@ jobs:
       with:
         node-version: 12.x
 
+    # Login to services
     - name: Login to Azure
       if: github.event_name != 'pull_request'
       uses: azure/login@v1
@@ -43,16 +49,13 @@ jobs:
       if: github.event_name != 'pull_request'
       run: docker login -u ${{ env.DOCKER_REPOSITORY_USERNAME }} -p ${{ env.DOCKER_REPOSITORY_PASSWORD }}
         
+    # Build
     - name: Install API dependencies
       run: dotnet restore
       working-directory: ${{ env.API_WORKING_DIRECTORY }}
         
     - name: Build API
       run: dotnet build --no-restore --configuration ${{ env.BUILD_CONFIGURATION }}
-      working-directory: ${{ env.API_WORKING_DIRECTORY }}
-        
-    - name: Test API
-      run: dotnet test --no-build --no-restore --configuration ${{ env.BUILD_CONFIGURATION }}
       working-directory: ${{ env.API_WORKING_DIRECTORY }}
 
     - name: Install Vue dependencies
@@ -63,10 +66,22 @@ jobs:
       run: npm run build --if-present
       working-directory: ${{ env.VUE_WORKING_DIRECTORY }}
 
+    # Test
+    - name: Test API
+      run: dotnet test --no-build --no-restore --configuration ${{ env.BUILD_CONFIGURATION }}
+      working-directory: ${{ env.API_WORKING_DIRECTORY }}
+
+    # Prepare for deploy
     - name: Build API Docker Image
       if: github.event_name != 'pull_request'
       run: docker build --rm -f "src/api/ShowNTell.API/Dockerfile" -t ${{ env.DOCKER_REPOSITORY_TAG }} "src/api"
 
+    - name: Publish Azure Functions
+      if: github.event_name != 'pull_request'
+      run: dotnet publish --no-restore --no-build --configuration Release --output ${{ env.AZURE_FUNCTIONS_PUBLISH_PATH }}
+      working-directory: ${{ env.AZURE_FUNCTIONS_WORKING_DIRECTORY }}
+
+    # Deploy
     - name: Deploy API to Docker Repository
       if: github.event_name != 'pull_request'
       run: docker push ${{ env.DOCKER_REPOSITORY_TAG }}
@@ -77,6 +92,13 @@ jobs:
       with:
         inlineScript: az container restart --name show-n-tell-api --resource-group show-n-tell
 
+    - name: Deploy Azure Functions
+      if: github.event_name != 'pull_request'
+      uses: Azure/functions-action@v1
+      with:
+        app-name: ${{ env.AZURE_FUNCTIONS_NAME }}
+        path: ${{ env.AZURE_FUNCTIONS_PUBLISH_PATH }}
+        
     - name: Deploy Vue to Surge
       if: github.event_name != 'pull_request'
       run: npm run deploy --if-present --token ${{ env.SURGE_TOKEN }}

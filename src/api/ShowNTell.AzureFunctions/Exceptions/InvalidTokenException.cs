@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.Serialization;
 
-namespace ShowNTell.Domain.Exceptions
+namespace ShowNTell.AzureFunctions.Exceptions
 {
     public class InvalidTokenException : Exception
     {
