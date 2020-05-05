@@ -5,6 +5,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using ShowNTell.API.Filters.AccessModes;
 using ShowNTell.API.Models.Responses;
 using ShowNTell.API.Services.CurrentUsers;
 using ShowNTell.Domain.Models;
@@ -38,6 +39,7 @@ namespace ShowNTell.API.Controllers
         /// <response code="401">Unauthorized.</response>
         [Produces("application/json")]
         [Authorize]
+        [ServiceFilter(typeof(RequireReadAccessModeFilter))]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ImagePostResponse>>> GetFeed()
         {

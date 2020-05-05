@@ -82,13 +82,13 @@ namespace ShowNTell.AzureFunctions.Tests.Handlers
         }
 
         [Test]
-        public async Task Handle_WithInvalidImageBlobDeleteEventAndValidToken_ReturnsNotFound()
+        public async Task Handle_WithInvalidImageBlobDeleteEventAndValidToken_ReturnsNoContent()
         {
             string token = "valid-token";
             EventGridEvent gridEvent = new EventGridEvent() { EventType = EventTypes.StorageBlobDeletedEvent };
             EventGridEvent[] events = new EventGridEvent[]{ gridEvent };
             _mockBlobDeleteService.Setup(s => s.DeleteImagePost(gridEvent, token)).ReturnsAsync(false);
-            Type expectedType = typeof(NotFoundResult);
+            Type expectedType = typeof(NoContentResult);
 
             IActionResult actual = await _handler.Handle(events, token, _logger);
 

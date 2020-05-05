@@ -11,6 +11,7 @@ using ShowNTell.API.Models.Responses;
 using ShowNTell.API.Models.Requests;
 using Microsoft.AspNetCore.Http;
 using ShowNTell.API.Services.CurrentUsers;
+using ShowNTell.API.Filters.AccessModes;
 
 namespace ShowNTell.API.Controllers
 {
@@ -44,6 +45,7 @@ namespace ShowNTell.API.Controllers
         /// <response code="401">Unauthorized.</response>
         /// <response code="404">Failed to create comment.</response>
         [Authorize]
+        [ServiceFilter(typeof(RequireWriteAccessModeFilter))]
         [HttpPost("comments")]
         public async Task<ActionResult<CommentResponse>> CreateComment(int imagePostId, [FromBody] CreateCommentRequest commentRequest)
         {
@@ -86,6 +88,7 @@ namespace ShowNTell.API.Controllers
         /// <response code="403">User does not own comment.</response>
         /// <response code="404">Comment to update not found.</response>
         [Authorize]        
+        [ServiceFilter(typeof(RequireWriteAccessModeFilter))]
         [HttpPut("comments/{commentId:int}")]
         public async Task<ActionResult<CommentResponse>> UpdateComment(int commentId, [FromBody] UpdateCommentRequest updateCommentRequest)
         {
@@ -126,6 +129,7 @@ namespace ShowNTell.API.Controllers
         /// <response code="404">Comment to delete not found.</response>
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [Authorize]
+        [ServiceFilter(typeof(RequireWriteAccessModeFilter))]
         [HttpDelete("comments/{commentId:int}")]
         public async Task<IActionResult> DeleteComment(int commentId)
         {
@@ -160,6 +164,7 @@ namespace ShowNTell.API.Controllers
         /// <response code="401">Unauthorized.</response>
         /// <response code="404">Failed to create like.</response>
         [Authorize]
+        [ServiceFilter(typeof(RequireWriteAccessModeFilter))]
         [HttpPost("like")]
         public async Task<ActionResult<LikeResponse>> LikeImagePost(int imagePostId)
         {
@@ -208,6 +213,7 @@ namespace ShowNTell.API.Controllers
         /// <response code="401">Unauthorized.</response>
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [Authorize]
+        [ServiceFilter(typeof(RequireWriteAccessModeFilter))]
         [HttpDelete("like")]
         public async Task<IActionResult> UnlikeImagePost(int imagePostId)
         {

@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using ShowNTell.API.Filters.AccessModes;
 using ShowNTell.API.Models.Requests;
 using ShowNTell.API.Models.Responses;
 using ShowNTell.API.Services.CurrentUsers;
@@ -56,6 +57,7 @@ namespace ShowNTell.API.Controllers
         /// <returns>All image posts or the list of image posts matching the search query.</returns>
         /// <response code="200">Returns all image posts or the list of image posts matching the search query.</response>
         [Produces("application/json")]
+        [ServiceFilter(typeof(RequireReadAccessModeFilter))]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ImagePostResponse>>> Search([FromQuery(Name = "search")] string search)
         {
@@ -82,6 +84,7 @@ namespace ShowNTell.API.Controllers
         /// <response code="200">Returns a random image post.</response>
         /// <response code="404">No image posts are available.</response>
         [Produces("application/json")]
+        [ServiceFilter(typeof(RequireReadAccessModeFilter))]
         [HttpGet("random")]
         public async Task<ActionResult<ImagePostResponse>> GetRandom()
         {
@@ -108,6 +111,7 @@ namespace ShowNTell.API.Controllers
         /// <response code="200">Returns the image post with the id.</response>
         /// <response code="404">Image post does not exist.</response>
         [Produces("application/json")]
+        [ServiceFilter(typeof(RequireReadAccessModeFilter))]
         [HttpGet("{id:int}")]
         public async Task<ActionResult<ImagePostResponse>> GetById(int id)
         {
@@ -138,6 +142,7 @@ namespace ShowNTell.API.Controllers
         [ProducesResponseType(typeof(ImagePostResponse), StatusCodes.Status201Created)]
         [Produces("application/json")]
         [Authorize]
+        [ServiceFilter(typeof(RequireWriteAccessModeFilter))]
         [HttpPost]
         public async Task<ActionResult<ImagePostResponse>> Create([FromForm] CreateImagePostRequest imagePostRequest)
         {
@@ -195,6 +200,7 @@ namespace ShowNTell.API.Controllers
         /// <response code="404">Image post does not exist.</response>
         [Produces("application/json")]
         [Authorize]
+        [ServiceFilter(typeof(RequireWriteAccessModeFilter))]
         [HttpPut("{id:int}")]
         public async Task<ActionResult<ImagePostResponse>> Update(int id, [FromBody] UpdateImagePostRequest imagePostRequest)
         {
@@ -244,6 +250,7 @@ namespace ShowNTell.API.Controllers
         /// <response code="404">Image post does not exist.</response>
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [Authorize]
+        [ServiceFilter(typeof(RequireWriteAccessModeFilter))]
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete(int id)
         {

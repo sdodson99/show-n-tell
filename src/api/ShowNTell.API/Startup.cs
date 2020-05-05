@@ -15,6 +15,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using SeanDodson.GoogleJWTAuthentication.Extensions;
+using ShowNTell.API.Filters.AccessModes;
+using ShowNTell.API.Models;
 using ShowNTell.API.Models.MappingProfiles;
 using ShowNTell.API.Services.CurrentUsers;
 using ShowNTell.API.Services.ImageOptimizations;
@@ -116,6 +118,9 @@ namespace ShowNTell.API
                     options.AddApplicationInsights(Configuration.ApplicationInsightsKey);
                 });
             }
+
+            services.AddScoped<RequireReadAccessModeFilter>(s => new RequireReadAccessModeFilter(Configuration.ReadAccessModeEnabled));
+            services.AddScoped<RequireWriteAccessModeFilter>(s => new RequireWriteAccessModeFilter(Configuration.WriteAccessModeEnabled));
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -175,6 +180,7 @@ namespace ShowNTell.API
         private ShowNTellConfiguration CreateShowNTellConfiguration(IConfiguration configuration)
         {
             ShowNTellConfiguration showNTellConfiguration = new ShowNTellConfiguration();
+
             if(Environment.IsProduction())
             {
                 string keyVaultName = GetConfigurationValue(configuration, "KEY_VAULT_NAME");
@@ -184,6 +190,11 @@ namespace ShowNTell.API
                 showNTellConfiguration.DatabaseConnectionString = keyVaultClient.GetSecret("DATABASE-CONNECTION-STRING").Value.Value;
                 showNTellConfiguration.ApplicationInsightsKey = keyVaultClient.GetSecret("APPLICATION-INSIGHTS-KEY").Value.Value;
                 showNTellConfiguration.BlobStorageConnectionString = keyVaultClient.GetSecret("BLOB-STORAGE-CONNECTION-STRING").Value.Value;
+
+                if(int.TryParse(keyVaultClient.GetSecret("ACCESS-MODE").Value.Value, out int accessMode))
+                {
+                    showNTellConfiguration.ShowNTellAccessMode = (ShowNTellAccessMode) accessMode;
+                }
             }
             else
             {
@@ -205,14 +216,6 @@ namespace ShowNTell.API
             }
 
             return value;
-        }
-
-        public class ShowNTellConfiguration
-        {
-            public string DatabaseConnectionString { get; set; }
-            public string ApplicationInsightsKey { get; set; }
-            public string BlobStorageConnectionString { get; set; }
-            public string BaseUrl { get; set; }
         }
     }
 }

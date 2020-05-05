@@ -64,11 +64,13 @@ namespace ShowNTell.AzureFunctions.Handlers
                     if (await _eventGridImageBlobDeleteService.DeleteImagePost(gridEvent, token))
                     {
                         logger.LogInformation("Successfully deleted image post record.");
-                        return new NoContentResult();
+                    }
+                    else
+                    {
+                        logger.LogWarning("No image posts referencing the deleted blob exist.");
                     }
 
-                    logger.LogError("No image posts referencing the deleted blob exist.");
-                    return new NotFoundResult();
+                    return new NoContentResult();
                 }
                 catch (InvalidTokenException)
                 {

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using ShowNTell.API.Filters.AccessModes;
 using ShowNTell.API.Models.Responses;
 using ShowNTell.API.Services.CurrentUsers;
 using ShowNTell.Domain.Exceptions;
@@ -41,6 +42,7 @@ namespace ShowNTell.API.Controllers
         /// <response code="200">Returns the profile for the username.</response>
         /// <response code="404">Profile does not exist.</response>
         [Produces("application/json")]
+        [ServiceFilter(typeof(RequireReadAccessModeFilter))]
         [HttpGet]
         public async Task<ActionResult<ProfileResponse>> GetProfile(string username)
         {
@@ -67,6 +69,7 @@ namespace ShowNTell.API.Controllers
         /// <returns>The profile's list of image posts.</returns>
         /// <response code="200">Returns the profile's list of image posts.</response>
         [Produces("application/json")]
+        [ServiceFilter(typeof(RequireReadAccessModeFilter))]
         [HttpGet("imageposts")]
         public async Task<ActionResult<IEnumerable<ImagePostResponse>>> GetImagePosts(string username)
         {
@@ -91,6 +94,7 @@ namespace ShowNTell.API.Controllers
         /// <response code="404">Profile to follow does not exist.</response>
         [Produces("application/json")]
         [Authorize]
+        [ServiceFilter(typeof(RequireWriteAccessModeFilter))]
         [HttpPost("follow")]
         public async Task<ActionResult<FollowResponse>> Follow(string username)
         {
@@ -128,6 +132,7 @@ namespace ShowNTell.API.Controllers
         /// <response code="401">Unauthorized.</response>
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [Authorize]
+        [ServiceFilter(typeof(RequireWriteAccessModeFilter))]
         [HttpDelete("follow")]
         public async Task<IActionResult> Unfollow(string username)
         {
