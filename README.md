@@ -96,7 +96,7 @@ It is **strongly recommended** to successfully run the application locally befor
 * APPLICATION-INSIGHTS-KEY: For logging with application insights.
 2. Build the API Docker image and tag the image with the desired Docker repository or Azure Container Registry URI.
 ```
-docker build --pull --rm -f "src/api/Dockerfile" -t <DOCKER REPOSITORY OR AZURE CONTAINER REGISTRY URI> "src/api"
+docker build --pull --rm -f "src/api/ShowNTell.API/Dockerfile" -t <DOCKER REPOSITORY OR AZURE CONTAINER REGISTRY URI> "src/api"
 ```
 3. Push the tagged Docker image.
 ```
