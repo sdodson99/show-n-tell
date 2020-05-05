@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using ShowNTell.API.Models;
 using ShowNTell.API.Models.Responses;
+using ShowNTell.API.Models.Results;
 
 namespace ShowNTell.API.Filters.AccessModes
 {
@@ -21,7 +22,7 @@ namespace ShowNTell.API.Filters.AccessModes
         {
             if(!_writeAccessMode)
             {
-                context.Result = new BadRequestObjectResult(new ErrorResponse()
+                context.Result = new ForbiddenObjectResult(new ErrorResponse()
                 {
                     Code = ErrorCode.WRITE_MODE_DISABLED,
                     Message = "Show 'N Tell is not in write mode."

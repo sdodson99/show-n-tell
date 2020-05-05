@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Routing;
 using Moq;
 using NUnit.Framework;
 using ShowNTell.API.Filters.AccessModes;
+using ShowNTell.API.Models.Results;
 using ShowNTell.API.Tests.BaseFixtures;
 
 namespace ShowNTell.API.Tests.Filters.AccessModes
@@ -17,10 +18,10 @@ namespace ShowNTell.API.Tests.Filters.AccessModes
     public class RequireWriteAccessModeFilterTests : ResourceFilterTests
     {
         [Test]
-        public void OnResourceExecuting_WithWriteAccessModeFalse_HasBadRequestObjectResult()
+        public void OnResourceExecuting_WithWriteAccessModeFalse_HasForbiddenObjectResult()
         {
             RequireWriteAccessModeFilter filter = new RequireWriteAccessModeFilter(false);
-            Type expectedResultType = typeof(BadRequestObjectResult);
+            Type expectedResultType = typeof(ForbiddenObjectResult);
 
             filter.OnResourceExecuting(_context);
             IActionResult actualResult = _context.Result;
