@@ -10,7 +10,7 @@ using ShowNTell.Domain.Models;
 namespace ShowNTell.API.Tests.BaseFixtures
 {
     [TestFixture]
-    public abstract class ControllerTest<TControllerType>
+    public abstract class ControllerTests<TControllerType>
     {
         protected IMapper _mapper;
         protected ILogger<TControllerType> _logger;

@@ -12,7 +12,7 @@ using ShowNTell.Domain.Services;
 namespace ShowNTell.API.Tests.Controllers
 {
     [TestFixture]
-    public class AuthenticationControllerTest : ControllerTest<AuthenticationController>
+    public class AuthenticationControllerTest : ControllerTests<AuthenticationController>
     {
         private Mock<IUserService> _mockUserService;
         private AuthenticationController _controller;

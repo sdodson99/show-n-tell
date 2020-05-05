@@ -15,7 +15,7 @@ using ShowNTell.Domain.Services;
 namespace ShowNTell.API.Tests.Controllers
 {
     [TestFixture]
-    public class FeedControllerTest : ControllerTest<FeedController>
+    public class FeedControllerTest : ControllerTests<FeedController>
     {
         private Mock<IFeedService> _mockFeedService;
         private FeedController _controller;

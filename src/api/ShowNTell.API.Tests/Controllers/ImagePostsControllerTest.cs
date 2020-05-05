@@ -19,7 +19,7 @@ using ShowNTell.Domain.Services.ImageStorages;
 namespace ShowNTell.API.Tests.Controllers
 {
     [TestFixture]
-    public class ImagePostsControllerTest : ControllerTest<ImagePostsController>
+    public class ImagePostsControllerTest : ControllerTests<ImagePostsController>
     {
         private Mock<IImagePostService> _mockImagePostService;
         private Mock<IRandomImagePostService> _mockRandomImagePostService;

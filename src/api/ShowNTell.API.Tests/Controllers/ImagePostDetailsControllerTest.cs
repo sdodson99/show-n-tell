@@ -14,7 +14,7 @@ using ShowNTell.Domain.Services;
 namespace ShowNTell.API.Tests.Controllers
 {
     [TestFixture]
-    public class ImagePostDetailsControllerTest : ControllerTest<ImagePostDetailsController>
+    public class ImagePostDetailsControllerTest : ControllerTests<ImagePostDetailsController>
     {
         private Mock<ILikeService> _mockLikeService;
         private Mock<ICommentService> _mockCommentService;

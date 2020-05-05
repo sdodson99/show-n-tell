@@ -14,7 +14,7 @@ using ShowNTell.Domain.Services;
 namespace ShowNTell.API.Tests.Controllers
 {
     [TestFixture]
-    public class ProfilesControllerTest : ControllerTest<ProfilesController>
+    public class ProfilesControllerTest : ControllerTests<ProfilesController>
     {
         private Mock<IProfileService> _mockProfileService;
         private Mock<IFollowService> _mockFollowService;
