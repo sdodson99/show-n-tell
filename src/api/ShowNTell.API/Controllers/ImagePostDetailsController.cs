@@ -11,7 +11,7 @@ using ShowNTell.API.Models.Responses;
 using ShowNTell.API.Models.Requests;
 using Microsoft.AspNetCore.Http;
 using ShowNTell.API.Services.CurrentUsers;
-using ShowNTell.API.Filters.AccessModes;
+using ShowNTell.API.Authorization;
 
 namespace ShowNTell.API.Controllers
 {
@@ -43,9 +43,9 @@ namespace ShowNTell.API.Controllers
         /// <returns>The created comment.</returns>
         /// <response code="200">Returns the created comment.</response>
         /// <response code="401">Unauthorized.</response>
+        /// <response code="403">Forbidden.</response>
         /// <response code="404">Failed to create comment.</response>
-        [Authorize]
-        [ServiceFilter(typeof(RequireWriteAccessModeFilter))]
+        [Authorize(Policy = PolicyName.REQUIRE_AUTH_WRITE_ACCESS)]
         [HttpPost("comments")]
         public async Task<ActionResult<CommentResponse>> CreateComment(int imagePostId, [FromBody] CreateCommentRequest commentRequest)
         {
@@ -85,10 +85,9 @@ namespace ShowNTell.API.Controllers
         /// <response code="200">Returns the updated comment.</response>
         /// <response code="400">Update comment response invalid.</response>
         /// <response code="401">Unauthorized.</response>
-        /// <response code="403">User does not own comment.</response>
-        /// <response code="404">Comment to update not found.</response>
-        [Authorize]        
-        [ServiceFilter(typeof(RequireWriteAccessModeFilter))]
+        /// <response code="403">Forbidden.</response>
+        /// <response code="404">Comment to update not found.</response>      
+        [Authorize(Policy = PolicyName.REQUIRE_AUTH_WRITE_ACCESS)]
         [HttpPut("comments/{commentId:int}")]
         public async Task<ActionResult<CommentResponse>> UpdateComment(int commentId, [FromBody] UpdateCommentRequest updateCommentRequest)
         {
@@ -125,11 +124,10 @@ namespace ShowNTell.API.Controllers
         /// <param name="commentId">The id of the comment to delete.</param>
         /// <response code="204">Returns the created comment.</response>
         /// <response code="401">Unauthorized.</response>
-        /// <response code="403">User does not have permission to delete comment.</response>
+        /// <response code="403">Forbidden.</response>
         /// <response code="404">Comment to delete not found.</response>
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [Authorize]
-        [ServiceFilter(typeof(RequireWriteAccessModeFilter))]
+        [Authorize(Policy = PolicyName.REQUIRE_AUTH_WRITE_ACCESS)]
         [HttpDelete("comments/{commentId:int}")]
         public async Task<IActionResult> DeleteComment(int commentId)
         {
@@ -162,9 +160,9 @@ namespace ShowNTell.API.Controllers
         /// <returns>The created like.</returns>
         /// <response code="200">Returns the created like.</response>
         /// <response code="401">Unauthorized.</response>
+        /// <response code="403">Forbidden.</response>
         /// <response code="404">Failed to create like.</response>
-        [Authorize]
-        [ServiceFilter(typeof(RequireWriteAccessModeFilter))]
+        [Authorize(Policy = PolicyName.REQUIRE_AUTH_WRITE_ACCESS)]
         [HttpPost("like")]
         public async Task<ActionResult<LikeResponse>> LikeImagePost(int imagePostId)
         {
@@ -211,9 +209,9 @@ namespace ShowNTell.API.Controllers
         /// <response code="204">Successfully unliked image post.</response>
         /// <response code="400">Failed to unlike image post.</response>
         /// <response code="401">Unauthorized.</response>
+        /// <response code="403">Forbidden.</response>
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [Authorize]
-        [ServiceFilter(typeof(RequireWriteAccessModeFilter))]
+        [Authorize(Policy = PolicyName.REQUIRE_AUTH_WRITE_ACCESS)]
         [HttpDelete("like")]
         public async Task<IActionResult> UnlikeImagePost(int imagePostId)
         {

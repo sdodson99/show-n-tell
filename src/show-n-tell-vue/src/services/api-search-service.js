@@ -17,7 +17,7 @@ class APISearchService {
     async searchImagePosts(searchQuery){
         const url = `${this.baseUrl}/imageposts?search=${searchQuery}`
 
-        const apiResponse = await this.apiClient.fetch(url)
+        const apiResponse = await this.apiClient.authFetch(url)
 
         const imagePostsResponse = await apiResponse.json()
 

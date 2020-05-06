@@ -15,7 +15,10 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using SeanDodson.GoogleJWTAuthentication.Extensions;
-using ShowNTell.API.Filters.AccessModes;
+using ShowNTell.API.Authorization;
+using ShowNTell.API.Authorization.Requirements.AdminOverride;
+using ShowNTell.API.Authorization.Requirements.ReadAccess;
+using ShowNTell.API.Authorization.Requirements.WriteAccess;
 using ShowNTell.API.Models;
 using ShowNTell.API.Models.MappingProfiles;
 using ShowNTell.API.Services.CurrentUsers;
@@ -49,12 +52,33 @@ namespace ShowNTell.API
         {
             services.AddControllers();
             services.AddGoogleJWTAuthentication();
+
             services.AddAuthorization(o =>
             {
                 o.DefaultPolicy = new AuthorizationPolicyBuilder(JwtBearerDefaults.AuthenticationScheme)
                     .RequireAuthenticatedUser()
                     .Build();
+            
+                o.AddPolicy(PolicyName.READ_ACCESS, p => p
+                    .AddRequirements(new ReadAccessRequirement()));
+
+                o.AddPolicy(PolicyName.REQUIRE_AUTH_READ_ACCESS, p => p
+                    .RequireAuthenticatedUser()
+                    .Combine(o.GetPolicy(PolicyName.READ_ACCESS)));
+
+                o.AddPolicy(PolicyName.WRITE_ACCESS, p => p
+                    .AddRequirements(new WriteAccessRequirement()));
+
+                o.AddPolicy(PolicyName.REQUIRE_AUTH_WRITE_ACCESS, p => p
+                    .RequireAuthenticatedUser()
+                    .Combine(o.GetPolicy(PolicyName.WRITE_ACCESS)));
             });
+            
+            services.AddSingleton<IAuthorizationHandler>(s => new UsernameAdminOverrideHandler(
+                s.GetRequiredService<ICurrentUserService>(), Configuration.AdminUsernames));
+            services.AddSingleton<IAuthorizationHandler>(new ReadShowNTellAccessModeHandler(Configuration.ReadAccessModeEnabled));
+            services.AddSingleton<IAuthorizationHandler>(new WriteShowNTellAccessModeHandler(Configuration.WriteAccessModeEnabled));
+
             services.AddCors();
 
             services.AddSwaggerGen(c =>
@@ -118,9 +142,6 @@ namespace ShowNTell.API
                     options.AddApplicationInsights(Configuration.ApplicationInsightsKey);
                 });
             }
-
-            services.AddScoped<RequireReadAccessModeFilter>(s => new RequireReadAccessModeFilter(Configuration.ReadAccessModeEnabled));
-            services.AddScoped<RequireWriteAccessModeFilter>(s => new RequireWriteAccessModeFilter(Configuration.WriteAccessModeEnabled));
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -202,6 +223,7 @@ namespace ShowNTell.API
             }
 
             showNTellConfiguration.BaseUrl = GetConfigurationValue(configuration, "BASE_URL");
+            showNTellConfiguration.AdminUsernames = new []{ "sc.dodson4" };
 
             return showNTellConfiguration;
         }

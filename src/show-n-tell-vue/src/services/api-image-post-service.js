@@ -17,7 +17,7 @@ class APIImagePostService {
     async getById(id) {
         const url = `${this.baseUrl}/imageposts/${id}`;
   
-        const apiResponse = await this.apiClient.fetch(url)
+        const apiResponse = await this.apiClient.authFetch(url)
 
         if(apiResponse.status === 404) {
             return null

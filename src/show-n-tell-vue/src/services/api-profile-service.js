@@ -18,7 +18,7 @@ class APIProfileService{
     async getProfile(username) {
         const url = `${this.baseUrl}/profiles/${username}`
 
-        const apiResponse = await this.apiClient.fetch(url);
+        const apiResponse = await this.apiClient.authFetch(url);
 
         const profileResponse = await apiResponse.json()
 
@@ -33,7 +33,7 @@ class APIProfileService{
     async getImagePosts(username) {
         const url = `${this.baseUrl}/profiles/${username}/imageposts`
 
-        const apiResponse = await this.apiClient.fetch(url);
+        const apiResponse = await this.apiClient.authFetch(url);
 
         const imagePostsResponse = await apiResponse.json()
 

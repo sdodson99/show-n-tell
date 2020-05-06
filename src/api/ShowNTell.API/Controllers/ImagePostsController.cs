@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using ShowNTell.API.Filters.AccessModes;
+using ShowNTell.API.Authorization;
 using ShowNTell.API.Models.Requests;
 using ShowNTell.API.Models.Responses;
 using ShowNTell.API.Services.CurrentUsers;
@@ -56,8 +56,9 @@ namespace ShowNTell.API.Controllers
         /// <param name="search">The query to search for.</param>
         /// <returns>All image posts or the list of image posts matching the search query.</returns>
         /// <response code="200">Returns all image posts or the list of image posts matching the search query.</response>
+        /// <response code="403">Forbidden.</response>
         [Produces("application/json")]
-        [ServiceFilter(typeof(RequireReadAccessModeFilter))]
+        [Authorize(Policy = PolicyName.READ_ACCESS)]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ImagePostResponse>>> Search([FromQuery(Name = "search")] string search)
         {
@@ -82,9 +83,10 @@ namespace ShowNTell.API.Controllers
         /// </summary>
         /// <returns>A random image post.</returns>
         /// <response code="200">Returns a random image post.</response>
+        /// <response code="403">Forbidden.</response>
         /// <response code="404">No image posts are available.</response>
         [Produces("application/json")]
-        [ServiceFilter(typeof(RequireReadAccessModeFilter))]
+        [Authorize(PolicyName.READ_ACCESS)]
         [HttpGet("random")]
         public async Task<ActionResult<ImagePostResponse>> GetRandom()
         {
@@ -109,9 +111,10 @@ namespace ShowNTell.API.Controllers
         /// <param name="id">The id of the image post.</param>
         /// <returns>The image post with the id.</returns>
         /// <response code="200">Returns the image post with the id.</response>
+        /// <response code="403">Forbidden.</response>
         /// <response code="404">Image post does not exist.</response>
         [Produces("application/json")]
-        [ServiceFilter(typeof(RequireReadAccessModeFilter))]
+        [Authorize(Policy = PolicyName.READ_ACCESS)]
         [HttpGet("{id:int}")]
         public async Task<ActionResult<ImagePostResponse>> GetById(int id)
         {
@@ -139,10 +142,10 @@ namespace ShowNTell.API.Controllers
         /// <response code="201">Returns the created image post.</response>
         /// <response code="400">Failed to create image post.</response>
         /// <response code="401">Unauthorized.</response>
+        /// <response code="403">Forbidden.</response>
         [ProducesResponseType(typeof(ImagePostResponse), StatusCodes.Status201Created)]
         [Produces("application/json")]
-        [Authorize]
-        [ServiceFilter(typeof(RequireWriteAccessModeFilter))]
+        [Authorize(Policy = PolicyName.REQUIRE_AUTH_WRITE_ACCESS)]
         [HttpPost]
         public async Task<ActionResult<ImagePostResponse>> Create([FromForm] CreateImagePostRequest imagePostRequest)
         {
@@ -196,11 +199,10 @@ namespace ShowNTell.API.Controllers
         /// <response code="200">Returns the updated image post.</response>
         /// <response code="400">Failed to update image post.</response>
         /// <response code="401">Unauthorized.</response>
-        /// <response code="403">User does not own image post.</response>
+        /// <response code="403">Forbidden.</response>
         /// <response code="404">Image post does not exist.</response>
         [Produces("application/json")]
-        [Authorize]
-        [ServiceFilter(typeof(RequireWriteAccessModeFilter))]
+        [Authorize(Policy = PolicyName.REQUIRE_AUTH_WRITE_ACCESS)]
         [HttpPut("{id:int}")]
         public async Task<ActionResult<ImagePostResponse>> Update(int id, [FromBody] UpdateImagePostRequest imagePostRequest)
         {
@@ -246,11 +248,10 @@ namespace ShowNTell.API.Controllers
         /// <response code="204">Successfully deleted image post.</response>
         /// <response code="400">Failed to delete stored image post.</response>
         /// <response code="401">Unauthorized.</response>
-        /// <response code="403">User does not own image post.</response>
+        /// <response code="403">Forbidden.</response>
         /// <response code="404">Image post does not exist.</response>
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [Authorize]
-        [ServiceFilter(typeof(RequireWriteAccessModeFilter))]
+        [Authorize(Policy = PolicyName.REQUIRE_AUTH_WRITE_ACCESS)]
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete(int id)
         {

@@ -16,7 +16,7 @@ class APIRandomImagePostService {
   async getRandom() {
     const url = `${this.baseUrl}/imageposts/random`;
 
-    const apiResponse = await this.apiClient.fetch(url);
+    const apiResponse = await this.apiClient.authFetch(url);
 
     if(apiResponse.status === 404) {
       return null

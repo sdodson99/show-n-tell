@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using ShowNTell.API.Filters.AccessModes;
+using ShowNTell.API.Authorization;
 using ShowNTell.API.Models.Responses;
 using ShowNTell.API.Services.CurrentUsers;
 using ShowNTell.Domain.Exceptions;
@@ -40,9 +40,10 @@ namespace ShowNTell.API.Controllers
         /// <param name="username">The username of the profile.</param>
         /// <returns>The profile for the username.</returns>
         /// <response code="200">Returns the profile for the username.</response>
+        /// <response code="403">Forbidden.</response>
         /// <response code="404">Profile does not exist.</response>
         [Produces("application/json")]
-        [ServiceFilter(typeof(RequireReadAccessModeFilter))]
+        [Authorize(Policy = PolicyName.READ_ACCESS)]
         [HttpGet]
         public async Task<ActionResult<ProfileResponse>> GetProfile(string username)
         {
@@ -68,8 +69,9 @@ namespace ShowNTell.API.Controllers
         /// <param name="username">The username of the profile.</param>
         /// <returns>The profile's list of image posts.</returns>
         /// <response code="200">Returns the profile's list of image posts.</response>
+        /// <response code="403">Forbidden.</response>
         [Produces("application/json")]
-        [ServiceFilter(typeof(RequireReadAccessModeFilter))]
+        [Authorize(Policy = PolicyName.READ_ACCESS)]
         [HttpGet("imageposts")]
         public async Task<ActionResult<IEnumerable<ImagePostResponse>>> GetImagePosts(string username)
         {
@@ -91,10 +93,10 @@ namespace ShowNTell.API.Controllers
         /// <response code="200">Returns the created follow.</response>
         /// <response code="400">User attempting to follow themselves.</response>
         /// <response code="401">Unauthorized.</response>
+        /// <response code="403">Forbidden.</response>
         /// <response code="404">Profile to follow does not exist.</response>
         [Produces("application/json")]
-        [Authorize]
-        [ServiceFilter(typeof(RequireWriteAccessModeFilter))]
+        [Authorize(Policy = PolicyName.REQUIRE_AUTH_WRITE_ACCESS)]
         [HttpPost("follow")]
         public async Task<ActionResult<FollowResponse>> Follow(string username)
         {
@@ -130,9 +132,9 @@ namespace ShowNTell.API.Controllers
         /// <response code="204">Successfully unfollowed profile.</response>
         /// <response code="400">Failed to unfollow profile.</response>
         /// <response code="401">Unauthorized.</response>
+        /// <response code="403">Forbidden.</response>
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [Authorize]
-        [ServiceFilter(typeof(RequireWriteAccessModeFilter))]
+        [Authorize(Policy = PolicyName.REQUIRE_AUTH_WRITE_ACCESS)]
         [HttpDelete("follow")]
         public async Task<IActionResult> Unfollow(string username)
         {

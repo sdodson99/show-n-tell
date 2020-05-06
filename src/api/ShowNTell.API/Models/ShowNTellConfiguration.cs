@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace ShowNTell.API.Models
 {
     public enum ShowNTellAccessMode
@@ -14,6 +16,7 @@ namespace ShowNTell.API.Models
         public string ApplicationInsightsKey { get; set; }
         public string BlobStorageConnectionString { get; set; }
         public string BaseUrl { get; set; }
+        public IEnumerable<string> AdminUsernames { get; set; }
         public ShowNTellAccessMode ShowNTellAccessMode { get; set; } = ShowNTellAccessMode.All;
         public bool ReadAccessModeEnabled => ShowNTellAccessMode == ShowNTellAccessMode.Read || ShowNTellAccessMode == ShowNTellAccessMode.All;
         public bool WriteAccessModeEnabled => ShowNTellAccessMode == ShowNTellAccessMode.Write || ShowNTellAccessMode == ShowNTellAccessMode.All;
