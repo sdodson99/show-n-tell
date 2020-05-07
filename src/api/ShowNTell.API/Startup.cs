@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using AutoMapper;
 using Azure.Identity;
@@ -19,6 +20,7 @@ using ShowNTell.API.Authorization;
 using ShowNTell.API.Authorization.Requirements.AdminOverride;
 using ShowNTell.API.Authorization.Requirements.ReadAccess;
 using ShowNTell.API.Authorization.Requirements.WriteAccess;
+using ShowNTell.API.Hubs;
 using ShowNTell.API.Models;
 using ShowNTell.API.Models.MappingProfiles;
 using ShowNTell.API.Services.CurrentUsers;
@@ -51,6 +53,7 @@ namespace ShowNTell.API
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            services.AddSignalR();
             services.AddGoogleJWTAuthentication();
 
             services.AddAuthorization(o =>
@@ -151,6 +154,7 @@ namespace ShowNTell.API
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseHttpsRedirection();
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
@@ -158,19 +162,21 @@ namespace ShowNTell.API
                 c.RoutePrefix = string.Empty;
             });
             app.UseStaticFiles("/" + STATIC_FILE_BASE_URI);
-            app.UseHttpsRedirection();
             app.UseRouting();
             app.UseCors(policy =>
             {
-                policy.AllowAnyOrigin()
+                string[] allowedHosts = new []{ "localhost", "seandodson.com" };
+                policy.SetIsOriginAllowed(o => allowedHosts.Contains(new Uri(o).Host))
                     .AllowAnyHeader()
-                    .AllowAnyMethod();
+                    .AllowAnyMethod()
+                    .AllowCredentials();
             });
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHub<ShowNTellHub>("/hub");
             });
         }
 
