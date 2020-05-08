@@ -18,7 +18,7 @@
                         :canEdit="false"
                         :canDelete="false"
                         fallbackContent="No description available."
-                        @usernameClicked="(username) => viewProfile(username)"/>
+                        @username-clicked="(username) => viewProfile(username)"/>
                 </div>
                 <button class="mt-3 w-100" v-b-toggle="'comments-accordion' + post.id">
                     <div>Comments</div>
@@ -32,7 +32,7 @@
                         @created="(content) => createComment(post, content)"
                         @edited="(comment) => editComment(post, comment)"
                         @deleted="(commentId) => deleteComment(post, commentId)"
-                        @usernameClicked="viewProfile"/>
+                        @username-clicked="viewProfile"/>
                 </b-collapse>
             </li>
         </ul>
