@@ -20,7 +20,9 @@ namespace ShowNTell.EntityFramework.Services
         {
             using(ShowNTellDbContext context = _contextFactory.CreateDbContext())
             {
-                return await context.Users.FindAsync(email);
+                return await context.Users
+                    .Include(u => u.Following)
+                    .FirstOrDefaultAsync(u => u.Email == email);
             }
         }
 

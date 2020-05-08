@@ -44,6 +44,22 @@ class APIGoogleAuthenticationService{
 
         return true
     }
+
+    /**
+     * Get the current logged in user.
+     * @returns {User} The logged in user. Null if the user is not logged in.
+     */
+    getUser() {
+        return this.userService.getUser()
+    }
+
+    /**
+     * Check if a user is logged in.
+     * @returns {boolean} True/false for success.
+     */
+    isLoggedIn() {
+        return this.userService.getUser() !== null && this.tokenService.getToken() !== null
+    }
 }
 
 export default APIGoogleAuthenticationService

@@ -24,6 +24,7 @@ namespace ShowNTell.API.Models.MappingProfiles
                 .ForMember(dest => dest.FollowerUsername, opt => opt.MapFrom(src => src.Follower.Username));
             CreateMap<User, ProfileResponse>();
             CreateMap<User, UserResponse>();
+            CreateMap<User, LoggedInUserResponse>();
             CreateMap<ImagePost, ImagePostResponse>()
                 .ForMember(dest => dest.Tags, opt => opt.MapFrom(src => src.Tags.Select(t => t.Tag).ToList()));
         }

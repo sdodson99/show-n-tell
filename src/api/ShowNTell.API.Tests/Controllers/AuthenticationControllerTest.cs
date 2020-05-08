@@ -30,7 +30,7 @@ namespace ShowNTell.API.Tests.Controllers
             _mockUserService.Setup(s => s.GetByEmail(It.IsAny<string>())).ReturnsAsync(CurrentUser);
             Type expectedType = typeof(OkObjectResult);
 
-            ActionResult<UserResponse> actual = await _controller.GoogleLogin();
+            ActionResult<LoggedInUserResponse> actual = await _controller.GoogleLogin();
             ActionResult actualResult = actual.Result;
 
             Assert.IsAssignableFrom(expectedType, actualResult);
@@ -42,7 +42,7 @@ namespace ShowNTell.API.Tests.Controllers
             _mockUserService.Setup(s => s.Create(It.IsAny<User>())).ReturnsAsync(CurrentUser);
             Type expectedType = typeof(OkObjectResult);
 
-            ActionResult<UserResponse> actual = await _controller.GoogleLogin();
+            ActionResult<LoggedInUserResponse> actual = await _controller.GoogleLogin();
             ActionResult actualResult = actual.Result;
 
             Assert.IsAssignableFrom(expectedType, actualResult);
@@ -53,7 +53,7 @@ namespace ShowNTell.API.Tests.Controllers
         {
             _mockUserService.Setup(s => s.Create(It.IsAny<User>())).ReturnsAsync(CurrentUser).Verifiable();
 
-            ActionResult<UserResponse> actual = await _controller.GoogleLogin();
+            ActionResult<LoggedInUserResponse> actual = await _controller.GoogleLogin();
 
             _mockUserService.Verify(s => s.Create(It.IsAny<User>()), Times.Once);
         }

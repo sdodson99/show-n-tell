@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Moq;
@@ -13,8 +14,6 @@ namespace ShowNTell.EntityFramework.Tests.Services
     [TestFixture]
     public class EFUserServiceTest : EFTest
     {
-        private const string EXISTING_EMAIL = "test@gmail.com";
-        private const string NON_EXISTING_EMAIL = "missing@gmail.com";
         private EFUserService _userService;
 
         [SetUp]
@@ -26,7 +25,10 @@ namespace ShowNTell.EntityFramework.Tests.Services
         [Test]
         public async Task GetByEmail_WithExistingEmail_ReturnsUserWithEmail()
         {
-            string expectedEmail = EXISTING_EMAIL;
+            string expectedEmail = "test@gmail.com";
+            ShowNTellDbContext context = _contextFactory.CreateDbContext();
+            context.Add(new User(){ Email = expectedEmail });
+            context.SaveChanges();
 
             User user = await _userService.GetByEmail(expectedEmail);
             string actualEmail = user.Email;
@@ -35,9 +37,29 @@ namespace ShowNTell.EntityFramework.Tests.Services
         }
 
         [Test]
+        public async Task GetByEmail_WithUserFollowingOthers_ReturnsUserWithFollows()
+        {
+            int expectedFollowingCount = 3;
+            ShowNTellDbContext context = _contextFactory.CreateDbContext();
+            context.Add(new User(){ Email = string.Empty, Following = new List<Follow>() 
+            {
+                new Follow() { UserEmail = "user1@gmail.com"},
+                new Follow() { UserEmail = "user2@gmail.com"},
+                new Follow() { UserEmail = "user3@gmail.com"}
+            }});
+            context.SaveChanges();
+
+            User user = await _userService.GetByEmail(string.Empty);
+            int actualFollowingCount = user.Following.Count;
+
+            Assert.IsNotNull(user.Following);
+            Assert.AreEqual(expectedFollowingCount, actualFollowingCount);
+        }
+
+        [Test]
         public async Task GetByEmail_WithNonExistingEmail_ReturnsNull()
         {
-            User user = await _userService.GetByEmail(NON_EXISTING_EMAIL);
+            User user = await _userService.GetByEmail(It.IsAny<string>());
 
             Assert.IsNull(user);
         }
@@ -45,11 +67,8 @@ namespace ShowNTell.EntityFramework.Tests.Services
         [Test]
         public async Task Create_WithNonExistingEmail_ReturnsNewUserWithEmail()
         {
-            string expectedEmail = NON_EXISTING_EMAIL;
-            User newUser = new User()
-            {
-                Email = expectedEmail
-            };
+            string expectedEmail = "test@gmail.com";
+            User newUser = new User() { Email = expectedEmail };
 
             User createdUser = await _userService.Create(newUser);
             string actualEmail = createdUser.Email;
@@ -61,28 +80,16 @@ namespace ShowNTell.EntityFramework.Tests.Services
         public void Create_WithExistingEmail_ThrowsArgumentExceptionForEmail()
         {
             string expectedInvalidParamName = "email";
-            User newUser = new User()
-            {
-                Email = EXISTING_EMAIL
-            };
+            string existingEmail = "test@gmail.com";
+            ShowNTellDbContext context = _contextFactory.CreateDbContext();
+            context.Add(new User() { Email = existingEmail });
+            context.SaveChanges();
+            User newUser = new User() { Email = existingEmail };
 
             ArgumentException exception = Assert.ThrowsAsync<ArgumentException>(() => _userService.Create(newUser));
             string actualInvalidParamName = exception.ParamName;
 
             Assert.AreEqual(expectedInvalidParamName, actualInvalidParamName);
-        }
-
-        protected override void Seed(ShowNTellDbContext context)
-        {
-            context.Add(GetUser());
-        }
-
-        private User GetUser()
-        {
-            return new User()
-            {
-                Email = EXISTING_EMAIL
-            };
         }
     }
 }
