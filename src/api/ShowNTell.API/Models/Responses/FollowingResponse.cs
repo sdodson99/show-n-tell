@@ -10,7 +10,7 @@ namespace ShowNTell.API.Models.Responses
     /// </summary>
     public class FollowingResponse
     {
-        public string UserEmail { get; set; }
-        public string UserUsername { get; set; }
+        public string Email { get; set; }
+        public string Username { get; set; }
     }
 }

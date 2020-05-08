@@ -243,6 +243,7 @@ namespace ShowNTell.API.Controllers
                 ImagePost updatedImagePost = await _imagePostService.Update(id, 
                     imagePostRequest.Description, 
                     imagePostRequest.Tags.Select(t => new Tag() { Content = t }));
+                updatedImagePost.User = user;
 
                 ImagePostResponse imagePostResponse = _mapper.Map<ImagePostResponse>(updatedImagePost);
 
@@ -252,7 +253,7 @@ namespace ShowNTell.API.Controllers
                 
                 _logger.LogInformation("Successfully updated image post with id {0}.", id);
 
-                return Ok(imagePostRequest);
+                return Ok(imagePostResponse);
             }
             catch (EntityNotFoundException)
             {

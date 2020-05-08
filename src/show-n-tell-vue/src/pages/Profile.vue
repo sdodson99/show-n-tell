@@ -77,7 +77,7 @@ export default {
             return this.profile.following && this.profile.following.length
         },
         isFollowing: function() {
-            return this.currentUser && this.profile.followers && this.profile.followers.some(f => f.followerEmail === this.currentUser.email)
+            return this.currentUser && this.profile.followers && this.profile.followers.some(f => f.email === this.currentUser.email)
         }
     },
     created: function() {

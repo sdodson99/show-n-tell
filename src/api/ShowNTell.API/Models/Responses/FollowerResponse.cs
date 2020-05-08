@@ -5,7 +5,7 @@ namespace ShowNTell.API.Models.Responses
     /// </summary>
     public class FollowerResponse
     {
-        public string FollowerEmail { get; set; }
-        public string FollowerUsername { get; set; }
+        public string Email { get; set; }
+        public string Username { get; set; }
     }
 }

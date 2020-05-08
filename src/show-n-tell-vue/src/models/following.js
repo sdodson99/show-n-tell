@@ -1,12 +1,12 @@
-function Following(userEmail, userUsername) {
-    this.userEmail = userEmail
-    this.userUsername = userUsername
+function Following(email, username) {
+    this.email = email
+    this.username = username
 }
 
 Following.fromJSON = function(follow) {
     return new Following(
-        follow.userEmail,
-        follow.userUsername
+        follow.email,
+        follow.username
     )
 }
 

@@ -22,6 +22,7 @@ namespace ShowNTell.EntityFramework.Services
             {
                 return await context.Users
                     .Include(u => u.Following)
+                        .ThenInclude(f => f.User)
                     .FirstOrDefaultAsync(u => u.Email == email);
             }
         }

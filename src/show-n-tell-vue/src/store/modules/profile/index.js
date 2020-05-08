@@ -1,8 +1,11 @@
 import { Action, Mutation } from './types'
 import { ModuleName as ImagePostsModuleName, Action as ImagePostsAction, Mutation as ImagePostsMutation } from '../image-posts/types'
+import { ModuleName as UserModuleName, Action as UserAction } from '../user/types'
 
 import UnauthorizedError from "../../../errors/unauthorized-error";
 import NotFoundError from "../../../errors/not-found-error";
+
+import Follower from '../../../models/follower'
 
 export { ModuleName } from './types'
 
@@ -15,7 +18,8 @@ export default function createProfileModule(profileService, followService, route
     }
 
     const getters = {
-        imagePosts: (state, g, rootState) => state.imagePostIds.map(id => rootState.imagePosts.imagePosts[id])
+        imagePosts: (state, g, rootState) => state.imagePostIds.map(id => rootState.imagePosts.imagePosts[id]),
+        currentUser: (s, g, rootState) => rootState.user.currentUser
     }
 
     const actions = {
@@ -36,21 +40,24 @@ export default function createProfileModule(profileService, followService, route
                 }
             }
         },
-        async [Action.FOLLOW_PROFILE]({ commit }) {
+        async [Action.FOLLOW_PROFILE]({ commit, dispatch, getters }) {
             try {
-                const follow = await followService.follow(state.profileUsername)
-                commit(Mutation.ADD_FOLLOW_TO_PROFILE, follow)
+                const following = await followService.follow(state.profileUsername)
+
+                commit(Mutation.ADD_FOLLOWER_TO_PROFILE, new Follower(getters.currentUser.email, getters.currentUser.username))
+                dispatch(`${UserModuleName}/${UserAction.ADD_FOLLOWING}`, following, { root: true })
             } catch (error) {
                 if(error instanceof UnauthorizedError) {
                   router.push({path: "/login", query: { back: true }})
                 }
             }
         },
-        async [Action.UNFOLLOW_PROFILE]({ commit, rootState }) {
+        async [Action.UNFOLLOW_PROFILE]({ commit, getters, dispatch }) {
             try {
                 const success = await followService.unfollow(state.profileUsername)
                 if(success) {
-                    commit(Mutation.REMOVE_FOLLOW_FROM_PROFILE, rootState.user.currentUser.email)
+                    commit(Mutation.REMOVE_FOLLOWER_FROM_PROFILE, getters.currentUser.email)
+                    dispatch(`${UserModuleName}/${UserAction.REMOVE_FOLLOWING_BY_USERNAME}`, state.profileUsername, { root: true })
                 }
             } catch (error) {
                 if(error instanceof UnauthorizedError) {
@@ -72,9 +79,9 @@ export default function createProfileModule(profileService, followService, route
         [Mutation.SET_IMAGE_POST_IDS]: (state, imagePostIds) => state.imagePostIds = imagePostIds,
         [Mutation.SET_PROFILE_USERNAME]: (state, profileUsername) => state.profileUsername = profileUsername,
         [Mutation.SET_PROFILE_NOT_FOUND]: (state, profileNotFound) => state.profileNotFound = profileNotFound,
-        [Mutation.ADD_FOLLOW_TO_PROFILE]: (state, follow) => state.profile.followers.push(follow),
-        [Mutation.REMOVE_FOLLOW_FROM_PROFILE]: (state, email) => {
-            state.profile.followers = state.profile.followers.filter(f => f.followerEmail !== email);
+        [Mutation.ADD_FOLLOWER_TO_PROFILE]: (state, follow) => state.profile.followers.push(follow),
+        [Mutation.REMOVE_FOLLOWER_FROM_PROFILE]: (state, email) => {
+            state.profile.followers = state.profile.followers.filter(f => f.email !== email);
         },
         [Mutation.REMOVE_IMAGE_POST_FROM_PROFILE]: (state, imagePostId) => {
             state.imagePostIds = state.imagePostIds.filter(x => x !== imagePostId)

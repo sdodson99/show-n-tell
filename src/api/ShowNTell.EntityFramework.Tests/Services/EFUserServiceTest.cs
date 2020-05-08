@@ -43,9 +43,9 @@ namespace ShowNTell.EntityFramework.Tests.Services
             ShowNTellDbContext context = _contextFactory.CreateDbContext();
             context.Add(new User(){ Email = string.Empty, Following = new List<Follow>() 
             {
-                new Follow() { UserEmail = "user1@gmail.com"},
-                new Follow() { UserEmail = "user2@gmail.com"},
-                new Follow() { UserEmail = "user3@gmail.com"}
+                new Follow() { User = new User() { Email = "user1@gmail.com" }},
+                new Follow() { User = new User() { Email = "user2@gmail.com" }},
+                new Follow() { User = new User() { Email = "user3@gmail.com" }}
             }});
             context.SaveChanges();
 

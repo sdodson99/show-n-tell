@@ -28,6 +28,7 @@ Show ‘N Tell is a social media platform for users to upload and discover image
 * Explore other user's profiles 
 * Follow other user's profiles
 * View a feed of recent image posts created by followed user profiles
+* Real-time feed updates
 * Search for image posts
 * Add tags to uploaded image posts to increase search rank
 
@@ -38,6 +39,7 @@ Show ‘N Tell is a social media platform for users to upload and discover image
 ## API
 * ASP.NET Core
 * Entity Framework Core w/ SQL Server
+* SignalR for real-time updates
 * Swagger UI
 * Unit Testing w/ NUnit + Moq
 * Azure SQL for production database
@@ -52,6 +54,7 @@ Show ‘N Tell is a social media platform for users to upload and discover image
 * Vue Router
 * Vuex
 * Bootstrap
+* SignalR
 
 # How to Run Locally
 Follow the following steps to run Show 'N Tell locally after cloning.

@@ -152,7 +152,7 @@ namespace ShowNTell.API.Tests.Controllers
         [Test]
         public async Task Update_WithExistingImagePost_ReturnsOk()
         {
-            _mockImagePostService.Setup(s => s.Update(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<List<Tag>>())).ReturnsAsync(new ImagePost());
+            _mockImagePostService.Setup(s => s.Update(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<IEnumerable<Tag>>())).ReturnsAsync(new ImagePost());
             _mockImagePostService.Setup(s => s.IsAuthor(It.IsAny<int>(), It.IsAny<string>())).ReturnsAsync(true);
             Type expectedType = typeof(OkObjectResult);
             UpdateImagePostRequest updateImagePostRequest = new UpdateImagePostRequest()
@@ -169,7 +169,7 @@ namespace ShowNTell.API.Tests.Controllers
         [Test]
         public async Task Update_WithSuccessfulUpdate_PublishesNotification()
         {
-            _mockImagePostService.Setup(s => s.Update(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<List<Tag>>())).ReturnsAsync(new ImagePost());
+            _mockImagePostService.Setup(s => s.Update(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<IEnumerable<Tag>>())).ReturnsAsync(new ImagePost());
             _mockImagePostService.Setup(s => s.IsAuthor(It.IsAny<int>(), It.IsAny<string>())).ReturnsAsync(true);
             UpdateImagePostRequest updateImagePostRequest = new UpdateImagePostRequest()
             {
