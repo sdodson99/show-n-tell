@@ -5,6 +5,7 @@ using System.Reflection;
 using AutoMapper;
 using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
+using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -25,6 +26,7 @@ using ShowNTell.API.Models;
 using ShowNTell.API.Models.MappingProfiles;
 using ShowNTell.API.Services.CurrentUsers;
 using ShowNTell.API.Services.ImageOptimizations;
+using ShowNTell.API.Services.Notifications;
 using ShowNTell.AzureStorage.Services;
 using ShowNTell.AzureStorage.Services.BlobClientFactories;
 using ShowNTell.Domain.Services;
@@ -54,6 +56,7 @@ namespace ShowNTell.API
         {
             services.AddControllers();
             services.AddSignalR();
+            services.AddMediatR(typeof(Startup));
             services.AddGoogleJWTAuthentication();
 
             services.AddAuthorization(o =>
@@ -134,6 +137,7 @@ namespace ShowNTell.API
             services.AddSingleton<ISearchService, EFSearchService>();
             services.AddSingleton<IRandomImagePostService, EFRandomImagePostService>();
             services.AddSingleton<IImageOptimizationService, NoneImageOptimizationService>();
+            services.AddSingleton<INotificationService, MediatRNotificationService>();
             services.AddSingleton<IImageStorage>(CreateImageStorage());
             services.AddSingleton<AdminDataSeeder>();
             services.AddSingleton<IMapper>(new MapperFactory().CreateMapper());

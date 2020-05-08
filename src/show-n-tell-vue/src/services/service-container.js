@@ -1,3 +1,4 @@
+import Constants from '../utilities/constants'
 import LocalStorageTokenService from "./local-storage-token-service";
 import LocalStorageUserService from "./local-storage-user-service";
 import APIGoogleAuthenticationService from "./api-google-authentication-service";
@@ -11,7 +12,7 @@ import APIFeedService from "./api-feed-service"
 import APISearchService from "./api-search-service"
 import APIClient from "./authentication-api-client"
 
-const baseUrl = process.env.VUE_APP_API_BASE_URL
+const baseUrl = Constants.BASE_URL;
 const tokenService = new LocalStorageTokenService();
 const userService = new LocalStorageUserService();
 const authenticationService = new APIGoogleAuthenticationService(baseUrl, tokenService, userService);

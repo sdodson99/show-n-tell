@@ -17,6 +17,8 @@
     <PackageReference Include="Azure.Security.KeyVault.Secrets" Version="4.0.3" />
     <PackageReference Include="McMaster.AspNetCore.LetsEncrypt" Version="0.4.0" />
     <PackageReference Include="McMaster.AspNetCore.LetsEncrypt.Azure" Version="0.4.0" />
+    <PackageReference Include="mediatr" Version="8.0.1" />
+    <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="8.0.0" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.13.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.2">
       <PrivateAssets>all</PrivateAssets>
