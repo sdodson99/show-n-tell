@@ -50,7 +50,7 @@ export default function createProfileModule(profileService, followService, route
             try {
                 const success = await followService.unfollow(state.profileUsername)
                 if(success) {
-                    commit(Mutation.REMOVE_FOLLOW_FROM_PROFILE, rootState.authentication.currentUser.email)
+                    commit(Mutation.REMOVE_FOLLOW_FROM_PROFILE, rootState.user.currentUser.email)
                 }
             } catch (error) {
                 if(error instanceof UnauthorizedError) {

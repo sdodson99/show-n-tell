@@ -19,8 +19,9 @@ namespace ShowNTell.API.Models.MappingProfiles
             CreateMap<Like, LikeResponse>();
             CreateMap<Comment, CommentResponse>()
                 .ForMember(dest => dest.Username, opt => opt.MapFrom(src => src.User.Username));
-            CreateMap<Follow, FollowResponse>()
-                .ForMember(dest => dest.UserUsername, opt => opt.MapFrom(src => src.User.Username))
+            CreateMap<Follow, FollowingResponse>()
+                .ForMember(dest => dest.UserUsername, opt => opt.MapFrom(src => src.User.Username));
+            CreateMap<Follow, FollowerResponse>()
                 .ForMember(dest => dest.FollowerUsername, opt => opt.MapFrom(src => src.Follower.Username));
             CreateMap<User, ProfileResponse>();
             CreateMap<User, UserResponse>();

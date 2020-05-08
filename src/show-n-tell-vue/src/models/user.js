@@ -1,4 +1,4 @@
-import Follow from './follow'
+import Following from './following'
 
 function User(email, username, dateJoined, following){
     this.email = email
@@ -12,7 +12,7 @@ User.fromJSON = function(user) {
         user.email,
         user.username,
         user.dateJoined,
-        user.following ? user.following.map(f => Follow.fromJSON(f)) : []
+        user.following ? user.following.map(f => Following.fromJSON(f)) : []
     )
 }
 

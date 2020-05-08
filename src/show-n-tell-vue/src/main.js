@@ -8,7 +8,6 @@ import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap-vue/dist/bootstrap-vue.css";
 
 import App from "./components/App.vue";
-import ServiceContainer from "./services/service-container";
 
 Vue.use(BootstrapVue);
 Vue.config.productionTip = false;
@@ -16,10 +15,5 @@ Vue.config.productionTip = false;
 new Vue({
   router,
   store,
-  render: h =>
-    h(App, {
-      props: {
-        authenticationService: ServiceContainer.AuthenticationService
-      }
-    })
+  render: h => h(App)
 }).$mount("#app");

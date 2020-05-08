@@ -9,6 +9,6 @@ namespace ShowNTell.API.Models.Responses
         public string Username { get; set; }
         public DateTime DateJoined { get; set; }
 
-        public IEnumerable<FollowResponse> Following { get; set; }
+        public IEnumerable<FollowingResponse> Following { get; set; }
     }
 }

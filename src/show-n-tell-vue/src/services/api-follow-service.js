@@ -1,4 +1,4 @@
-import Follow from '../models/follow'
+import Following from '../models/following'
 
 /**
  * Service to follow and unfollow users.
@@ -23,7 +23,7 @@ class APIFollowService{
 
         const followResponse = await apiResponse.json();
 
-        return Follow.fromJSON(followResponse)
+        return Following.fromJSON(followResponse)
     }
 
     /**
