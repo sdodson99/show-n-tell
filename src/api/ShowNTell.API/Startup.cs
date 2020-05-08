@@ -157,7 +157,7 @@ namespace ShowNTell.API
             {
                 app.UseDeveloperExceptionPage();
             }
-
+            
             app.UseHttpsRedirection();
             app.UseSwagger();
             app.UseSwaggerUI(c =>
@@ -169,7 +169,7 @@ namespace ShowNTell.API
             app.UseRouting();
             app.UseCors(policy =>
             {
-                string[] allowedHosts = new []{ "localhost", "seandodson.com" };
+                string[] allowedHosts = new []{ "localhost", "snt.seandodson.com" };
                 policy.SetIsOriginAllowed(o => allowedHosts.Contains(new Uri(o).Host))
                     .AllowAnyHeader()
                     .AllowAnyMethod()
