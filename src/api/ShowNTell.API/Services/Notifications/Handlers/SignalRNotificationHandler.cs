@@ -17,9 +17,10 @@ namespace ShowNTell.API.Services.Notifications.Handlers
             _hub = hub;
         }
 
-        public async Task Handle(ISignalRNotification notification, CancellationToken cancellationToken)
+        public Task Handle(ISignalRNotification notification, CancellationToken cancellationToken)
         {
-            await _hub.Clients.All.SendAsync(notification.MethodName, notification.Data);
+            _hub.Clients.All.SendAsync(notification.MethodName, notification.Data);
+            return Task.CompletedTask;
         }
     }
 }
