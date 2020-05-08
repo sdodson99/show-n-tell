@@ -61,7 +61,7 @@ export default {
             profile: state => state.profile.profile,
             profileUsername: state => state.profile.profileUsername,
             profileNotFound: state => state.profile.profileNotFound,
-            currentUser: state => state.authentication.currentUser
+            currentUser: state => state.user.currentUser
         }),
         ...mapGetters(ProfileModuleName, ['imagePosts']),
         hasNoImagePosts: function() {

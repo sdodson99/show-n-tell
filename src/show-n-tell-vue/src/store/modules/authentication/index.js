@@ -1,20 +1,17 @@
-import { Action, Mutation } from './types'
+import { Action } from './types'
+import { ModuleName as UserModuleName, Mutation as UserMutation } from '../user/types'
 
 export { ModuleName } from './types'
 
 export default function createAuthenticationModule(authenticationService, router) {
-    const state = {
-        currentUser: authenticationService.getUser()
-    }
-
     const getters = {
-        isLoggedIn: (state) => state.currentUser !== null
+        isLoggedIn: (s, g, rootState) => rootState.user.currentUser !== null
     }
 
     const actions = {
         async [Action.LOGIN]({ commit }, { token, redirectPath, redirectBack }) {
             const user = await authenticationService.login(token)
-            commit(Mutation.SET_CURRENT_USER, user)
+            commit(`${UserModuleName}/${UserMutation.SET_CURRENT_USER}`, user, { root: true })
 
             if(redirectPath) {
                 router.push({path: redirectPath})
@@ -27,21 +24,14 @@ export default function createAuthenticationModule(authenticationService, router
         async [Action.LOGOUT]({ commit }) {
             if(authenticationService.logout()) {
                 router.push({name: "Home"})
-                commit(Mutation.SET_CURRENT_USER, null)
+                commit(`${UserModuleName}/${UserMutation.SET_CURRENT_USER}`, null, { root: true })
             }
         }
     }
 
-    const mutations = {
-        [Mutation.SET_CURRENT_USER]: (state, user) => state.currentUser = user,
-        [Mutation.SET_IS_LOGGING_IN]: (state, isLoggingIn) => state.isLoggingIn = isLoggingIn
-    }
-
     return {
         namespaced: true,
-        state,
         getters,
-        actions,
-        mutations
+        actions
     }
 }

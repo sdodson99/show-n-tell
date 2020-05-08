@@ -74,7 +74,7 @@ export default {
       isLoading: (state) => state.explore.isLoading,
       noImagePostsAvailable: (state) => state.explore.noImagePostsAvailable,
       imagePostNotFound: (state) => state.explore.imagePostNotFound,
-      currentUser: (state) => state.authentication.currentUser
+      currentUser: (state) => state.user.currentUser
     }),
     ...mapGetters(ExploreModuleName, ['currentImagePost', 'noImagePosts', 'canExplore', 'hasPreviousImagePost']),
     ...mapGetters(AuthenticationModuleName, ['isLoggedIn']),

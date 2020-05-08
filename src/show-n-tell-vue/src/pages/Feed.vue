@@ -74,7 +74,7 @@ export default {
     },
     computed: {
         ...mapState({
-            currentUser: state => state.authentication.currentUser
+            currentUser: state => state.user.currentUser
         }),
         ...mapGetters(FeedModuleName, ['imagePosts']),
         ...mapGetters(AuthenticationModuleName, ['isLoggedIn'])
