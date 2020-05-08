@@ -1,6 +1,6 @@
-import User from "./user"
 import ImagePost from "./image-post"
-import Follow from "./follow"
+import Follower from "./follower"
+import Following from "./following"
 
 function Profile(email, username, dateJoined, imagePosts, followers, following) {
     this.email = email
@@ -17,8 +17,8 @@ Profile.fromJSON = function(profile) {
         profile.username,
         profile.dateJoined,
         profile.imagePosts ? profile.imagePosts.map(p => ImagePost.fromJSON(p)) : [],
-        profile.followers ? profile.followers.map(f => Follow.fromJSON(f)) : [],
-        profile.following ? profile.following.map(f => Follow.fromJSON(f)) : []
+        profile.followers ? profile.followers.map(f => Follower.fromJSON(f)) : [],
+        profile.following ? profile.following.map(f => Following.fromJSON(f)) : []
     )
 }
 

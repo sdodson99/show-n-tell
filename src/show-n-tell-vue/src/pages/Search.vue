@@ -41,7 +41,7 @@ export default {
     },
     computed: {
         ...mapState({
-            currentUser: (state) => state.authentication.currentUser
+            currentUser: (state) => state.user.currentUser
         }),
         ...mapGetters(SearchModuleName, ['imagePosts']),
         hasImagePosts: function(){

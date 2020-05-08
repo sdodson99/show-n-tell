@@ -61,7 +61,7 @@ export default {
             profile: state => state.profile.profile,
             profileUsername: state => state.profile.profileUsername,
             profileNotFound: state => state.profile.profileNotFound,
-            currentUser: state => state.authentication.currentUser
+            currentUser: state => state.user.currentUser
         }),
         ...mapGetters(ProfileModuleName, ['imagePosts']),
         hasNoImagePosts: function() {
@@ -77,7 +77,7 @@ export default {
             return this.profile.following && this.profile.following.length
         },
         isFollowing: function() {
-            return this.currentUser && this.profile.followers && this.profile.followers.some(f => f.followerEmail === this.currentUser.email)
+            return this.currentUser && this.profile.followers && this.profile.followers.some(f => f.email === this.currentUser.email)
         }
     },
     created: function() {

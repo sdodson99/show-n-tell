@@ -43,6 +43,6 @@ namespace ShowNTell.EntityFramework.Tests.BaseFixtures
             }
         }
 
-        protected abstract void Seed(ShowNTellDbContext context);
+        protected virtual void Seed(ShowNTellDbContext context) {}
     }
 }

@@ -7,9 +7,11 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 using ShowNTell.API.Controllers;
+using ShowNTell.API.Models.Notifications.ImagePosts;
 using ShowNTell.API.Models.Requests;
 using ShowNTell.API.Models.Responses;
 using ShowNTell.API.Services.ImageOptimizations;
+using ShowNTell.API.Services.Notifications;
 using ShowNTell.API.Tests.BaseFixtures;
 using ShowNTell.Domain.Exceptions;
 using ShowNTell.Domain.Models;
@@ -26,6 +28,7 @@ namespace ShowNTell.API.Tests.Controllers
         private Mock<ISearchService> _mockSearchService;
         private Mock<IImageStorage> _mockImageStorage;
         private Mock<IImageOptimizationService> _mockImageOptimizationService;
+        private Mock<INotificationService> _mockNotificationService;
         private ImagePostsController _controller;
 
         [SetUp]
@@ -36,9 +39,12 @@ namespace ShowNTell.API.Tests.Controllers
             _mockSearchService = new Mock<ISearchService>();
             _mockImageStorage = new Mock<IImageStorage>();
             _mockImageOptimizationService = new Mock<IImageOptimizationService>();
+            _mockNotificationService = new Mock<INotificationService>();
 
             _controller = new ImagePostsController(_mockImagePostService.Object, _mockRandomImagePostService.Object,
-                _mockSearchService.Object, _mockImageStorage.Object, _mockImageOptimizationService.Object, _mapper, _logger, _currentUserService);
+                _mockSearchService.Object, _mockImageStorage.Object, _mockImageOptimizationService.Object, 
+                _mapper, _logger, _currentUserService,
+                _mockNotificationService.Object);
         }
 
         [Test]
@@ -112,7 +118,7 @@ namespace ShowNTell.API.Tests.Controllers
         }
 
         [Test]
-        public async Task Create_ReturnsCreated()
+        public async Task Create_WithSuccessfulCreate_ReturnsCreated()
         {
             _mockImagePostService.Setup(s => s.Create(It.IsAny<ImagePost>())).ReturnsAsync(new ImagePost());
             Type expectedType = typeof(CreatedResult);
@@ -129,9 +135,24 @@ namespace ShowNTell.API.Tests.Controllers
         }
 
         [Test]
+        public async Task Create_WithSuccessfulCreate_PublishesNotification()
+        {
+            _mockImagePostService.Setup(s => s.Create(It.IsAny<ImagePost>())).ReturnsAsync(new ImagePost());
+            CreateImagePostRequest createImagePostRequest = new CreateImagePostRequest()
+            {
+                Image = new Mock<IFormFile>().Object,
+                Tags = new List<string>()
+            };
+
+            await _controller.Create(createImagePostRequest);
+            
+            _mockNotificationService.Verify(s => s.Publish(It.IsAny<ImagePostCreatedNotification>()), Times.Once);
+        }
+
+        [Test]
         public async Task Update_WithExistingImagePost_ReturnsOk()
         {
-            _mockImagePostService.Setup(s => s.Update(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<List<Tag>>())).ReturnsAsync(new ImagePost());
+            _mockImagePostService.Setup(s => s.Update(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<IEnumerable<Tag>>())).ReturnsAsync(new ImagePost());
             _mockImagePostService.Setup(s => s.IsAuthor(It.IsAny<int>(), It.IsAny<string>())).ReturnsAsync(true);
             Type expectedType = typeof(OkObjectResult);
             UpdateImagePostRequest updateImagePostRequest = new UpdateImagePostRequest()
@@ -143,6 +164,21 @@ namespace ShowNTell.API.Tests.Controllers
             ActionResult actualResult = actual.Result;
             
             Assert.IsAssignableFrom(expectedType, actualResult);
+        }
+
+        [Test]
+        public async Task Update_WithSuccessfulUpdate_PublishesNotification()
+        {
+            _mockImagePostService.Setup(s => s.Update(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<IEnumerable<Tag>>())).ReturnsAsync(new ImagePost());
+            _mockImagePostService.Setup(s => s.IsAuthor(It.IsAny<int>(), It.IsAny<string>())).ReturnsAsync(true);
+            UpdateImagePostRequest updateImagePostRequest = new UpdateImagePostRequest()
+            {
+                Tags = new List<string>()
+            };
+
+            await _controller.Update(It.IsAny<int>(), updateImagePostRequest);
+            
+            _mockNotificationService.Verify(s => s.Publish(It.IsAny<ImagePostUpdatedNotification>()), Times.Once);
         }
 
         [Test]
@@ -185,6 +221,18 @@ namespace ShowNTell.API.Tests.Controllers
             IActionResult actual = await _controller.Delete(It.IsAny<int>());
             
             Assert.IsAssignableFrom(expectedType, actual);
+        }
+
+        [Test]
+        public async Task Delete_WithSuccessfulDelete_PublishesNotification()
+        {
+            _mockImagePostService.Setup(s => s.GetById(It.IsAny<int>())).ReturnsAsync(new ImagePost() { UserEmail = CurrentUser.Email });
+            _mockImagePostService.Setup(s => s.Delete(It.IsAny<int>())).ReturnsAsync(true);
+            _mockImageStorage.Setup(s => s.DeleteImage(It.IsAny<string>())).ReturnsAsync(true);
+
+            await _controller.Delete(It.IsAny<int>());
+            
+            _mockNotificationService.Verify(s => s.Publish(It.IsAny<ImagePostDeletedNotification>()), Times.Once);
         }
 
         [Test]

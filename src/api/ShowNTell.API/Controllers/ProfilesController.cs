@@ -98,7 +98,7 @@ namespace ShowNTell.API.Controllers
         [Produces("application/json")]
         [Authorize(Policy = PolicyName.REQUIRE_AUTH_WRITE_ACCESS)]
         [HttpPost("follow")]
-        public async Task<ActionResult<FollowResponse>> Follow(string username)
+        public async Task<ActionResult<FollowingResponse>> Follow(string username)
         {
             _logger.LogInformation("Received profile follow request.");
             _logger.LogInformation("Profile username: {0}", username);
@@ -111,7 +111,7 @@ namespace ShowNTell.API.Controllers
                 Follow newFollow = await _followService.FollowUser(username, currentUser.Email);
                 _logger.LogInformation("Successfully followed '{0}' for '{1}'.", username, currentUser.Email);
 
-                return Ok(_mapper.Map<FollowResponse>(newFollow));
+                return Ok(_mapper.Map<FollowingResponse>(newFollow));
             }
             catch (EntityNotFoundException<string>)
             {

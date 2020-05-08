@@ -26,11 +26,23 @@ export default function createFeedModule(feedService, router) {
                     router.push({path: "/login", query: { back: true }})
                 }
             }
-        }
+        },
+        [Action.ADD_NEW_IMAGE_POST_ID]({ commit }, imagePostId) {
+            if(state.imagePostIds.every(p => p.id !== imagePostId)) {
+                commit(Mutation.ADD_IMAGE_POST_ID_TO_BEGINNING, imagePostId)
+            }
+        },
+        [Action.REMOVE_IMAGE_POST_ID]({ commit }, imagePostId) {
+            commit(Mutation.REMOVE_IMAGE_POST_ID, imagePostId)
+        },
     }
 
     const mutations = {
-        [Mutation.SET_IMAGE_POST_IDS]: (state, imagePostIds) => state.imagePostIds = imagePostIds
+        [Mutation.SET_IMAGE_POST_IDS]: (state, imagePostIds) => state.imagePostIds = imagePostIds,
+        [Mutation.ADD_IMAGE_POST_ID_TO_BEGINNING]: (state, imagePostId) => state.imagePostIds.unshift(imagePostId),
+        [Mutation.REMOVE_IMAGE_POST_ID]: (state, imagePostId) => {
+            state.imagePostIds = state.imagePostIds.filter(p => p !== imagePostId)
+        }
     }
 
     return {

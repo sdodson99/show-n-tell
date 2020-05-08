@@ -9,10 +9,12 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using ShowNTell.API.Authorization;
+using ShowNTell.API.Models.Notifications.ImagePosts;
 using ShowNTell.API.Models.Requests;
 using ShowNTell.API.Models.Responses;
 using ShowNTell.API.Services.CurrentUsers;
 using ShowNTell.API.Services.ImageOptimizations;
+using ShowNTell.API.Services.Notifications;
 using ShowNTell.Domain.Exceptions;
 using ShowNTell.Domain.Models;
 using ShowNTell.Domain.Services;
@@ -30,6 +32,7 @@ namespace ShowNTell.API.Controllers
         private readonly IImageOptimizationService _imageOptimizationService;
         private readonly IImageStorage _imageStorage;
         private readonly IMapper _mapper;
+        private readonly INotificationService _notificationService;
         private readonly ILogger<ImagePostsController> _logger;
         private readonly ICurrentUserService _currentUserService;
 
@@ -38,7 +41,7 @@ namespace ShowNTell.API.Controllers
             ISearchService searchService,
             IImageStorage imageStorage,
             IImageOptimizationService imageOptimizationService,
-            IMapper mapper, ILogger<ImagePostsController> logger, ICurrentUserService currentUserService)
+            IMapper mapper, ILogger<ImagePostsController> logger, ICurrentUserService currentUserService, INotificationService notificationService)
         {
             _imagePostService = imagePostService;
             _randomImagePostService = randomImagePostService;
@@ -48,6 +51,7 @@ namespace ShowNTell.API.Controllers
             _mapper = mapper;
             _logger = logger;
             _currentUserService = currentUserService;
+            _notificationService = notificationService;
         }
 
         /// <summary>
@@ -185,9 +189,18 @@ namespace ShowNTell.API.Controllers
 
             _logger.LogInformation("Creating image post.");
             newImagePost = await _imagePostService.Create(newImagePost);
+            newImagePost.User = user;
+
+            // Map to response object.
+            ImagePostResponse imagePostResponse = _mapper.Map<ImagePostResponse>(newImagePost);
+
+            // Publish event.
+            _logger.LogInformation("Publishing image post create notification.");
+            await _notificationService.Publish(new ImagePostCreatedNotification(imagePostResponse));
+
             _logger.LogInformation("Successfully created image post with id {0}.", newImagePost.Id);
 
-            return Created($"/imageposts/{newImagePost.Id}", _mapper.Map<ImagePostResponse>(newImagePost));
+            return Created($"/imageposts/{newImagePost.Id}", imagePostResponse);
         }
 
         /// <summary>
@@ -230,9 +243,17 @@ namespace ShowNTell.API.Controllers
                 ImagePost updatedImagePost = await _imagePostService.Update(id, 
                     imagePostRequest.Description, 
                     imagePostRequest.Tags.Select(t => new Tag() { Content = t }));
+                updatedImagePost.User = user;
+
+                ImagePostResponse imagePostResponse = _mapper.Map<ImagePostResponse>(updatedImagePost);
+
+                // Publish event.
+                _logger.LogInformation("Publishing image post updated notification.");
+                await _notificationService.Publish(new ImagePostUpdatedNotification(imagePostResponse));
+                
                 _logger.LogInformation("Successfully updated image post with id {0}.", id);
 
-                return Ok(_mapper.Map<ImagePostResponse>(updatedImagePost));
+                return Ok(imagePostResponse);
             }
             catch (EntityNotFoundException)
             {
@@ -291,6 +312,10 @@ namespace ShowNTell.API.Controllers
                 _logger.LogError("Failed to delete stored image at '{0}'.", imageToDelete.ImageUri);
                 return BadRequest();
             }
+
+            // Publish event.
+            _logger.LogInformation("Publishing image post deleted notification.");
+            await _notificationService.Publish(new ImagePostDeletedNotification(id));
 
             _logger.LogInformation("Successfully deleted image post with id {0}.", id);
 

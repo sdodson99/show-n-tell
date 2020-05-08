@@ -15,7 +15,7 @@ namespace ShowNTell.API.Models.Responses
         public DateTime DateJoined { get; set; }
 
         public ICollection<ImagePostResponse> ImagePosts { get; set; }
-        public ICollection<FollowResponse> Followers { get; set; }
-        public ICollection<FollowResponse> Following { get; set; }
+        public ICollection<FollowerResponse> Followers { get; set; }
+        public ICollection<FollowingResponse> Following { get; set; }
     }
 }

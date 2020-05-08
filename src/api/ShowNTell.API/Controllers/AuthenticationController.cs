@@ -39,7 +39,7 @@ namespace ShowNTell.API.Controllers
         [Produces("application/json")]
         [Authorize]
         [HttpPost("google")]
-        public async Task<ActionResult<UserResponse>> GoogleLogin()
+        public async Task<ActionResult<LoggedInUserResponse>> GoogleLogin()
         {
             _logger.LogInformation("Received Google login request.");
 
@@ -59,7 +59,7 @@ namespace ShowNTell.API.Controllers
 
             _logger.LogInformation("Successfully logged in user '{0}'.", existingUser.Email);
 
-            return Ok(_mapper.Map<UserResponse>(existingUser));
+            return Ok(_mapper.Map<LoggedInUserResponse>(existingUser));
         }
     }
 }

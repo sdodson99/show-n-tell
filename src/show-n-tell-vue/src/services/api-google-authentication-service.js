@@ -1,14 +1,6 @@
 import User from '../models/user'
 
 /**
- * Constants for authentication event names.
- */
-export const AuthenticationEvents = {
-    LOGIN: "login",
-    LOGOUT: "logout",
-}
-
-/**
  * Service for authenticating a Google login token with Show 'N Tell.
  */
 class APIGoogleAuthenticationService{

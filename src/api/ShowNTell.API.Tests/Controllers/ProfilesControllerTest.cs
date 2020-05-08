@@ -71,7 +71,7 @@ namespace ShowNTell.API.Tests.Controllers
             _mockFollowService.Setup(s => s.FollowUser(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(new Follow());
             Type expectedType = typeof(OkObjectResult);
 
-            ActionResult<FollowResponse> actual = await _controller.Follow(It.IsAny<string>());
+            ActionResult<FollowingResponse> actual = await _controller.Follow(It.IsAny<string>());
             ActionResult actualResult = actual.Result;
 
             Assert.IsAssignableFrom(expectedType, actualResult);
@@ -83,7 +83,7 @@ namespace ShowNTell.API.Tests.Controllers
             _mockFollowService.Setup(s => s.FollowUser(It.IsAny<string>(), It.IsAny<string>())).ThrowsAsync(new EntityNotFoundException<string>(It.IsAny<string>()));
             Type expectedType = typeof(NotFoundResult);
 
-            ActionResult<FollowResponse> actual = await _controller.Follow(It.IsAny<string>());
+            ActionResult<FollowingResponse> actual = await _controller.Follow(It.IsAny<string>());
             ActionResult actualResult = actual.Result;
 
             Assert.IsAssignableFrom(expectedType, actualResult);
@@ -95,7 +95,7 @@ namespace ShowNTell.API.Tests.Controllers
             _mockFollowService.Setup(s => s.FollowUser(It.IsAny<string>(), It.IsAny<string>())).ThrowsAsync(new OwnProfileFollowException(It.IsAny<string>()));
             Type expectedType = typeof(BadRequestResult);
 
-            ActionResult<FollowResponse> actual = await _controller.Follow(It.IsAny<string>());
+            ActionResult<FollowingResponse> actual = await _controller.Follow(It.IsAny<string>());
             ActionResult actualResult = actual.Result;
 
             Assert.IsAssignableFrom(expectedType, actualResult);
