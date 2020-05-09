@@ -12,6 +12,7 @@ namespace ShowNTell.API.Models.Responses
     {
         public int ImagePostId { get; set; }
         public string UserEmail { get; set; }
+        public string Username { get; set; }
         public DateTime DateCreated { get; set; }
     }
 }

@@ -16,7 +16,8 @@ namespace ShowNTell.API.Models.MappingProfiles
         public ResponseDomainMappingProfile()
         {
             CreateMap<Tag, TagResponse>();
-            CreateMap<Like, LikeResponse>();
+            CreateMap<Like, LikeResponse>()
+                .ForMember(dest => dest.Username, opt => opt.MapFrom(src => src.User.Username));
             CreateMap<Comment, CommentResponse>()
                 .ForMember(dest => dest.Username, opt => opt.MapFrom(src => src.User.Username));
             CreateMap<Follow, FollowingResponse>()
@@ -25,6 +26,9 @@ namespace ShowNTell.API.Models.MappingProfiles
             CreateMap<Follow, FollowerResponse>()
                 .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.FollowerEmail))
                 .ForMember(dest => dest.Username, opt => opt.MapFrom(src => src.Follower.Username));
+            CreateMap<Follow, FollowResponse>()
+                .ForMember(dest => dest.UserUsername, opt => opt.MapFrom(src => src.User.Username))
+                .ForMember(dest => dest.FollowerUsername, opt => opt.MapFrom(src => src.Follower.Username));
             CreateMap<User, ProfileResponse>();
             CreateMap<User, UserResponse>();
             CreateMap<User, LoggedInUserResponse>();
