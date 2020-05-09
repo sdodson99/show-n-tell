@@ -1,9 +1,7 @@
 export const ModuleName = "feed"
 
 export const Action = {
-    GET_FEED: "GET_FEED",
-    ADD_NEW_IMAGE_POST_ID: "ADD_NEW_IMAGE_POST_ID",
-    REMOVE_IMAGE_POST_ID: "REMOVE_IMAGE_POST_ID"
+    GET_FEED: "GET_FEED"
 }
 
 export const Mutation = {

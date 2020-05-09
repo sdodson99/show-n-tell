@@ -79,7 +79,19 @@ export default function createProfileModule(profileService, followService, route
         [Mutation.SET_IMAGE_POST_IDS]: (state, imagePostIds) => state.imagePostIds = imagePostIds,
         [Mutation.SET_PROFILE_USERNAME]: (state, profileUsername) => state.profileUsername = profileUsername,
         [Mutation.SET_PROFILE_NOT_FOUND]: (state, profileNotFound) => state.profileNotFound = profileNotFound,
-        [Mutation.ADD_FOLLOWER_TO_PROFILE]: (state, follow) => state.profile.followers.push(follow),
+        [Mutation.ADD_FOLLOWER_TO_PROFILE]: (state, follow) => {
+            if(state.profile.followers.every(f => f.followerEmail !== follow.followerEmail)) {
+                state.profile.followers.push(follow)
+            }
+        },
+        [Mutation.ADD_IMAGE_POST_ID_TO_BEGINNING]: (state, imagePostId) => {
+            if(state.imagePostIds.every(p => p.id !== imagePostId)) {
+                state.imagePostIds.unshift(imagePostId)
+            }
+        },
+        [Mutation.REMOVE_IMAGE_POST_ID]: (state, imagePostId) => {
+            state.imagePostIds = state.imagePostIds.filter(p => p !== imagePostId)
+        },
         [Mutation.REMOVE_FOLLOWER_FROM_PROFILE]: (state, email) => {
             state.profile.followers = state.profile.followers.filter(f => f.email !== email);
         },
