@@ -16,7 +16,7 @@ import createFeedModule, { ModuleName as FeedModuleName } from './modules/feed';
 import createProfileModule, { ModuleName as ProfileModuleName } from './modules/profile';
 import createSearchModule, { ModuleName as SearchModuleName } from './modules/search';
 
-import realTimePlugin from './plugins/signalr-real-time-plugin';
+import realTimePlugin from './plugins/signalr/signalr-real-time-plugin';
 
 Vue.use(Vuex)
 

@@ -88,7 +88,7 @@ export default function createImagePostsModule(imagePostService, likeVueService,
         },
         [Mutation.ADD_LIKE_TO_IMAGE_POST]: (state, { imagePostId, like }) => {
             const imagePost = state.imagePosts[imagePostId]
-            if(imagePost) {
+            if(imagePost && imagePost.likes.every(l => l.userEmail !== like.userEmail)) {
                 imagePost.likes.push(like)
             }
         },
