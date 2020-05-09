@@ -7,13 +7,13 @@ namespace ShowNTell.API.Models.Notifications.Likes
     {
         public string MethodName => ShowNTellHub.IMAGE_POST_UNLIKE;
 
-        public object Data => LikeResponse;
+        public object Data => UnlikeResponse;
 
-        public LikeResponse LikeResponse { get; }
+        public UnlikeResponse UnlikeResponse { get; }
 
-        public UnlikeNotification(LikeResponse likeResponse)
+        public UnlikeNotification(UnlikeResponse unlikeResponse)
         {
-            LikeResponse = likeResponse;
+            UnlikeResponse = unlikeResponse;
         }
     }
 }

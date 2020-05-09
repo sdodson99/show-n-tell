@@ -5,7 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 using ShowNTell.API.Controllers;
+using ShowNTell.API.Models.Notifications.Follows;
 using ShowNTell.API.Models.Responses;
+using ShowNTell.API.Services.Notifications;
 using ShowNTell.API.Tests.BaseFixtures;
 using ShowNTell.Domain.Exceptions;
 using ShowNTell.Domain.Models;
@@ -18,6 +20,7 @@ namespace ShowNTell.API.Tests.Controllers
     {
         private Mock<IProfileService> _mockProfileService;
         private Mock<IFollowService> _mockFollowService;
+        private Mock<INotificationService> _mockNotificationService;
         private ProfilesController _controller;
 
         [SetUp]
@@ -25,9 +28,10 @@ namespace ShowNTell.API.Tests.Controllers
         {
             _mockProfileService = new Mock<IProfileService>();
             _mockFollowService = new Mock<IFollowService>();
+            _mockNotificationService = new Mock<INotificationService>();
 
             _controller = new ProfilesController(_mockProfileService.Object, _mockFollowService.Object, 
-                _mapper, _logger, _currentUserService);
+                _mapper, _logger, _currentUserService, _mockNotificationService.Object);
         }
 
         [Test]
@@ -78,6 +82,16 @@ namespace ShowNTell.API.Tests.Controllers
         }
 
         [Test]
+        public async Task Follow_WithExistingProfileUsername_PublishesNotification()
+        {
+            _mockFollowService.Setup(s => s.FollowUser(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(new Follow());
+
+            await _controller.Follow(It.IsAny<string>());
+
+            _mockNotificationService.Verify(s => s.Publish(It.IsAny<FollowNotification>()), Times.Once);
+        }
+
+        [Test]
         public async Task Follow_WithNonExistingProfileUsername_ReturnsNotFound()
         {
             _mockFollowService.Setup(s => s.FollowUser(It.IsAny<string>(), It.IsAny<string>())).ThrowsAsync(new EntityNotFoundException<string>(It.IsAny<string>()));
@@ -110,6 +124,16 @@ namespace ShowNTell.API.Tests.Controllers
             IActionResult actual = await _controller.Unfollow(It.IsAny<string>());
 
             Assert.IsAssignableFrom(expectedType, actual);
+        }
+
+        [Test]
+        public async Task Unfollow_WithSuccessfulUnfollow_PublishesNotification()
+        {
+            _mockFollowService.Setup(s => s.UnfollowUser(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(true);
+
+            await _controller.Unfollow(It.IsAny<string>());
+
+            _mockNotificationService.Verify(s => s.Publish(It.IsAny<UnfollowNotification>()), Times.Once);
         }
 
         [Test]

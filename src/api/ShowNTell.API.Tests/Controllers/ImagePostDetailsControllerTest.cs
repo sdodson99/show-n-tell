@@ -4,8 +4,11 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 using ShowNTell.API.Controllers;
+using ShowNTell.API.Models.Notifications.Comments;
+using ShowNTell.API.Models.Notifications.Likes;
 using ShowNTell.API.Models.Requests;
 using ShowNTell.API.Models.Responses;
+using ShowNTell.API.Services.Notifications;
 using ShowNTell.API.Tests.BaseFixtures;
 using ShowNTell.Domain.Exceptions;
 using ShowNTell.Domain.Models;
@@ -18,6 +21,7 @@ namespace ShowNTell.API.Tests.Controllers
     {
         private Mock<ILikeService> _mockLikeService;
         private Mock<ICommentService> _mockCommentService;
+        private Mock<INotificationService> _mockNotificationService;
         private ImagePostDetailsController _controller;
 
         [SetUp]
@@ -25,9 +29,10 @@ namespace ShowNTell.API.Tests.Controllers
         {
             _mockLikeService = new Mock<ILikeService>();
             _mockCommentService = new Mock<ICommentService>();
+            _mockNotificationService = new Mock<INotificationService>();
 
             _controller = new ImagePostDetailsController(_mockLikeService.Object, _mockCommentService.Object, 
-                _mapper, _logger, _currentUserService);
+                _mapper, _logger, _currentUserService, _mockNotificationService.Object);
         }
 
         [Test]
@@ -40,6 +45,16 @@ namespace ShowNTell.API.Tests.Controllers
             ActionResult actualResult = actual.Result;
             
             Assert.IsAssignableFrom(expectedType, actualResult);
+        }
+
+        [Test]
+        public async Task CreateComment_WithValidComment_PublishesNotification()
+        {
+            _mockCommentService.Setup(s => s.Create(It.IsAny<Comment>())).ReturnsAsync(new Comment());
+
+            await _controller.CreateComment(1, new CreateCommentRequest());
+            
+            _mockNotificationService.Verify(s => s.Publish(It.IsAny<CommentCreatedNotification>()), Times.Once);
         }
 
         [Test]
@@ -65,6 +80,17 @@ namespace ShowNTell.API.Tests.Controllers
             ActionResult actualResult = actual.Result;
             
             Assert.IsAssignableFrom(expectedType, actualResult); 
+        }
+
+        [Test]
+        public async Task UpdateComment_WithValidUpdateRequest_PublishesNotification()
+        {
+            _mockCommentService.Setup(s => s.IsCommentOwner(It.IsAny<int>(), It.IsAny<string>())).ReturnsAsync(true);
+            _mockCommentService.Setup(s => s.Update(It.IsAny<int>(), It.IsAny<string>())).ReturnsAsync(new Comment());
+
+            await _controller.UpdateComment(It.IsAny<int>(), new UpdateCommentRequest());
+            
+            _mockNotificationService.Verify(s => s.Publish(It.IsAny<CommentUpdatedNotification>()), Times.Once);
         }
 
         [Test]
@@ -99,9 +125,20 @@ namespace ShowNTell.API.Tests.Controllers
             _mockCommentService.Setup(s => s.Delete(It.IsAny<int>())).ReturnsAsync(true);
             Type expectedType = typeof(NoContentResult);
 
-            IActionResult actual = await _controller.DeleteComment(It.IsAny<int>());
+            IActionResult actual = await _controller.DeleteComment(It.IsAny<int>(), It.IsAny<int>());
 
             Assert.IsAssignableFrom(expectedType, actual); 
+        }
+
+        [Test]
+        public async Task DeleteComment_WithValidCommentDelete_PublishesNotification()
+        {
+            _mockCommentService.Setup(s => s.CanDelete(It.IsAny<int>(), It.IsAny<string>())).ReturnsAsync(true);
+            _mockCommentService.Setup(s => s.Delete(It.IsAny<int>())).ReturnsAsync(true);
+
+            await _controller.DeleteComment(It.IsAny<int>(), It.IsAny<int>());
+
+            _mockNotificationService.Verify(s => s.Publish(It.IsAny<CommentDeletedNotification>()), Times.Once);
         }
 
         [Test]
@@ -111,7 +148,7 @@ namespace ShowNTell.API.Tests.Controllers
             _mockCommentService.Setup(s => s.Delete(It.IsAny<int>())).ReturnsAsync(false);
             Type expectedType = typeof(NotFoundResult);
 
-            IActionResult actual = await _controller.DeleteComment(It.IsAny<int>());
+            IActionResult actual = await _controller.DeleteComment(It.IsAny<int>(), It.IsAny<int>());
 
             Assert.IsAssignableFrom(expectedType, actual); 
         }
@@ -122,7 +159,7 @@ namespace ShowNTell.API.Tests.Controllers
             _mockCommentService.Setup(s => s.CanDelete(It.IsAny<int>(), It.IsAny<string>())).ReturnsAsync(false);
             Type expectedType = typeof(ForbidResult);
 
-            IActionResult actual = await _controller.DeleteComment(It.IsAny<int>());
+            IActionResult actual = await _controller.DeleteComment(It.IsAny<int>(), It.IsAny<int>());
 
             Assert.IsAssignableFrom(expectedType, actual); 
         }
@@ -137,6 +174,16 @@ namespace ShowNTell.API.Tests.Controllers
             ActionResult actualResult = actual.Result;
             
             Assert.IsAssignableFrom(expectedType, actualResult);
+        }
+
+        [Test]
+        public async Task LikeImagePost_WithValidLike_PublishesNotification()
+        {
+            _mockLikeService.Setup(s => s.LikeImagePost(It.IsAny<int>(), It.IsAny<string>())).ReturnsAsync(new Like());
+
+            await _controller.LikeImagePost(It.IsAny<int>());
+            
+            _mockNotificationService.Verify(s => s.Publish(It.IsAny<LikeNotification>()), Times.Once);
         }
 
         [Test]
@@ -196,6 +243,16 @@ namespace ShowNTell.API.Tests.Controllers
             IActionResult actual = await _controller.UnlikeImagePost(It.IsAny<int>());
             
             Assert.IsAssignableFrom(expectedType, actual);
+        }
+
+        [Test]
+        public async Task UnlikeImagePost_WithSuccessfulUnlike_PublishesNotification()
+        {
+            _mockLikeService.Setup(s => s.UnlikeImagePost(It.IsAny<int>(), It.IsAny<string>())).ReturnsAsync(true);
+
+            await _controller.UnlikeImagePost(It.IsAny<int>());
+            
+            _mockNotificationService.Verify(s => s.Publish(It.IsAny<UnlikeNotification>()), Times.Once);
         }
 
         [Test]
