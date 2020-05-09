@@ -1,12 +1,11 @@
 const signalr = require("@microsoft/signalr");
 
-import { ModuleName as ImagePostsModuleName, Action as ImagePostsAction, Mutation as ImagePostsMutation } from '../../modules/image-posts/types'
-import { ModuleName as FeedModuleName, Action as FeedAction } from '../../modules/feed/types'
+import { ModuleName as ImagePostsModuleName, Mutation as ImagePostsMutation } from '../modules/image-posts/types'
+import { ModuleName as FeedModuleName, Action as FeedAction } from '../modules/feed/types'
 
-import LikeResponse from './responses/like-response'
-
-import ImagePost from '../../../models/image-post'
-import Like from '../../../models/like';
+import ImagePost from '../../models/image-post'
+import Like from '../../models/like';
+import Comment from '../../models/comment';
 
 export default function createRealTimePlugin(hubUrl){
     return (store) => {
@@ -36,31 +35,38 @@ export default function createRealTimePlugin(hubUrl){
         })
 
         connection.on("IMAGE_POST_LIKE", data => {
-            const likeResponse = LikeResponse.fromJSON(data)
-            const imagePostId = likeResponse.imagePostId
-            const like = new Like(likeResponse.userEmail, likeResponse.dateCreated)
+            const imagePostId = data.imagePostId
+            const like = Like.fromJSON(data)
 
             store.commit(`${ImagePostsModuleName}/${ImagePostsMutation.ADD_LIKE_TO_IMAGE_POST}`, { imagePostId, like })
         })
 
         connection.on("IMAGE_POST_UNLIKE", data => {
-            const unlikeResponse = LikeResponse.fromJSON(data)
-            const imagePostId = unlikeResponse.imagePostId
-            const like = new Like(unlikeResponse.userEmail)
+            const imagePostId = data.imagePostId
+            const like = Like.fromJSON(data)
 
             store.commit(`${ImagePostsModuleName}/${ImagePostsMutation.REMOVE_LIKE_FROM_IMAGE_POST}`, { imagePostId, like})
         })
 
         connection.on("IMAGE_POST_COMMENT_CREATED", data => {
-
+            const imagePostId = data.imagePostId
+            const comment = Comment.fromJSON(data)
+            
+            store.commit(`${ImagePostsModuleName}/${ImagePostsMutation.ADD_COMMENT_TO_IMAGE_POST}`, { imagePostId, comment })
         })
 
         connection.on("IMAGE_POST_COMMENT_UPDATED", data => {
+            const imagePostId = data.imagePostId
+            const comment = Comment.fromJSON(data)
             
+            store.commit(`${ImagePostsModuleName}/${ImagePostsMutation.UPDATE_COMMENT_ON_IMAGE_POST}`, { imagePostId, comment })
         })
 
         connection.on("IMAGE_POST_COMMENT_DELETED", data => {
+            const imagePostId = data.imagePostId
+            const commentId = data.commentId
 
+            store.commit(`${ImagePostsModuleName}/${ImagePostsMutation.REMOVE_COMMENT_FROM_IMAGE_POST}`, { imagePostId, commentId })
         })
 
         connection.on("PROFILE_FOLLOW", data => {

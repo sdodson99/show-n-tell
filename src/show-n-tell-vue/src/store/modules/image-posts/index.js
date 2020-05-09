@@ -100,7 +100,7 @@ export default function createImagePostsModule(imagePostService, likeVueService,
         },
         [Mutation.ADD_COMMENT_TO_IMAGE_POST]: (state, { imagePostId, comment}) => {
             const imagePost = state.imagePosts[imagePostId]
-            if(imagePost) {
+            if(imagePost && imagePost.comments.every(c => c.id !== comment.id)) {
                 imagePost.comments.push(comment)
             }
         },

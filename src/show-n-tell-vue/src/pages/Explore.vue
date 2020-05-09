@@ -118,7 +118,7 @@ export default {
       this.$store.dispatch(`${ImagePostsModuleName}/${ImagePostsAction.UPDATE_IMAGE_POST_COMMENT}`, { imagePost: this.currentImagePost, comment })
     },
     deleteImagePostComment: function(commentId) {
-      this.$store.dispatch(`${ImagePostsModuleName}/${ExploreAction.DELETE_IMAGE_POST_COMMENT}`, { imagePost: this.currentImagePost, commentId })
+      this.$store.dispatch(`${ImagePostsModuleName}/${ImagePostsAction.DELETE_IMAGE_POST_COMMENT}`, { imagePost: this.currentImagePost, commentId })
     },
     viewProfile: function(username) {
       this.$router.push({path: `/profile/${username}`})
