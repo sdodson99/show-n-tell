@@ -3,6 +3,7 @@ const signalr = require("@microsoft/signalr");
 import { ModuleName as ImagePostsModuleName, Mutation as ImagePostsMutation } from '../modules/image-posts/types'
 import { ModuleName as FeedModuleName, Mutation as FeedMutation } from '../modules/feed/types'
 import { ModuleName as ProfileModuleName, Mutation as ProfileMutation } from '../modules/profile/types'
+import { ModuleName as ExploreModuleName, Action as ExploreAction } from '../modules/explore/types'
 
 import ImagePost from '../../models/image-post'
 import Like from '../../models/like';
@@ -41,6 +42,7 @@ export default function createRealTimePlugin(hubUrl){
             store.commit(`${ImagePostsModuleName}/${ImagePostsMutation.REMOVE_IMAGE_POST}`, id)
             store.commit(`${FeedModuleName}/${FeedMutation.REMOVE_IMAGE_POST_ID}`, id)
             store.commit(`${ProfileModuleName}/${ProfileMutation.REMOVE_IMAGE_POST_ID}`, id)
+            store.dispatch(`${ExploreModuleName}/${ExploreAction.REMOVE_IMAGE_POST_BY_ID}`, id)
         })
 
         connection.on("IMAGE_POST_LIKE", data => {

@@ -76,16 +76,19 @@ export default function createExploreModule(imagePostService, randomImagePostSer
                 commit(Mutation.SET_CURRENT_IMAGE_POST_INDEX, state.currentImagePostIndex - 1)
             }
         },
-        async [Action.DELETE_IMAGE_POST]({ commit, getters, dispatch, rootState }) {
+        async [Action.DELETE_IMAGE_POST]({ getters, dispatch, rootState }) {
             await dispatch(`${ImagePostsModuleName}/${ImagePostsAction.DELETE_IMAGE_POST}`, getters.currentImagePostId, { root: true })
 
             if(!rootState.imagePosts.imagePosts[getters.currentImagePostId]) {
-                commit(Mutation.REMOVE_IMAGE_POST_ID, getters.currentImagePostId)
+                await dispatch(Action.REMOVE_IMAGE_POST_BY_ID, getters.currentImagePostId)
+            }
+        },
+        async [Action.REMOVE_IMAGE_POST_BY_ID]({ commit, getters, dispatch }, id) {
+            commit(Mutation.REMOVE_IMAGE_POST_ID, id)
 
-                // Get an initial image if length is 0.
-                if(getters.noImagePosts) {
-                    await dispatch(Action.VIEW_RANDOM_IMAGE_POST)
-                }
+            // Get an initial image if length is 0.
+            if(getters.noImagePosts) {
+                await dispatch(Action.VIEW_RANDOM_IMAGE_POST)
             }
         }
     }
