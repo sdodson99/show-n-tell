@@ -31,6 +31,5 @@ img {
     max-width: 100%;
     max-height: 100%;
     image-orientation: from-image;
-    padding: 1px;
 }
 </style>
