@@ -4,8 +4,10 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using ShowNTell.API.Authorization;
+using ShowNTell.API.Models.Notifications.Follows;
 using ShowNTell.API.Models.Responses;
 using ShowNTell.API.Services.CurrentUsers;
+using ShowNTell.API.Services.Notifications;
 using ShowNTell.Domain.Exceptions;
 using ShowNTell.Domain.Models;
 using ShowNTell.Domain.Services;
@@ -23,15 +25,18 @@ namespace ShowNTell.API.Controllers
         private readonly IMapper _mapper;
         private readonly ILogger<ProfilesController> _logger;
         private readonly ICurrentUserService _currentUserService;
+        private readonly INotificationService _notificationService;
 
         public ProfilesController(IProfileService profileService, IFollowService followService,
-            IMapper mapper, ILogger<ProfilesController> logger, ICurrentUserService currentUserService)
+            IMapper mapper, ILogger<ProfilesController> logger, ICurrentUserService currentUserService, 
+            INotificationService notificationService)
         {
             _profileService = profileService;
             _followService = followService;
             _mapper = mapper;
             _logger = logger;
             _currentUserService = currentUserService;
+            _notificationService = notificationService;
         }
 
         /// <summary>
@@ -109,6 +114,12 @@ namespace ShowNTell.API.Controllers
             try
             {
                 Follow newFollow = await _followService.FollowUser(username, currentUser.Email);
+                newFollow.Follower = currentUser;
+
+                // Publish event.
+                _logger.LogInformation("Publishing follow notification.");
+                await _notificationService.Publish(new FollowNotification(_mapper.Map<FollowResponse>(newFollow)));
+
                 _logger.LogInformation("Successfully followed '{0}' for '{1}'.", username, currentUser.Email);
 
                 return Ok(_mapper.Map<FollowingResponse>(newFollow));
@@ -151,6 +162,16 @@ namespace ShowNTell.API.Controllers
                 _logger.LogError("Failed to unfollow '{0}' for '{1}'.", username, currentUser.Email);
                 return BadRequest();
             }
+
+            // Publish event.
+            _logger.LogInformation("Publishing unfollow notification.");
+            FollowResponse followResponse = new FollowResponse()
+            {
+                UserUsername = username,
+                FollowerEmail = currentUser.Email,
+                FollowerUsername = currentUser.Username
+            };
+            await _notificationService.Publish(new UnfollowNotification(followResponse));
 
             _logger.LogInformation("Successfully unfollowed '{0}' for '{1}'.", username, currentUser.Email);
 

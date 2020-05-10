@@ -12,6 +12,9 @@ using ShowNTell.API.Models.Requests;
 using Microsoft.AspNetCore.Http;
 using ShowNTell.API.Services.CurrentUsers;
 using ShowNTell.API.Authorization;
+using ShowNTell.API.Services.Notifications;
+using ShowNTell.API.Models.Notifications.Comments;
+using ShowNTell.API.Models.Notifications.Likes;
 
 namespace ShowNTell.API.Controllers
 {
@@ -24,15 +27,18 @@ namespace ShowNTell.API.Controllers
         private readonly IMapper _mapper;
         private readonly ILogger<ImagePostDetailsController> _logger;
         private readonly ICurrentUserService _currentUserService;
+        private readonly INotificationService _notificationService;
 
         public ImagePostDetailsController(ILikeService likeService, ICommentService commentService,
-            IMapper mapper, ILogger<ImagePostDetailsController> logger, ICurrentUserService currentUserService)
+            IMapper mapper, ILogger<ImagePostDetailsController> logger, ICurrentUserService currentUserService,
+            INotificationService notificationService)
         {
             _likeService = likeService;
             _commentService = commentService;
             _mapper = mapper;
             _logger = logger;
             _currentUserService = currentUserService;
+            _notificationService = notificationService;
         }
 
         /// <summary>
@@ -70,10 +76,17 @@ namespace ShowNTell.API.Controllers
             };
 
             createdComment = await _commentService.Create(createdComment);
+            createdComment.User = currentUser;
+
+            CommentResponse commentResponse = _mapper.Map<CommentResponse>(createdComment);
+
+            // Publish event.
+            _logger.LogInformation("Publishing comment create notification.");
+            await _notificationService.Publish(new CommentCreatedNotification(commentResponse));
 
             _logger.LogInformation("Successfully created comment with id {0} on image post with id {1}.", createdComment.Id, createdComment.ImagePostId);
 
-            return Ok(_mapper.Map<CommentResponse>(createdComment));
+            return Ok(commentResponse);
         }
 
         /// <summary>
@@ -107,9 +120,17 @@ namespace ShowNTell.API.Controllers
             {
                 _logger.LogInformation("Updating content of comment with id {0} to '{1}'.", commentId, updateCommentRequest.Content);
                 Comment updatedComment = await _commentService.Update(commentId, updateCommentRequest.Content);
+                updatedComment.User = currentUser;
+
+                CommentResponse commentResponse = _mapper.Map<CommentResponse>(updatedComment);
+
+                // Publish event.
+                _logger.LogInformation("Publishing comment update notification.");
+                await _notificationService.Publish(new CommentUpdatedNotification(commentResponse));
+
                 _logger.LogInformation("Successfully updated comment with id {0}.", commentId);
 
-                return Ok(_mapper.Map<CommentResponse>(updatedComment));
+                return Ok(commentResponse);
             }
             catch (EntityNotFoundException)
             {
@@ -122,6 +143,7 @@ namespace ShowNTell.API.Controllers
         /// Delete a comment.
         /// </summary>
         /// <param name="commentId">The id of the comment to delete.</param>
+        /// <param name="imagePostId">The id of the image post.</param>
         /// <response code="204">Returns the created comment.</response>
         /// <response code="401">Unauthorized.</response>
         /// <response code="403">Forbidden.</response>
@@ -129,7 +151,7 @@ namespace ShowNTell.API.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [Authorize(Policy = PolicyName.REQUIRE_AUTH_WRITE_ACCESS)]
         [HttpDelete("comments/{commentId:int}")]
-        public async Task<IActionResult> DeleteComment(int commentId)
+        public async Task<IActionResult> DeleteComment(int commentId, int imagePostId)
         {
             _logger.LogInformation("Received comment delete request.");
             _logger.LogInformation("Comment id: {0}", commentId);
@@ -148,6 +170,15 @@ namespace ShowNTell.API.Controllers
                 _logger.LogError("Failed to delete comment with id {0}.", commentId);
                 return NotFound();
             }
+
+            // Publish event.
+            _logger.LogInformation("Publishing comment delete notification.");
+            CommentDeletedResponse commentDeletedResponse = new CommentDeletedResponse()
+            {
+                CommentId = commentId,
+                ImagePostId = imagePostId
+            };
+            await _notificationService.Publish(new CommentDeletedNotification(commentDeletedResponse));
 
             _logger.LogError("Successfully deleted comment with id {0}.", commentId);
             return NoContent();
@@ -175,10 +206,16 @@ namespace ShowNTell.API.Controllers
             try
             {
                 Like createdLike = await _likeService.LikeImagePost(imagePostId, currentUser.Email);
+                createdLike.User = currentUser;
+
+                LikeResponse likeResponse = _mapper.Map<LikeResponse>(createdLike);
                 
+                // Publish event.
+                _logger.LogInformation("Publishing like notification.");
+                await _notificationService.Publish(new LikeNotification(likeResponse));
                 _logger.LogInformation("Successfully created like by '{0}' on image post with id {1}.", createdLike.UserEmail, createdLike.ImagePostId);
 
-                return Ok(_mapper.Map<LikeResponse>(createdLike));
+                return Ok(likeResponse);
             }
             catch (DuplicateLikeException)
             {
@@ -226,6 +263,16 @@ namespace ShowNTell.API.Controllers
                 _logger.LogError("Failed to delete like by '{0}' on image post with id '{1}'.", currentUser.Email, imagePostId);
                 return BadRequest();
             }
+
+            // Publish event.
+            _logger.LogInformation("Publishing unlike notification.");
+            UnlikeResponse unlikeResponse = new UnlikeResponse()
+            {
+                ImagePostId = imagePostId,
+                UserEmail = currentUser.Email,
+                Username = currentUser.Username
+            };
+            await _notificationService.Publish(new UnlikeNotification(unlikeResponse));
 
             _logger.LogInformation("Successfully deleted like by '{0}' on image post with id {1}.", currentUser.Email, imagePostId);
             return NoContent();
