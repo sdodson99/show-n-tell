@@ -8,14 +8,14 @@
     "deploy": "surge dist/ snt.seandodson.com"
   },
   "dependencies": {
-    "@microsoft/signalr": "^3.1.3",
-    "bootstrap-vue": "^2.6.1",
-    "core-js": "^3.6.4",
+    "@microsoft/signalr": "^3.1.5",
+    "bootstrap-vue": "^2.15.0",
+    "core-js": "^3.6.5",
     "surge": "^0.21.3",
     "vue": "^2.6.11",
-    "vue-google-login": "^2.0.3",
-    "vue-router": "^3.1.6",
-    "vuex": "^3.2.0"
+    "vue-google-login": "^2.0.5",
+    "vue-router": "^3.3.4",
+    "vuex": "^3.4.0"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.2.0",

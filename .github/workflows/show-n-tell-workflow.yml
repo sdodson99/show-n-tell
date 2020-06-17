@@ -85,7 +85,7 @@ jobs:
         if: github.event_name != 'pull_request'
         run: docker push ${{ env.DOCKER_REPOSITORY_TAG }}
 
-      - name: Deploy API to Azure WebApp
+      - name: Deploy API to Azure App Service
         if: github.event_name != 'pull_request'
         uses: azure/CLI@v1
         with:
