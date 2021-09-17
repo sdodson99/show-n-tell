@@ -2,7 +2,7 @@
 
 # Show 'N Tell
 
-A social media platform to show off your prized possessions.
+A social media platform to show off your prized possessions. Created for a school project.
 
 # Table of Contents
 
